@@ -1,0 +1,82 @@
+[
+  {
+    "id": "anime_0",
+    "name": "Anime Ghibli Nature",
+    "category": "Animation",
+    "camera": "Static wide shot, gentle pan",
+    "lighting": "Soft pastel sunlight",
+    "style": "Studio Ghibli style, 2D animation"
+  },
+  {
+    "id": "anime_1",
+    "name": "Anime Cyberpunk Akira",
+    "category": "Animation",
+    "camera": "Dynamic action tracking",
+    "lighting": "Neon pink and blue",
+    "style": "90s cyberpunk anime, cel-shaded"
+  },
+  {
+    "id": "anime_2",
+    "name": "Anime Shinkai Skies",
+    "category": "Animation",
+    "camera": "Slow tilt up to the sky",
+    "lighting": "Breathtaking volumetric clouds",
+    "style": "Makoto Shinkai style, hyper-detailed"
+  },
+  {
+    "id": "anime_3",
+    "name": "Anime Ufotable Combat",
+    "category": "Animation",
+    "camera": "Fast spinning camera",
+    "lighting": "Glowing aura, particle effects",
+    "style": "Ufotable style, Fate series"
+  },
+  {
+    "id": "anime_4",
+    "name": "Anime Trigger Action",
+    "category": "Animation",
+    "camera": "Exaggerated perspective",
+    "lighting": "Flat vibrant lighting",
+    "style": "Studio Trigger style, energetic"
+  },
+  {
+    "id": "anime_5",
+    "name": "Anime Slice of Life",
+    "category": "Animation",
+    "camera": "Static eye-level shot",
+    "lighting": "Cozy afternoon sunlight",
+    "style": "Kyoto Animation style, slice of life"
+  },
+  {
+    "id": "anime_6",
+    "name": "Anime Mecha Launch",
+    "category": "Animation",
+    "camera": "Fast tracking shot",
+    "lighting": "Hangar lights, metallic reflections",
+    "style": "Gundam style, 80s mecha anime"
+  },
+  {
+    "id": "anime_7",
+    "name": "Anime Dark Fantasy",
+    "category": "Animation",
+    "camera": "Slow dolly in",
+    "lighting": "Gloomy, dark ambient",
+    "style": "Dark fantasy anime, Berserk style"
+  },
+  {
+    "id": "anime_8",
+    "name": "Anime Chibi Comedy",
+    "category": "Animation",
+    "camera": "Static medium shot",
+    "lighting": "Bright, flat comedic lighting",
+    "style": "Chibi anime style, cute"
+  },
+  {
+    "id": "anime_9",
+    "name": "Anime Retro 80s",
+    "category": "Animation",
+    "camera": "Slow pan, static",
+    "lighting": "Neon synthwave lighting",
+    "style": "80s anime aesthetic, City Pop vibe"
+  }
+]

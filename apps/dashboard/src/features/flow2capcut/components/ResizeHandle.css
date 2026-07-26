@@ -1,0 +1,42 @@
+/**
+ * ResizeHandle - 드래그 핸들 스타일
+ */
+
+.resize-handle {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  touch-action: none;
+  transition: background-color 0.15s;
+}
+
+.resize-handle:hover {
+  background: var(--bg-color);
+}
+
+.resize-handle:active {
+  background: var(--primary-color);
+}
+
+.resize-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  transition: background-color 0.15s, width 0.15s;
+}
+
+.resize-handle:hover .resize-handle-bar {
+  background: var(--text-secondary);
+  width: 60px;
+}
+
+.resize-handle:active .resize-handle-bar {
+  background: white;
+  width: 80px;
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "cine_0",
+    "name": "Cinematic Dolly Zoom",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom, intense focus",
+    "lighting": "Golden hour, dramatic rim light",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_1",
+    "name": "Cinematic Handheld",
+    "category": "Cinematic",
+    "camera": "Shaky handheld camera, chaotic movement",
+    "lighting": "Natural lighting, cloudy day",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_2",
+    "name": "Cinematic Steadicam Follow",
+    "category": "Cinematic",
+    "camera": "Smooth steadicam tracking from behind",
+    "lighting": "High contrast lighting",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_3",
+    "name": "Cinematic Low Angle",
+    "category": "Cinematic",
+    "camera": "Extreme low angle, looking up",
+    "lighting": "Moody chiaroscuro, deep shadows",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_4",
+    "name": "Cinematic Overhead",
+    "category": "Cinematic",
+    "camera": "Bird's eye view, slow rotation",
+    "lighting": "Bright daylight, sharp shadows",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_5",
+    "name": "Cinematic Rack Focus",
+    "category": "Cinematic",
+    "camera": "Static shot, rack focus from foreground to background",
+    "lighting": "Soft bokeh, neon backlights",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_6",
+    "name": "Cinematic Pan and Tilt",
+    "category": "Cinematic",
+    "camera": "Slow diagonal pan and tilt",
+    "lighting": "Volumetric fog, god rays",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_7",
+    "name": "Cinematic Tracking Profile",
+    "category": "Cinematic",
+    "camera": "Profile tracking shot, matching speed",
+    "lighting": "Cinematic dusk, street lights",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_8",
+    "name": "Cinematic Dutch Angle",
+    "category": "Cinematic",
+    "camera": "Canted dutch angle, disorienting",
+    "lighting": "Harsh directional lighting",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  },
+  {
+    "id": "cine_9",
+    "name": "Cinematic Crane Shot",
+    "category": "Cinematic",
+    "camera": "Sweeping crane shot descending",
+    "lighting": "Epic sunset lighting",
+    "style": "8k, photorealistic, shot on 35mm lens, cinematic film grain"
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "name": "viraloop-studio",
+  "version": "0.9.10",
+  "buildNumber": 538,
+  "description": "ViraLoop Studio - Sovereign AI Video Production Hub from Google Flow to CapCut projects",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ViraLoopMedia",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "@google/genai",
+      "@swc/core",
+      "esbuild",
+      "koffi",
+      "protobufjs",
+      "sharp"
+    ]
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

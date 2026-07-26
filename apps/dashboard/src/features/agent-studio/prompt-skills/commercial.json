@@ -1,0 +1,18 @@
+[
+  {
+    "id": "commercial_product",
+    "name": "제품 광고 (Product Showcase)",
+    "category": "Commercial",
+    "camera": "Macro close-up, smooth orbit, slow rotation",
+    "lighting": "Studio lighting, softbox, clean white reflection, bright and crisp",
+    "style": "Commercial photography, hyper-realistic, 8k, extreme detail, depth of field blur"
+  },
+  {
+    "id": "commercial_food",
+    "name": "푸드 포르노 (Food Commercial)",
+    "category": "Commercial",
+    "camera": "Extreme close-up, slow dolly out, slight tilt",
+    "lighting": "Warm appetizing lighting, back-lit steam, bright highlights",
+    "style": "Food photography, mouth-watering, highly detailed, 4k, professional food styling"
+  }
+]

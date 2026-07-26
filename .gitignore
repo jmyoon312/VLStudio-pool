@@ -1,0 +1,99 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-electron/
+output/
+release/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment & secrets
+.env
+.env.*
+client_secret_*.json
+credentials/
+
+# Package locks (use pnpm-lock.yaml only)
+package-lock.json
+
+# AI agents (external)
+.claude/
+.agent/
+
+# IDE & Editor
+.vscode/
+.idea/
+
+# Backups & Temp
+* - 복사본/
+*_backup/
+*.backup_*
+*.tmp*
+*.bak
+*.swp
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+.eggs/
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+*.spec
+venv/
+.venv/
+*.db
+models--*/
+CACHEDIR.TAG
+
+# Vite cache
+.vite-clean/
+.vite/
+
+# Story / User workspaces
+story/
+projects/
+.kanbots/
+
+# External projects (not our source code)
+apps/swarm/
+
+# AutoFlow (external)
+AutoFlow_10.7.58/
+AutoFlow_10.7.58_pretty/
+AutoFlow_10.7.58.zip
+
+# Scratch / legacy
+scratch/
+legacy_backups/
+dist-backend/
+dist-dummy/
+backend/
+pool/
+profiles/
+scripts/
+skills/
+docs/
+
+# Dev artifacts
+test_env/
+refactor.cjs
+css_light_migrator.py
+theme_converter.py
+
+# Dashboard - exclude build/dev artifacts
+apps/dashboard/dev/
+apps/dashboard/.npmrc
+apps/dashboard/src/**/firebase/config.js

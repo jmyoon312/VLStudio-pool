@@ -1,0 +1,411 @@
+/* ============================================
+   Image History Button & Modal
+   ============================================ */
+
+/* 이미지 셀 위 히스토리 버튼 */
+.image-cell {
+  position: relative;
+}
+
+.btn-history-overlay {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-cell:hover .btn-history-overlay {
+  opacity: 1;
+}
+
+.btn-history-overlay:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+/* 히스토리 모달 */
+.image-history-modal .modal-inner {
+  max-width: 700px;
+  max-height: 85vh;
+}
+
+.history-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 현재 이미지 섹션 */
+.current-image-section h4,
+.history-section h4 {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.current-image-preview {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.current-image-preview img {
+  width: 100%;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-color);
+}
+
+.current-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* 에러/로딩 */
+.history-error {
+  padding: 12px;
+  background: rgba(245, 101, 101, 0.2);
+  border-radius: var(--border-radius);
+  color: var(--error-color);
+}
+
+.history-loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.history-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+}
+
+/* 히스토리 그리드 */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.history-item {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.2s;
+}
+
+.history-item:hover {
+  border-color: var(--primary-color);
+}
+
+.history-image {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--bg-color);
+}
+
+.history-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.history-image .no-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.history-info {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.history-engine {
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.history-date {
+  color: var(--text-secondary);
+}
+
+.history-actions {
+  padding: 0 8px 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.btn-restore {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.btn-restore:hover {
+  background: #3182ce;
+}
+
+.btn-restore:disabled {
+  background: var(--border-color);
+  cursor: not-allowed;
+}
+
+.btn-delete-small {
+  padding: 6px 8px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.btn-delete-small:hover {
+  background: rgba(245, 101, 101, 0.2);
+  border-color: var(--error-color);
+}
+
+/* ===== History Panel ===== */
+.history-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 12px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.history-panel.collapsed {
+  padding: 8px 12px;
+}
+
+.history-panel.collapsed .history-panel-header {
+  margin-bottom: 0;
+}
+
+.history-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.history-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-clear-history {
+  padding: 4px 10px;
+  border: 1px solid var(--error-color);
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-clear-history:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.history-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-loading-state,
+.history-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.history-card {
+  position: relative;
+  width: 100px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.history-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.history-card .history-image {
+  width: 100px;
+  height: 75px;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-card .history-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.history-loading,
+.history-no-image {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.history-card .history-info {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-card .history-date {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.history-prompt {
+  font-size: 0.7rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-delete-history {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 0.65rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.history-card:hover .btn-delete-history {
+  opacity: 1;
+}
+
+.btn-delete-history:hover {
+  background: var(--error-color);
+}
+
+/* History Detail Modal */
+.history-detail-modal {
+  max-width: 450px;
+}
+
+.history-detail-modal .modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-detail-image {
+  width: 100%;
+  max-height: 250px;
+  display: flex;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.history-detail-image img {
+  max-width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+}
+
+.history-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-detail-info .info-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.history-detail-info .info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-detail-info .label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.history-detail-info .prompt-text,
+.history-detail-info .subtitle-text {
+  margin: 0;
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--border-radius);
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

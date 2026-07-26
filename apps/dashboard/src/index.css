@@ -1,0 +1,369 @@
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import 'wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ====================================================================
+   ViraLoop Studio — Design Token System
+   
+   [원칙] 이 파일이 유일한 진실의 원천(Single Source of Truth)입니다.
+   컴포넌트에서 bg-slate-900, text-gray-300 같은 하드코딩 금지.
+   반드시 아래 시맨틱 토큰(bg-background, text-foreground 등)을 사용하세요.
+   테마 변경은 오직 이 파일의 변수 값만 수정하면 전체 앱에 즉시 반영됩니다.
+   ==================================================================== */
+
+@layer base {
+
+  /* ============================================================
+     LIGHT THEME  (기본, :root)
+     ============================================================ */
+  :root {
+
+    /* --- 1. 핵심 배경 / 전경 (Pixeling OKLCH 테마) --- */
+    --background:        oklch(0.98 0.003 255);       /* #f8f9fc */
+    --foreground:        oklch(0.28 0.025 255);       /* #373c5c */
+
+    /* --- 2. 카드 / 팝오버 / 사이드바 --- */
+    --card:              oklch(1 0 0);                /* #ffffff */
+    --card-foreground:   oklch(0.28 0.025 255);       /* #373c5c */
+    --popover:           oklch(0.98 0.005 255);       /* #f5f7fc */
+    --popover-foreground: oklch(0.28 0.025 255);      /* #373c5c */
+    --sidebar:           var(--background);      /* Unified with main background */
+    --sidebar-border:    oklch(0.89 0.02 250);        /* #d6dbeb - Sharp structural division */
+
+    /* --- 3. 브랜드 포인트 컬러 (Pixeling Royal Blue) --- */
+    --primary:           oklch(0.546 0.245 262.881);  /* #2563eb */
+    --primary-foreground: oklch(1 0 0);               /* #ffffff */
+    --primary-hover:     oklch(0.48 0.24 262.881);
+
+    /* --- 4. 보조 컬러 --- */
+    --secondary:         oklch(0.93 0.01 255);        /* #e3e6f3 */
+    --secondary-foreground: oklch(0.35 0.025 255);    /* #4a4f7a */
+
+    /* --- 5. 음소거(Muted) — 배경, 부제목 등 --- */
+    --muted:             oklch(0.95 0.008 255);       /* #ebeef7 */
+    --muted-foreground:  oklch(0.55 0.02 255);        /* #717695 */
+
+    /* --- 6. 액센트 (hover 배경 등) --- */
+    --accent:            oklch(0.685 0.169 237.323);  /* #0ea5e9 */
+    --accent-foreground: oklch(1 0 0);               /* #ffffff */
+
+    /* --- 7. 위험/경고/성공/정보 --- */
+    --destructive:       oklch(0.586 0.227 17.584);   /* #e11d48 */
+    --destructive-foreground: oklch(1 0 0);
+    --success:           oklch(0.596 0.145 163.225);  /* #059669 */
+    --success-foreground: oklch(1 0 0);
+    --warning:           oklch(0.75 0.15 75);
+    --warning-foreground: oklch(0.28 0.025 255);
+    --info:              oklch(0.546 0.245 262.881);
+    --info-foreground:   oklch(1 0 0);
+
+    /* --- 8. 테두리 / 인풋 / 포커스 링 --- */
+    --border:            oklch(0.869 0.022 252.894);  /* #d0d5e6 */
+    --input:             oklch(0.93 0.01 255);        /* #e3e6f3 */
+    --ring:              oklch(0.546 0.245 262.881);
+
+    /* --- 9. 반지름 --- */
+    --radius:            0.75rem;                     /* 12px */
+
+    /* --- 10. 그림자 --- */
+    --shadow-sm:         0 1px 2px 0 rgb(0 0 0 / 0.02);
+    --shadow-md:         0 4px 6px -1px rgb(0 0 0 / 0.04), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --shadow-lg:         0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --shadow-xl:         0 20px 25px -5px rgb(0 0 0 / 0.06), 0 8px 10px -6px rgb(0 0 0 / 0.06);
+    --shadow-2xl:        0 25px 50px -12px rgb(0 0 0 / 0.1);
+    --shadow-inner:      inset 0 2px 4px 0 rgb(0 0 0 / 0.02);
+
+    /* --- 11. 타이포그래피 (Wanted Sans 우선 적용) --- */
+    --font-wanted-sans:  'Wanted Sans Variable', 'wantedSans', 'Wanted Sans', 'Pretendard Variable', 'Pretendard', 'Noto Sans KR', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-sans:         var(--font-wanted-sans);
+    --font-mono:         'JetBrains Mono', 'Fira Code', monospace;
+
+    /* --- 12. 레이아웃 --- */
+    --sidebar-width:     288px;
+    --header-height:     56px;
+  }
+
+  /* ============================================================
+     DARK THEME
+     ============================================================ */
+  .dark {
+
+    /* --- 1. 핵심 배경 / 전경 --- */
+    --background:        oklch(0.15 0.015 255);       /* #181c2b */
+    --foreground:        oklch(0.9 0.01 255);        /* #e6e8f2 */
+
+    /* --- 2. 카드 / 팝오버 / 사이드바 --- */
+    --card:              oklch(0.18 0.015 255);       /* #1f2438 */
+    --card-foreground:   oklch(0.9 0.01 255);
+    --popover:           oklch(0.18 0.015 255);
+    --popover-foreground: oklch(0.9 0.01 255);
+    --sidebar:           var(--background);       /* Unified with main background */
+    --sidebar-border:    oklch(0.22 0.02 255);        /* #262c45 */
+
+    /* --- 3. 브랜드 포인트 컬러 --- */
+    --primary:           oklch(0.6 0.2 260);
+    --primary-foreground: oklch(1 0 0);
+    --primary-hover:     oklch(0.55 0.2 260);
+
+    /* --- 4. 보조 컬러 --- */
+    --secondary:         oklch(0.22 0.02 255);
+    --secondary-foreground: oklch(0.9 0.01 255);
+
+    /* --- 5. 음소거(Muted) --- */
+    --muted:             oklch(0.2 0.015 255);
+    --muted-foreground:  oklch(0.6 0.02 255);
+
+    /* --- 6. 액센트 --- */
+    --accent:            oklch(0.22 0.02 255);
+    --accent-foreground: oklch(0.9 0.01 255);
+
+    /* --- 7. 위험/경고/성공/정보 --- */
+    --destructive:       oklch(0.5 0.2 20);
+    --destructive-foreground: oklch(1 0 0);
+    --success:           oklch(0.55 0.15 160);
+    --success-foreground: oklch(1 0 0);
+    --warning:           oklch(0.65 0.15 75);
+    --warning-foreground: oklch(0.9 0.01 255);
+    --info:              oklch(0.6 0.2 260);
+    --info-foreground:   oklch(1 0 0);
+
+    /* --- 8. 테두리 / 인풋 / 포커스 링 --- */
+    --border:            oklch(0.22 0.02 255);
+    --input:             oklch(0.22 0.02 255);
+    --ring:              oklch(0.6 0.2 260);
+
+    /* --- 9. 반지름 (동일) --- */
+    --radius:            0.75rem;
+
+    /* --- 10. 그림자 (다크 모드) --- */
+    --shadow-sm:         0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-md:         0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg:         0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+    --shadow-xl:         0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+    --shadow-2xl:        0 25px 50px -12px rgb(0 0 0 / 0.7);
+    --shadow-inner:      inset 0 2px 4px 0 rgb(0 0 0 / 0.4);
+  }
+}
+
+
+/* ============================================================
+   GLOBAL BASE STYLES
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border box-border;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-foreground;
+    font-family: var(--font-sans);
+  }
+
+  /* 코드, 모노스페이스 */
+  code, pre, kbd, samp {
+    font-family: var(--font-mono);
+  }
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { @apply bg-muted-foreground; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+
+/* ============================================================
+   UTILITY COMPONENT CLASSES
+   (자주 쓰이는 패턴을 @layer components에 등록하여 재사용)
+   ============================================================ */
+@layer components {
+
+  /* 카드 */
+  .vl-card {
+    @apply bg-card text-card-foreground rounded-xl border border-border shadow-sm;
+  }
+  .vl-card-hover {
+    @apply vl-card transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  /* 패널 (사이드바 내부 섹션 등) */
+  .vl-panel {
+    @apply bg-muted rounded-lg border border-border;
+  }
+
+  /* 기본 버튼 스타일 (shadcn Button 컴포넌트가 자동으로 사용) */
+  .vl-btn-primary {
+    @apply bg-primary text-primary-foreground hover:opacity-90 transition-opacity rounded-lg font-semibold;
+  }
+  .vl-btn-ghost {
+    @apply bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg;
+  }
+  .vl-btn-outline {
+    @apply border border-border bg-transparent text-foreground hover:bg-accent transition-colors rounded-lg;
+  }
+
+  /* 입력 필드 */
+  .vl-input {
+    @apply bg-background border border-input text-foreground placeholder:text-muted-foreground
+           rounded-lg px-3 py-2 text-sm
+           focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-shadow;
+  }
+
+  /* 배지 */
+  .vl-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
+           bg-muted text-muted-foreground border border-border;
+  }
+  .vl-badge-primary { @apply vl-badge bg-primary/10 text-primary border-primary/20; }
+  .vl-badge-success { @apply vl-badge bg-success/10 text-success border-success/20; }
+  .vl-badge-warning { @apply vl-badge bg-warning/10 text-warning-foreground border-warning/20; }
+  .vl-badge-error   { @apply vl-badge bg-destructive/10 text-destructive border-destructive/20; }
+
+  /* 페이지 레이아웃 */
+  .vl-page {
+    @apply space-y-6 container mx-auto p-6 max-w-7xl;
+  }
+  .vl-page-title {
+    @apply text-xl font-black tracking-tight text-foreground;
+  }
+  .vl-section-title {
+    @apply text-sm font-bold uppercase tracking-widest text-muted-foreground;
+  }
+
+  /* 사이드바 메뉴 아이템 */
+  .vl-menu-item {
+    @apply flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium
+           text-muted-foreground transition-all duration-150
+           hover:bg-accent hover:text-foreground;
+  }
+  .vl-menu-item-active {
+    @apply vl-menu-item bg-card text-primary shadow-sm border border-border;
+  }
+
+  /* 구분선 */
+  .vl-divider { @apply border-t border-border; }
+
+  /* 상태 도트 */
+  .vl-dot-success { @apply w-2 h-2 rounded-full bg-success animate-pulse; }
+  .vl-dot-warning { @apply w-2 h-2 rounded-full bg-warning; }
+  .vl-dot-error   { @apply w-2 h-2 rounded-full bg-destructive animate-pulse; }
+  .vl-dot-muted   { @apply w-2 h-2 rounded-full bg-muted-foreground; }
+
+  /* 애니메이션 ticker */
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    display: flex;
+    gap: 4rem;
+    white-space: nowrap;
+  }
+}
+
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   RESPONSIVE LAYOUT & SIDEBAR COLLAPSE SYSTEM
+   ============================================================ */
+
+/* Smooth sliding transitions */
+aside {
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+main {
+  transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Width control of main layout on smaller screens */
+@media (max-width: 1280px) {
+  :root {
+    --sidebar-width: 72px !important;
+  }
+  
+  .hide-on-slim {
+    display: none !important;
+  }
+  
+  .sidebar-mode-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  aside .px-6, aside .px-4, aside .p-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  aside nav {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  aside nav a {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    gap: 0 !important;
+  }
+  
+  aside nav a svg {
+    margin: 0 !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  
+  aside button {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  aside button svg {
+    margin: 0 !important;
+  }
+  
+  .dark-mode-toggle-text {
+    display: none !important;
+  }
+  
+  .sidebar-logo-container {
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+}
+
+/* Scrollbar Utility for smooth stage menus */
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+}
+.scrollbar-none {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}

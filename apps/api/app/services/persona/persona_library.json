@@ -1,0 +1,103 @@
+{
+  "niches": [
+    {
+      "id": "senior_care",
+      "display_name": "Silver Compass (Seniors)",
+      "vibe": "Warm, Respectful, Clear",
+      "typography": { "size": "large", "font": "Outfit", "color": "#f1f5f9" },
+      "pacing": "Moderate",
+      "hooks": ["Safety", "Health", "Modern Comfort"],
+      "remotion_template": "ClassicGuide"
+    },
+    {
+      "id": "wealth_finance",
+      "display_name": "Fortune Analyst (Finance)",
+      "vibe": "Sharp, Professional, Urgent",
+      "typography": { "size": "medium", "font": "Inter", "color": "#10b981" },
+      "pacing": "Fast",
+      "hooks": ["Market Shift", "Wealth Secret", "Avoid Loss"],
+      "remotion_template": "DataOverlay"
+    },
+    {
+      "id": "healing_pets",
+      "display_name": "Zen Paws (Pets)",
+      "vibe": "Emotional, Cute, Immersive",
+      "typography": { "size": "small", "font": "Roboto", "color": "#ffffff" },
+      "pacing": "Atmospheric",
+      "hooks": ["Cute Interaction", "Funny Scenario", "Heartwarming"],
+      "remotion_template": "ImmersiveLoop"
+    },
+    {
+      "id": "history_mysteries",
+      "display_name": "Chronos Archive",
+      "vibe": "Epic, Dark, Scholarly",
+      "typography": { "size": "medium", "font": "Crimson Text", "color": "#d1d5db" },
+      "pacing": "Tense",
+      "hooks": ["Forbidden Fact", "Lost History", "Secret Artifact"],
+      "remotion_template": "CurationShowcase"
+    },
+    {
+      "id": "religion_spirituality",
+      "display_name": "Sacred Path",
+      "vibe": "Serene, Deep, Majestic",
+      "typography": { "size": "medium", "font": "Playfair Display", "color": "#fef3c7" },
+      "pacing": "Slow",
+      "hooks": ["Inner Peace", "Ancient Wisdom", "Universal Truth"],
+      "remotion_template": "ClassicGuide"
+    },
+    {
+      "id": "war_tactics",
+      "display_name": "Vanguard Tactics",
+      "vibe": "Aggressive, Analytical, High-Stakes",
+      "typography": { "size": "medium", "font": "Oswald", "color": "#f43f5e" },
+      "pacing": "Rapid",
+      "hooks": ["Battlefield Secret", "Unit Strength", "Strategic Move"],
+      "remotion_template": "DataOverlay"
+    },
+    {
+      "id": "anime_breakdown",
+      "display_name": "Otaku Theory",
+      "vibe": "Energetic, Hype, Detailed",
+      "typography": { "size": "large", "font": "Bangers", "color": "#fbbf24" },
+      "pacing": "Very Fast",
+      "hooks": ["Power Scaling", "Hidden Detail", "Character Theory"],
+      "remotion_template": "ImmersiveLoop"
+    },
+    {
+      "id": "politics_insight",
+      "display_name": "Agora Review",
+      "vibe": "Cynical, Informative, Direct",
+      "typography": { "size": "medium", "font": "Roboto Slab", "color": "#ffffff" },
+      "pacing": "Steady",
+      "hooks": ["Political Shift", "Behind Locked Doors", "Policy Impact"],
+      "remotion_template": "CurationShowcase"
+    },
+    {
+      "id": "erotic_stories",
+      "display_name": "Midnight Tales",
+      "vibe": "Sultry, Suspenseful, Noir",
+      "typography": { "size": "medium", "font": "Dancing Script", "color": "#fbcfe8" },
+      "pacing": "Slow",
+      "hooks": ["Hidden Passion", "Midnight Secret", "Temptation"],
+      "remotion_template": "ClassicGuide"
+    },
+    {
+      "id": "gaming_meta",
+      "display_name": "Meta Master (Gaming)",
+      "vibe": "High-Energy, Technical, Competitive",
+      "typography": { "size": "medium", "font": "Press Start 2P", "color": "#22d3ee" },
+      "pacing": "Very Fast",
+      "hooks": ["Secret Glitch", "Pro Strategy", "Patch Update"],
+      "remotion_template": "DataOverlay"
+    },
+    {
+      "id": "shopping_deals",
+      "display_name": "Value Hunter",
+      "vibe": "Exciting, FOMO, Practical",
+      "typography": { "size": "large", "font": "Montserrat", "color": "#ffffff" },
+      "pacing": "Fast",
+      "hooks": ["Price Drop", "Must-Buy Item", "Huge Savings"],
+      "remotion_template": "DataOverlay"
+    }
+  ]
+}

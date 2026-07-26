@@ -1,0 +1,298 @@
+# ViraLoop Studio (Flow2CapCut Desktop)
+
+<kbd>[🇺🇸 English](README.md)</kbd> <kbd>🇰🇷 한국어</kbd>
+
+Google Flow AI로 이미지/비디오를 **대량 생성**하고, CapCut 영상 프로젝트로 원클릭 내보내기하는 프리미엄 데스크톱 앱.
+
+[![Release](https://img.shields.io/github/v/release/jmyoon312/VLStudio)](https://github.com/jmyoon312/VLStudio/releases)
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL%20v3-blue)](LICENSE)
+
+## 개요
+
+AI 영상, 아직도 한 장면씩 만들고 계신가요?
+
+ViraLoop Studio는 AI 영상 제작 전 과정을 자동화합니다. Google Flow AI(labs.google/fx)로 이미지와 비디오를 생성하고, 바로 편집 가능한 CapCut 프로젝트로 변환합니다. 대본을 가져오고, 비주얼을 생성하고, 씬별로 최적의 미디어를 선택한 뒤, 원클릭으로 내보내세요.
+
+## 주요 기능
+
+### AI 이미지/비디오 생성
+- **일괄 이미지 생성** — Google Flow AI로 100장 이상의 AI 이미지를 배치 생성. 에러 자동 재시도
+- **T2V (Text-to-Video)** — 텍스트 프롬프트에서 비디오 클립 생성 (Veo 3.1)
+- **I2V (Image-to-Video)** — 생성된 이미지를 비디오로 변환
+- **이미지 업스케일** — 2K/4K 해상도 업스케일 지원
+- **씬별 미디어 선택** — 이미지, T2V, I2V 중 최적 미디어 자동 선택 (우선순위: I2V > T2V > Image)
+
+### 레퍼런스 시스템
+- **캐릭터/배경/스타일 레퍼런스** — 태그 기반 자동 매칭으로 200개 이상 씬에서 시각적 일관성 유지
+- **87개 스타일 프리셋** — 애니메이션, 사진, 영화 등 11개 카테고리
+- **스타일 프롬프트 자동 주입** — 레퍼런스 스타일이 생성 프롬프트에 자동 합성
+
+### CapCut 내보내기
+- **원클릭 내보내기** — 타임라인, 미디어, 자막, Ken Burns 애니메이션을 포함한 완성 프로젝트
+- **CapCut 프로젝트 폴더 직접 쓰기** — ZIP 다운로드 불필요
+- **CapCut 자동 실행** — 내보내기 후 CapCut 앱 자동 실행
+- **SRT 자막** — 다국어 자막 포함 내보내기
+
+### 오디오/SFX 통합
+- **오디오 패키지 임포트** — 나레이션, 보이스, SFX 파일 자동 인식
+- **SRT 타임코드 매칭** — 자막 타이밍 기반 오디오 배치
+- **멀티 트랙 타임라인** — 이미지/자막/나레이션/보이스/SFX 트랙 + 가로 줌, 스크럽, 플레이헤드
+- **그룹 펼치기** — 보이스/SFX는 캐릭터·카테고리별로 접고 펼쳐서 개별 파일 row 확인
+- **파일 row 미니 마커** — 각 파일 row에 클립 위치 컬러바 → 스크롤해도 시간 컨텍스트 유지
+- **드래그로 타임코드 보정** — 보이스/SFX 클립을 드래그해 시작 시점 조정. 원본 파일은 건드리지 않고 `.audio_overrides.json`에 보정값만 저장
+- **트랙/라벨 크기 조절** — 트랙 높이, 라벨 컬럼 너비 드래그로 조절 (localStorage 저장)
+- **프리뷰 패널** — 현재 플레이헤드 위치의 씬 이미지 + SRT 자막 표시
+- **키보드 단축키** — `Space` 재생/정지, `Esc` 정지 + 처음으로
+- **오디오 리뷰 시스템** — 부적합 오디오에 사유 표시 + 일괄 정리
+
+### MCP 서버 (Claude Code 연동)
+- **내장 MCP 서버** — Claude Code에서 직접 씬/레퍼런스/프롬프트 편집
+- **HTTP API 브릿지** — 외부 도구 연동 (포트 3210)
+- **스킬 시스템** — Claude Code 스킬 설치/관리, 앱 첫 실행 시 자동 설치
+- **Story Engine v2** — 9-Wave 자동 파이프라인으로 대본부터 CapCut 내보내기까지 전자동
+  - `/story-new` → 에피소드 초기화 + 주제 논의
+  - `/story-execute` → W1~W9 자동 실행 (서브에이전트 + 리뷰 루프, W3/W7 사용자 게이트 2개)
+  - `/story-step` → 다음 한 웨이브만 실행 후 종료. 수동 모드 — 웨이브 내부 질문 없음. 사용자가 결과물 보고 다음 호출 시점 결정
+  - `/story-next` → 중단 후 재개 (`/story-execute` 위임)
+  - `/story-rewrite` → 기존 에피소드 개선 (몰입도 진단 → fork → 부분 웨이브 재실행)
+
+### 소버린 에이전트 스웜 네트워크 & 플러그형 인지 브레인 코어
+- **소버린 스웜 네트워크** — 자율 멀티 에이전트 네트워크(Swarm Hub)를 활용하여 정교한 미디어 생성 및 편집 워크플로우를 유기적으로 오케스트레이션합니다.
+- **플러그형 인지 브레인** — **OpenClaude**, **OpenHands**, **Hermes Core** 등의 추론 에이전트를 실시간으로 전환하여 스웜의 지능을 유연하게 교체할 수 있습니다.
+- **동적 모델 설정 및 제어** — AI 환경설정 패널을 통해 가동 중인 스웜 브레인 목록을 직관적으로 확인하고 활성화할 수 있습니다.
+
+### 엔터프라이즈급 인프라 오케스트레이션 및 라이프사이클 관리
+- **자가 치유형 백엔드 수명 주기** — 일렉트론 메인 프로세스가 로컬 파이썬 FastAPI 백엔드 서버를 실시간 모니터링하고 자율적으로 제어합니다.
+- **능동형 포트 충돌 자동 해결** — 앱 실행 시 8000번 포트를 불법 점유하고 있는 좀비 프로세스를 자동으로 감지 및 강제 종료하며, 소켓 완전 해제를 위한 안전 릴리즈 타임을 보장합니다.
+- **무설정 로컬 데이터베이스** — 일렉트론 샌드박스 사용자 경로별 분리된 SQLite 데이터베이스를 자동으로 매핑하고, 구동 시점에 스키마 자율 동기화(Self-Healing Schema Migration)를 실행합니다.
+
+### 기타
+- **듀얼 뷰 레이아웃** — 탭 / 좌우분할 / 상하분할 모드
+- **다국어** — 한국어, 영어
+- **프로젝트 관리** — 여러 프로젝트를 독립 관리, project.json 기반
+- **다양한 입력 형식** — TXT, CSV, SRT 파일 가져오기
+
+## 기술 스택
+
+| 카테고리 | 기술 |
+|----------|------|
+| **Frontend** | React 18 + Vite 6 |
+| **Desktop** | Electron 36 |
+| **AI Engine** | Google Flow AI (labs.google/fx) |
+| **Backend** | Firebase (Auth, Firestore, Cloud Functions) |
+| **MCP** | @modelcontextprotocol/sdk |
+| **결제** | Lemon Squeezy |
+| **빌드** | electron-builder (DMG, ZIP, NSIS, APPX) |
+| **테스트** | Vitest |
+
+## 아키텍처
+
+```
+Electron BrowserWindow
+├── [Layout Mode] — 탭 / 좌우분할 / 상하분할 (Shell.jsx)
+│
+├── [App View] — React (BrowserWindow webContents)
+│   ├── Header — 프로젝트 선택, Export, Settings
+│   ├── PromptInput — 프롬프트 입력
+│   ├── SceneList — 씬 목록 (이미지/비디오/자막)
+│   ├── ReferencePanel — 레퍼런스 관리
+│   ├── AudioPanel — 오디오/SFX 임포트
+│   └── StatusBar — 생성 진행 상태
+│
+├── [Flow View] — WebContentsView (labs.google/fx/tools/whisk)
+│   └── Google 로그인 + Flow AI 내장 브라우저
+│
+└── [MCP Server] — stdio + HTTP (포트 3210)
+    └── 씬/레퍼런스/스타일/오디오 관리 도구
+```
+
+### IPC 네임스페이스
+
+| 네임스페이스 | 역할 | 파일 |
+|-------------|------|------|
+| `fs:*` | 파일 I/O | `electron/ipc/filesystem.js` |
+| `flow:*` | Flow API (토큰, 이미지/비디오 생성) | `electron/ipc/flow-api.js` |
+| `flow:dom-*` | DOM 자동화 (프롬프트 주입, 생성 트리거) | `electron/ipc/dom.js` |
+| `flow:video-*` | 비디오 생성 (T2V, I2V, 업스케일) | `electron/ipc/video.js` |
+| `capcut:*` | CapCut 경로 감지, 프로젝트 쓰기, 앱 실행 | `electron/ipc/capcut.js` |
+| `auth:*` | Google OAuth | `electron/ipc/auth.js` |
+
+### 비디오 생성 파이프라인 (3-Phase Async)
+
+```
+Phase 1: Submit     → 여러 비디오 요청을 순차 제출 (7~15초 간격)
+Phase 2: Poll       → 모든 generationId를 병렬 폴링 (최대 20분)
+Phase 3: Download   → 완료된 비디오를 순차 다운로드 + 저장
+```
+
+## 프로젝트 구조
+
+```
+VLStudio/
+├── electron/                    # Electron 메인 프로세스
+│   ├── main.js                 # 메인 프로세스 + WebContentsView 관리
+│   ├── preload.js              # Context bridge (window.electronAPI)
+│   └── ipc/                    # IPC 핸들러
+│       ├── filesystem.js       # 파일 I/O
+│       ├── flow-api.js         # Flow API (이미지/비디오 생성)
+│       ├── dom.js              # DOM 자동화 (프롬프트 주입, 생성)
+│       ├── video.js            # 비디오 (T2V, I2V, 업스케일)
+│       ├── capcut.js           # CapCut 경로 탐지, 프로젝트 쓰기
+│       ├── auth.js             # Google OAuth
+│       └── shared.js           # 공통 유틸리티
+│
+├── apps/                        # 모노레포 워크스페이스 애플리케이션
+│   ├── dashboard/              # React 대시보드 (프론트엔드 제어 UI)
+│   ├── api/                    # 파이썬 FastAPI 로컬 서버 (인증, Fernet, uvicorn 프로세스 스포너)
+│   └── swarm/                  # Sovereign 에이전트 스웜 (21개 활성 파일 구조로 초경량화 완료)
+│
+├── docs/                       # 문서 (스키마, 스토어 설명 등)
+├── tests/                      # Vitest 단위/통합 테스트 (src/ 구조 미러링)
+├── scripts/                    # 빌드 헬퍼 (electron 이름 패치, 빌드 번호 bump 등)
+├── assets/                     # 앱 아이콘 (icon.icns, icon.png)
+├── public/                     # 정적 에셋 (스타일 썸네일)
+├── vite.config.js
+└── package.json
+```
+
+## 시작하기
+
+### 요구사항
+
+- Node.js 18+
+- npm
+- Google 계정 (Flow AI 접근용)
+- CapCut 데스크톱 앱
+
+### 설치
+
+```bash
+git clone https://github.com/jmyoon312/VLStudio.git
+cd VLStudio
+npm install
+```
+
+### 개발
+
+```bash
+# 개발 모드 (test 환경 — _test GCF 사용)
+npm run dev
+
+# 개발 모드 (prod 환경 — _prod GCF 사용)
+npm run dev:prod
+```
+
+### 빌드
+
+```bash
+# macOS 배포 (DMG + ZIP, 코드 서명 + 공증)
+npm run dist:mac
+
+# Windows 배포 (NSIS + ZIP + APPX, Certum OV 코드 서명)
+npm run dist:win
+
+# Windows 개별 타겟
+npm run dist:win:nsis    # 웹사이트 다운로드용 (.exe, 코드 서명)
+npm run dist:win:appx    # MS Store용 (.appx)
+
+# Linux 배포 (AppImage + deb)
+npm run dist:linux
+
+# 테스트 환경 배포
+npm run dist:test:mac
+npm run dist:test:win
+
+# 패키징 테스트 (설치 파일 없이)
+npm run pack
+```
+
+> **Windows 코드 서명**: SimplySign Desktop이 연결된 상태에서 빌드하면 자동 서명됩니다 (Certum OV 인증서).
+
+빌드 결과물은 `release/` 디렉토리에 생성됩니다.
+
+### 테스트
+
+```bash
+npm test              # watch 모드
+npm run test:run      # 1회 실행
+npm run test:coverage # 커버리지 리포트
+```
+
+테스트 파일은 `tests/` 디렉토리 안에 있고 `src/` 구조를 미러링합니다 (Vitest + jsdom + @testing-library/react).
+
+### 환경 분리 (test / prod)
+
+Cloud Functions는 `_test` / `_prod` 접미사로 분리 배포되어 있습니다.
+
+| 스크립트 | 환경 | GCF 접미사 |
+|----------|------|-----------|
+| `npm run dev` | test | `_test` |
+| `npm run dev:prod` | prod | `_prod` |
+| `npm run dist:mac` / `dist:win` | prod | `_prod` |
+| `npm run dist:test:mac` / `dist:test:win` | test | `_test` |
+
+## 사용 방법
+
+1. 앱 실행 후 **Flow 탭**에서 Google 로그인
+2. **App 탭**으로 전환
+3. 프롬프트 입력 (텍스트 / CSV / SRT 가져오기)
+4. 레퍼런스 이미지 설정 (캐릭터, 배경, 스타일 태그)
+5. **이미지 생성** → 배치 생성 시작
+6. (선택) **비디오 생성** → T2V 또는 I2V
+7. **Export** → CapCut 프로젝트 폴더에 자동 저장 → CapCut 실행
+
+## MCP 서버
+
+Claude Code에서 ViraLoop Studio의 씬/레퍼런스/프롬프트를 직접 편집할 수 있습니다.
+
+### 주요 도구
+
+| 도구 | 설명 |
+|------|------|
+| `load_csv` | CSV 파일 + 이미지 로드 |
+| `list_scenes` / `get_scene` | 씬 조회 |
+| `update_prompt` / `batch_update_prompts` | 프롬프트 수정 |
+| `list_references` / `update_reference_prompt` | 레퍼런스 관리 |
+| `list_problem_scenes` | 문제 씬 필터링 |
+| `list_styles` | 스타일 프리셋 조회 |
+| `export_capcut` | CapCut 내보내기 |
+| `install_skill` / `list_skills` | 스킬 관리 |
+| `get_progress` | W_progress.json 읽기 (진행 상태는 subagent가 파일 I/O로 직접 기록) |
+| `app_generate_scene` / `app_start_scene_batch` | 앱 연동 생성 |
+
+### HTTP API
+
+설정에서 HTTP 서버 활성화 시 (기본 포트 3210):
+
+```
+GET  /api/current-project  — 현재 프로젝트 상태
+POST /api/scenes           — 씬 조회
+POST /api/references       — 레퍼런스 조회
+POST /api/generate         — 이미지 생성 트리거
+```
+
+## 다운로드
+
+- **macOS / Windows**: [GitHub Releases](https://github.com/jmyoon312/VLStudio/releases)
+
+## 링크
+
+- **저장소**: [github.com/jmyoon312/VLStudio](https://github.com/jmyoon312/VLStudio)
+- **개발사**: ViraLoopMedia
+
+## 라이선스
+
+Copyright (C) 2026 ViraLoopMedia
+
+본 프로그램은 자유 소프트웨어입니다. **GNU Affero General Public License v3**
+조건에 따라 자유롭게 사용·수정·재배포할 수 있습니다. 전체 라이선스 텍스트는
+[LICENSE](LICENSE) 파일을 참고하세요.
+
+> **요약**: 자유롭게 사용·수정·자가 호스팅 가능. 단, 수정본을 배포하거나 수정본으로
+> 네트워크 서비스를 운영하는 경우, 변경 사항도 AGPL v3 로 공개해야 합니다.
+
+기여는 동일한 AGPL v3 라이선스로 받습니다 — [CONTRIBUTING.md](CONTRIBUTING.md) 참고.
+
+---
+
+*면책: ViraLoop Studio는 ViraLoopMedia에서 독립적으로 개발한 제품으로, Google 또는 ByteDance(CapCut)와 제휴·후원·인증 관계가 없습니다.*

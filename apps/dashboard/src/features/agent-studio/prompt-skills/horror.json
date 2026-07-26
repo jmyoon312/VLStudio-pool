@@ -1,0 +1,82 @@
+[
+  {
+    "id": "horror_0",
+    "name": "Horror Found Footage",
+    "category": "Horror",
+    "camera": "Shaky handheld, POV",
+    "lighting": "Flashlight beam, pitch black",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_1",
+    "name": "Horror Creeping Zoom",
+    "category": "Horror",
+    "camera": "Very slow zoom in",
+    "lighting": "Dimly lit, flickering light",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_2",
+    "name": "Horror Hidden Observer",
+    "category": "Horror",
+    "camera": "Static shot from behind an object",
+    "lighting": "Low-key lighting, deep shadows",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_3",
+    "name": "Horror Sudden Pan",
+    "category": "Horror",
+    "camera": "Static then rapid pan",
+    "lighting": "Moonlight through window",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_4",
+    "name": "Horror Dutch Canted",
+    "category": "Horror",
+    "camera": "Severe dutch angle",
+    "lighting": "Sickly green/yellow color grading",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_5",
+    "name": "Horror Hallway Tracking",
+    "category": "Horror",
+    "camera": "Slow reverse tracking shot",
+    "lighting": "Pulsing red emergency lights",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_6",
+    "name": "Horror Underbed POV",
+    "category": "Horror",
+    "camera": "Low angle ground level shot",
+    "lighting": "Almost total darkness",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_7",
+    "name": "Horror Mirror Reveal",
+    "category": "Horror",
+    "camera": "Tracking shot behind subject",
+    "lighting": "Harsh bathroom lighting",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_8",
+    "name": "Horror Staircase Descent",
+    "category": "Horror",
+    "camera": "High angle looking down stairs",
+    "lighting": "Shadows stretching upwards",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  },
+  {
+    "id": "horror_9",
+    "name": "Horror Jumpscare Push",
+    "category": "Horror",
+    "camera": "Extremely fast push in",
+    "lighting": "Strobe lighting, disorienting",
+    "style": "Horror cinematic, photorealistic, grainy, terrifying, 4k"
+  }
+]

@@ -1,0 +1,66 @@
+/* Tag Validation Modal */
+
+.tag-validation-modal {
+  max-width: 520px;
+}
+
+.tag-validation-summary {
+  padding: 10px 14px;
+  background: rgba(255, 165, 0, 0.1);
+  border-left: 3px solid #f0a030;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  color: var(--text-primary);
+}
+
+.tag-validation-list {
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tag-validation-scene {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.tag-validation-scene-header {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+.tag-validation-errors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.tag-validation-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-validation-type {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tag-validation-tags {
+  font-size: 12px;
+  color: var(--error-color, #f56565);
+  font-weight: 500;
+}

@@ -1,0 +1,68 @@
+# --- Sovereign API Hub (apps/api) ---
+FROM python:3.12-slim-bookworm
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+# Install system dependencies (Split for stability)
+RUN apt-get update && apt-get install -y \
+    procps \
+    build-essential \
+    libpq-dev \
+    git \
+    adb \
+    iproute2 \
+    curl \
+    gnupg \
+    wget \
+    ca-certificates \
+    libgl1 \
+    libglib2.0-0 \
+    ffmpeg \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-thai-tlwg \
+    fonts-kacst \
+    fonts-freefont-ttf
+
+# [SOVEREIGN] Install Node.js 22 for Remotion Rendering
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Chrome
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb
+
+# Cleanup
+RUN rm -rf /var/lib/apt/lists/*
+
+# [SOVEREIGN] Browser Configuration (Hybrid Mode)
+ENV CHROME_PATH=/usr/bin/google-chrome
+
+# [OPTIMIZED] Ensure pip is up to date and resilient
+RUN pip install --no-cache-dir --upgrade pip
+
+# [OPTIMIZED] Cache heavy AI models first
+RUN pip install --no-cache-dir --retries 20 --default-timeout=2000 \
+    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# [OPTIMIZED] Step 1: Heavy Infrastructure & Data packages
+RUN pip install --no-cache-dir --retries 30 --default-timeout=3000 \
+    pyarrow onnxruntime opencv-python faster-whisper lancedb numpy
+
+# [OPTIMIZED] Step 2: Everything else from requirements
+COPY apps/api/requirements_sovereign.txt .
+RUN pip install --no-cache-dir --retries 30 --default-timeout=3000 -r requirements_sovereign.txt
+
+WORKDIR /app/apps/api
+ENV PYTHONPATH=/app/apps/api
+
+# [SOVEREIGN] Entrypoint: Auto-start Xvfb + noVNC + API
+COPY apps/api/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]

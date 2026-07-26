@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="120" fill="#2563EB"/>
+  <!-- Centered Lightning Bolt (Zap) -->
+  <path d="M280 48L120 288h120v176l160-240H280z" fill="#FFFFFF"/>
+</svg>

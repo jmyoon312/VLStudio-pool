@@ -1,0 +1,136 @@
+/* SubscriptionBanner Styles */
+
+.subscription-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-icon {
+  font-size: 16px;
+}
+
+.banner-text {
+  color: #ccc;
+}
+
+.banner-text strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.banner-badge {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.banner-action {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+/* Login Banner */
+.subscription-banner--login {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.subscription-banner--login .banner-action {
+  background: #6366f1;
+  color: #fff;
+}
+
+.subscription-banner--login .banner-action:hover {
+  background: #5558e3;
+}
+
+/* Pro Banner */
+.subscription-banner--pro {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.subscription-banner--pro .banner-text {
+  color: #c4b5fd;
+}
+
+/* Trial Banner */
+.subscription-banner--trial {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.subscription-banner--trial .banner-icon {
+  color: #22c55e;
+}
+
+/* Low Trial Banner */
+.subscription-banner--low {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.subscription-banner--low .banner-icon {
+  color: #f59e0b;
+}
+
+.subscription-banner--low .banner-text {
+  color: #fbbf24;
+}
+
+/* Expired Banner */
+.subscription-banner--expired {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.subscription-banner--expired .banner-icon {
+  color: #ef4444;
+}
+
+.subscription-banner--expired .banner-text {
+  color: #f87171;
+}
+
+/* Upgrade Button */
+.banner-action--upgrade {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+}
+
+.banner-action--upgrade:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Subtle Pro Button (체험판 여유 있을 때) */
+.banner-action--subtle {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #a78bfa;
+}
+
+.banner-action--subtle:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.6);
+}

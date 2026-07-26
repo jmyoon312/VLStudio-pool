@@ -1,0 +1,82 @@
+[
+  {
+    "id": "scifi_0",
+    "name": "Sci-Fi Neon Slums",
+    "category": "Sci-Fi",
+    "camera": "Slow pan across street",
+    "lighting": "Cyberpunk neon lights, rain reflections",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_1",
+    "name": "Sci-Fi Space Walk",
+    "category": "Sci-Fi",
+    "camera": "Smooth floating camera",
+    "lighting": "Harsh stark sunlight against deep black space",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_2",
+    "name": "Sci-Fi Holo Deck",
+    "category": "Sci-Fi",
+    "camera": "Orbiting camera around subject",
+    "lighting": "Holographic blue glow",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_3",
+    "name": "Sci-Fi Warp Speed",
+    "category": "Sci-Fi",
+    "camera": "Static camera, environment zooming",
+    "lighting": "Streaking starlight",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_4",
+    "name": "Sci-Fi Mecha Hangar",
+    "category": "Sci-Fi",
+    "camera": "Low angle, slow tilt up",
+    "lighting": "Industrial overhead lights, sparks",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_5",
+    "name": "Sci-Fi Dystopian City",
+    "category": "Sci-Fi",
+    "camera": "High altitude drone shot",
+    "lighting": "Smoggy, desaturated lighting",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_6",
+    "name": "Sci-Fi Alien Planet",
+    "category": "Sci-Fi",
+    "camera": "Wide sweeping pan",
+    "lighting": "Bioluminescent flora lighting",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_7",
+    "name": "Sci-Fi Cybernetic Eye",
+    "category": "Sci-Fi",
+    "camera": "Extreme macro close up",
+    "lighting": "Red laser glow, metallic reflections",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_8",
+    "name": "Sci-Fi Time Portal",
+    "category": "Sci-Fi",
+    "camera": "Fast spinning dolly in",
+    "lighting": "Swirling purple and blue energy lights",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  },
+  {
+    "id": "scifi_9",
+    "name": "Sci-Fi Lab Containment",
+    "category": "Sci-Fi",
+    "camera": "Static medium shot",
+    "lighting": "Sterile white LED, warning yellow flashes",
+    "style": "Sci-fi cinematic, Unreal Engine 5 render, futuristic"
+  }
+]

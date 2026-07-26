@@ -1,0 +1,245 @@
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import { resolveImageSrc } from '../utils/formatters'
+import { toFileUrl } from '../hooks/useStyleThumbnails'
+import { splitTags } from '../utils/tagMatch'
+import './TagInputAutocomplete.css'
+
+// 마지막 토큰만 분리. splitTags와 동일한 separator(,;:) 사용.
+function splitLastToken(value) {
+  if (!value) return { last: '' }
+  const match = value.match(/^(.*[,;:]\s*)(.*)$/)
+  if (match) return { last: match[2] }
+  return { last: value }
+}
+
+const DROPDOWN_MAX_HEIGHT = 320
+
+export default function TagInputAutocomplete({
+  type,
+  value,
+  onChange,
+  references = [],
+  presets = [],
+  thumbnails = {},   // preset id → file path/url (useStyleThumbnails 결과)
+  placeholder,
+  disabled,
+  title,
+  className,
+  isKo,
+  t,
+}) {
+  const [isFocused, setIsFocused] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const inputRef = useRef(null)
+  const [dropdownPos, setDropdownPos] = useState(null)
+
+  const refOptions = useMemo(() =>
+    references
+      .filter(r => r.type === type && r.name)
+      .map(r => ({
+        kind: 'ref',
+        label: r.name,
+        value: r.name,
+        aliases: [r.name.toLowerCase()],
+        src: resolveImageSrc(r) || null,
+      })),
+    [references, type]
+  )
+
+  const presetOptions = useMemo(() =>
+    (type === 'style' ? presets : []).map(p => {
+      const label = isKo ? (p.name_ko || p.name_en) : (p.name_en || p.name_ko)
+      return {
+        kind: 'preset',
+        label,
+        // 저장값은 canonical(name_en) — label 은 locale 표시 전용
+        value: p.name_en || p.name_ko || p.id,
+        // preset 은 id/name_ko/name_en 어느 형태로 저장돼 있어도 동일 옵션으로 인식한다.
+        aliases: [p.id, p.name_ko, p.name_en]
+          .filter(Boolean)
+          .map(s => String(s).toLowerCase()),
+        src: thumbnails[p.id] ? toFileUrl(thumbnails[p.id]) : null,
+      }
+    }),
+    [type, presets, isKo, thumbnails]
+  )
+
+  const allOptions = useMemo(
+    () => [...refOptions, ...presetOptions],
+    [refOptions, presetOptions]
+  )
+
+  // 알려진 옵션의 모든 alias 집합 (소문자) — 확정 선택 판정용
+  const optionAliasSet = useMemo(
+    () => new Set(allOptions.flatMap(o => o.aliases)),
+    [allOptions]
+  )
+
+  const isMulti = type === 'character'
+
+  const { last } = splitLastToken(value)
+  const lastTrimLower = last.trim().toLowerCase()
+  // 마지막 토큰이 알려진 옵션의 alias와 일치하면 = 확정 선택 → 필터 안 함 (전체 노출)
+  const isLastCommitted = lastTrimLower !== '' && optionAliasSet.has(lastTrimLower)
+  const filterToken = isLastCommitted ? '' : lastTrimLower
+
+  const filteredOptions = useMemo(() => {
+    if (!filterToken) return allOptions
+    return allOptions.filter(o =>
+      o.label.toLowerCase().includes(filterToken) ||
+      o.aliases.some(a => a.includes(filterToken))
+    )
+  }, [allOptions, filterToken])
+
+  // 현재 값에 선택된 토큰 집합 (소문자)
+  const selectedSet = useMemo(() => new Set(splitTags(value)), [value])
+  const isEmptyValue = selectedSet.size === 0
+
+  // 옵션 리스트 변경 시 highlight reset (사용자가 타이핑할 때마다 -1로)
+  useEffect(() => { setHighlightedIndex(-1) }, [filterToken])
+
+  const dropdownOpen = isFocused && !disabled
+
+  // 드롭다운은 portal 로 document.body 에 렌더 → 스크롤 컨테이너의
+  // overflow/container-type clip 을 회피한다. 입력칸 위치를 fixed 좌표로
+  // 변환하고, 스크롤/리사이즈 시 갱신한다. 아래 공간이 부족하면 위로 펼친다.
+  useEffect(() => {
+    if (!dropdownOpen) {
+      setDropdownPos(null)
+      return
+    }
+    const update = () => {
+      const el = inputRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - r.bottom
+      const spaceAbove = r.top
+      const openUp = spaceBelow < DROPDOWN_MAX_HEIGHT && spaceAbove > spaceBelow
+      setDropdownPos({
+        left: r.left,
+        width: r.width,
+        ...(openUp
+          ? { bottom: window.innerHeight - r.top, maxHeight: Math.min(DROPDOWN_MAX_HEIGHT, spaceAbove - 8) }
+          : { top: r.bottom, maxHeight: Math.min(DROPDOWN_MAX_HEIGHT, spaceBelow - 8) }),
+      })
+    }
+    update()
+    window.addEventListener('scroll', update, true)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update, true)
+      window.removeEventListener('resize', update)
+    }
+  }, [dropdownOpen])
+
+  const applyOption = (opt) => {
+    if (isMulti) {
+      // 토글: 입력 중이던 미완성 마지막 토큰은 버린다
+      const rawTokens = (value || '').split(/[,;:]/).map(s => s.trim()).filter(Boolean)
+      const lastTrim = last.trim()
+      const dropLast = lastTrim !== '' && !optionAliasSet.has(lastTrim.toLowerCase())
+      const tokens = dropLast ? rawTokens.slice(0, -1) : rawTokens
+      const exists = tokens.some(tok => opt.aliases.includes(tok.toLowerCase()))
+      const next = exists
+        ? tokens.filter(tok => !opt.aliases.includes(tok.toLowerCase()))
+        : [...tokens, opt.value]
+      onChange(next.join(', '))
+    } else {
+      onChange(opt.value)
+    }
+    setHighlightedIndex(-1)
+  }
+
+  const clearValue = () => {
+    onChange('')
+    setHighlightedIndex(-1)
+  }
+
+  const handleKeyDown = (e) => {
+    if (!isFocused || filteredOptions.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setHighlightedIndex(i => Math.min(i + 1, filteredOptions.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setHighlightedIndex(i => Math.max(i - 1, 0))
+    } else if (e.key === 'Enter') {
+      if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+        e.preventDefault()
+        applyOption(filteredOptions[highlightedIndex])
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      setIsFocused(false)
+      setHighlightedIndex(-1)
+    }
+  }
+
+  const dropdown = (
+    <div
+      className="tag-autocomplete-dropdown"
+      style={{ position: 'fixed', ...dropdownPos }}
+    >
+      {/* '없음' — 값 비우기. 항상 최상단, 키보드 네비게이션 대상 아님 */}
+      <div
+        className={`tag-autocomplete-option clear ${isEmptyValue ? 'checked' : ''}`}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          clearValue()
+        }}
+      >
+        <span className="tag-autocomplete-check">{isEmptyValue ? '✅' : ''}</span>
+        <span className="tag-autocomplete-option-label">{t('sceneList.tagClear')}</span>
+      </div>
+      {filteredOptions.length === 0 ? (
+        <div className="tag-autocomplete-empty">{t('sceneList.noRefsForType')}</div>
+      ) : (
+        filteredOptions.map((opt, i) => {
+          const checked = opt.aliases.some(a => selectedSet.has(a))
+          return (
+            <div
+              key={`${opt.kind}-${i}`}
+              className={`tag-autocomplete-option ${opt.kind} ${i === highlightedIndex ? 'highlighted' : ''} ${checked ? 'checked' : ''}`}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                applyOption(opt)
+              }}
+              onMouseEnter={() => setHighlightedIndex(i)}
+            >
+              <span className="tag-autocomplete-check">{checked ? '✅' : ''}</span>
+              {opt.src ? (
+                <img src={opt.src} alt="" className="tag-autocomplete-thumb" loading="lazy" />
+              ) : (
+                <span className="tag-autocomplete-thumb empty" />
+              )}
+              <span className="tag-autocomplete-option-label">
+                {opt.label}
+                {opt.kind === 'preset' && <span className="preset-suffix"> (preset)</span>}
+              </span>
+            </div>
+          )
+        })
+      )}
+    </div>
+  )
+
+  return (
+    <div className="tag-autocomplete-wrapper">
+      <input
+        ref={inputRef}
+        type="text"
+        value={value || ''}
+        placeholder={placeholder}
+        disabled={disabled}
+        title={title}
+        className={className}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+        onKeyDown={handleKeyDown}
+      />
+      {dropdownOpen && dropdownPos && createPortal(dropdown, document.body)}
+    </div>
+  )
+}

@@ -1,0 +1,364 @@
+/**
+ * StylePicker - 썸네일 그리드 스타일 선택기
+ */
+
+.style-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+}
+
+/* 카테고리 탭 */
+.sp-categories {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.sp-cat-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.sp-cat-tab:hover {
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--text-color);
+}
+
+.sp-cat-tab.active {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+  color: #a855f7;
+}
+
+.sp-cat-count {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
+/* 검색 */
+.sp-search {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sp-search-input {
+  width: 100%;
+  padding: 6px 30px 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-color);
+  font-size: 0.8rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.sp-search-input:focus {
+  border-color: #a855f7;
+}
+
+.sp-search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.sp-search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+}
+
+/* 업로드된 스타일 섹션 */
+.sp-uploaded-section {
+  margin-bottom: 4px;
+}
+
+.sp-section-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
+/* 그리드 */
+.sp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 40vh;
+  padding: 2px;
+}
+
+/* 스타일 카드 */
+.sp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sp-card:hover {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.sp-card.selected {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3);
+}
+
+.sp-card.sp-no-style {
+  opacity: 0.7;
+}
+
+.sp-card.sp-no-style:hover {
+  opacity: 1;
+}
+
+/* 썸네일 영역 */
+.sp-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+}
+
+.sp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sp-icon {
+  font-size: 1.5rem;
+}
+
+/* 이름 */
+.sp-name {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-card.selected .sp-name {
+  color: #a855f7;
+  font-weight: 600;
+}
+
+/* 하단 */
+.sp-footer {
+  flex-shrink: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sp-btn-generate {
+  width: 100%;
+  padding: 8px 16px;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sp-btn-generate:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+}
+
+/* 진행 표시 */
+.sp-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sp-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sp-progress-fill {
+  height: 100%;
+  background: #a855f7;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.sp-progress-text {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sp-btn-stop {
+  padding: 4px 12px;
+  border: 1px solid var(--error-color);
+  border-radius: 6px;
+  background: rgba(245, 101, 101, 0.1);
+  color: var(--error-color);
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sp-btn-stop:hover {
+  background: rgba(245, 101, 101, 0.2);
+}
+
+.sp-elapsed {
+  color: var(--text-secondary);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 호버 풍선 미리보기 */
+.sp-hover-balloon {
+  position: fixed;
+  z-index: 3000;
+  width: auto;
+  max-width: min(var(--balloon-avail-width, 100vw), 90vw);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  pointer-events: none;
+  animation: sp-balloon-in 0.15s ease-out;
+}
+
+@keyframes sp-balloon-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.sp-hover-balloon img {
+  width: 100%;
+  display: block;
+  max-height: var(--balloon-avail-height, 80vh);
+}
+
+.sp-hover-name {
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--text-color);
+  text-align: center;
+  font-weight: 500;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 미리보기 모달 */
+.sp-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.sp-preview {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  max-width: 520px;
+  width: 90vw;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.sp-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sp-preview-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+}
+
+.sp-preview-close:hover {
+  color: var(--text-color);
+}
+
+.sp-preview-image {
+  padding: 8px;
+}
+
+.sp-preview-image img {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.sp-preview-prompt {
+  padding: 10px 16px 14px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  border-top: 1px solid var(--border-color);
+}
+
+.sp-card.sp-no-style .sp-auto-summary {
+  font-size: 11px;
+  color: var(--text-secondary, #888);
+  margin-top: 2px;
+  padding: 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

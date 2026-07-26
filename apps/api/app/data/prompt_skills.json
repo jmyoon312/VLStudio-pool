@@ -1,0 +1,3002 @@
+[
+  {
+    "id": "skill_cinematic_000",
+    "name": "[Cinematic] High Golden",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Golden hour",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "High angle, [SUBJECT], Golden hour, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_001",
+    "name": "[Cinematic] Tilt Volumetric",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Volumetric fog and god rays, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_002",
+    "name": "[Cinematic] Drone Volumetric",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Drone view, [SUBJECT], Volumetric fog and god rays, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_003",
+    "name": "[Cinematic] Tilt Neon",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Neon rim light",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Neon rim light, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_004",
+    "name": "[Cinematic] Slow Moody",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Moody chiaroscuro",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Moody chiaroscuro, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_005",
+    "name": "[Cinematic] Slow Golden",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Golden hour",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Golden hour, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_006",
+    "name": "[Cinematic] Tilt Cinematic",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Cinematic teal and orange",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Cinematic teal and orange, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_007",
+    "name": "[Cinematic] Tracking Neon",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Neon rim light",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Tracking shot, [SUBJECT], Neon rim light, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_008",
+    "name": "[Cinematic] Drone Harsh",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Harsh contrast",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Drone view, [SUBJECT], Harsh contrast, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_009",
+    "name": "[Cinematic] Extreme Golden",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Golden hour",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Extreme close-up, [SUBJECT], Golden hour, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_010",
+    "name": "[Cinematic] Slow Cinematic",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Cinematic teal and orange",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Cinematic teal and orange, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_011",
+    "name": "[Cinematic] Over-the-shoulder Golden",
+    "category": "Cinematic",
+    "camera": "Over-the-shoulder",
+    "lighting": "Golden hour",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Over-the-shoulder, [SUBJECT], Golden hour, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_012",
+    "name": "[Cinematic] Low Golden",
+    "category": "Cinematic",
+    "camera": "Low angle",
+    "lighting": "Golden hour",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Low angle, [SUBJECT], Golden hour, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_013",
+    "name": "[Cinematic] Extreme Volumetric",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Extreme close-up, [SUBJECT], Volumetric fog and god rays, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_014",
+    "name": "[Cinematic] Tracking Volumetric",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Tracking shot, [SUBJECT], Volumetric fog and god rays, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_015",
+    "name": "[Cinematic] Tracking Neon",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Neon rim light",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tracking shot, [SUBJECT], Neon rim light, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_016",
+    "name": "[Cinematic] Tilt Soft",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Soft diffused lighting",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Tilt up, [SUBJECT], Soft diffused lighting, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_017",
+    "name": "[Cinematic] Drone Soft",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Soft diffused lighting",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Drone view, [SUBJECT], Soft diffused lighting, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_018",
+    "name": "[Cinematic] Dutch Cinematic",
+    "category": "Cinematic",
+    "camera": "Dutch angle",
+    "lighting": "Cinematic teal and orange",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Dutch angle, [SUBJECT], Cinematic teal and orange, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "dutch",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_019",
+    "name": "[Cinematic] Tracking Moonlight",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Moonlight",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Tracking shot, [SUBJECT], Moonlight, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_020",
+    "name": "[Cinematic] Drone Golden",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Golden hour",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Drone view, [SUBJECT], Golden hour, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_021",
+    "name": "[Cinematic] Pan Moonlight",
+    "category": "Cinematic",
+    "camera": "Pan left",
+    "lighting": "Moonlight",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Pan left, [SUBJECT], Moonlight, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "pan",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_022",
+    "name": "[Cinematic] Tilt Golden",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Golden hour",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Golden hour, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_023",
+    "name": "[Cinematic] Slow Soft",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Soft diffused lighting",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Soft diffused lighting, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_024",
+    "name": "[Cinematic] Low Cinematic",
+    "category": "Cinematic",
+    "camera": "Low angle",
+    "lighting": "Cinematic teal and orange",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Low angle, [SUBJECT], Cinematic teal and orange, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_025",
+    "name": "[Cinematic] Over-the-shoulder Neon",
+    "category": "Cinematic",
+    "camera": "Over-the-shoulder",
+    "lighting": "Neon rim light",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Over-the-shoulder, [SUBJECT], Neon rim light, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_026",
+    "name": "[Cinematic] Low Volumetric",
+    "category": "Cinematic",
+    "camera": "Low angle",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Low angle, [SUBJECT], Volumetric fog and god rays, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_027",
+    "name": "[Cinematic] Tracking Neon",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Neon rim light",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Tracking shot, [SUBJECT], Neon rim light, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_028",
+    "name": "[Anime] Static Backlit",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Static emotional profile, [SUBJECT], Backlit glow, lens flare, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_029",
+    "name": "[Anime] Focus Backlit",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Focus on eyes, [SUBJECT], Backlit glow, lens flare, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_030",
+    "name": "[Anime] Dynamic Soft",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Soft pastel lighting",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Soft pastel lighting, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_031",
+    "name": "[Anime] Worm's Backlit",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Worm's eye view, [SUBJECT], Backlit glow, lens flare, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_032",
+    "name": "[Anime] Dynamic Soft",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Soft pastel lighting",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Soft pastel lighting, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_033",
+    "name": "[Anime] Static Soft",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Soft pastel lighting",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Static emotional profile, [SUBJECT], Soft pastel lighting, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_034",
+    "name": "[Anime] Focus Vibrant",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Focus on eyes, [SUBJECT], Vibrant colors, dramatic shadows, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_035",
+    "name": "[Anime] Focus Vibrant",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Focus on eyes, [SUBJECT], Vibrant colors, dramatic shadows, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_036",
+    "name": "[Anime] Worm's Vibrant",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Worm's eye view, [SUBJECT], Vibrant colors, dramatic shadows, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_037",
+    "name": "[Anime] Focus Soft",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Soft pastel lighting",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Focus on eyes, [SUBJECT], Soft pastel lighting, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_038",
+    "name": "[Anime] Worm's Soft",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Soft pastel lighting",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Worm's eye view, [SUBJECT], Soft pastel lighting, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_039",
+    "name": "[Anime] Static Backlit",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Static emotional profile, [SUBJECT], Backlit glow, lens flare, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_040",
+    "name": "[Anime] Static Soft",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Soft pastel lighting",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Static emotional profile, [SUBJECT], Soft pastel lighting, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_041",
+    "name": "[Anime] Dynamic Dark",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Dark moody ambiance",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Dark moody ambiance, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_042",
+    "name": "[Anime] Wide Vibrant",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Vibrant colors, dramatic shadows, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_043",
+    "name": "[Anime] Worm's Backlit",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Worm's eye view, [SUBJECT], Backlit glow, lens flare, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_044",
+    "name": "[Anime] Focus Backlit",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Focus on eyes, [SUBJECT], Backlit glow, lens flare, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_045",
+    "name": "[Anime] Dynamic Backlit",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Backlit glow, lens flare, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_046",
+    "name": "[Anime] Worm's Backlit",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Worm's eye view, [SUBJECT], Backlit glow, lens flare, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_047",
+    "name": "[Anime] Wide Soft",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Soft pastel lighting",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Soft pastel lighting, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_048",
+    "name": "[Anime] Wide Soft",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Soft pastel lighting",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Soft pastel lighting, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_049",
+    "name": "[Anime] Worm's Soft",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Soft pastel lighting",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Worm's eye view, [SUBJECT], Soft pastel lighting, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_050",
+    "name": "[Anime] Dynamic Soft",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Soft pastel lighting",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Soft pastel lighting, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_051",
+    "name": "[Anime] Wide Vibrant",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Vibrant colors, dramatic shadows, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_052",
+    "name": "[Anime] Dynamic Dark",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Dark moody ambiance",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Dark moody ambiance, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_053",
+    "name": "[Anime] Worm's Dark",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Dark moody ambiance",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Worm's eye view, [SUBJECT], Dark moody ambiance, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_054",
+    "name": "[Anime] Focus Dark",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Dark moody ambiance",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Focus on eyes, [SUBJECT], Dark moody ambiance, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_055",
+    "name": "[Anime] Wide Dark",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Dark moody ambiance",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Dark moody ambiance, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_056",
+    "name": "[Cyberpunk] Wide Harsh",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Wide shot, [SUBJECT], Harsh LED lighting, dark shadows, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_057",
+    "name": "[Cyberpunk] Low Holographic",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Holographic glow, smoggy atmosphere, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_058",
+    "name": "[Cyberpunk] Wide Holographic",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Wide shot, [SUBJECT], Holographic glow, smoggy atmosphere, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_059",
+    "name": "[Cyberpunk] Low Harsh",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Harsh LED lighting, dark shadows, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_060",
+    "name": "[Cyberpunk] Low Holographic",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Holographic glow, smoggy atmosphere, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_061",
+    "name": "[Cyberpunk] Wide Harsh",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Wide shot, [SUBJECT], Harsh LED lighting, dark shadows, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_062",
+    "name": "[Cyberpunk] First-person Harsh",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "First-person perspective, [SUBJECT], Harsh LED lighting, dark shadows, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_063",
+    "name": "[Cyberpunk] Close-up Harsh",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Harsh LED lighting, dark shadows, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_064",
+    "name": "[Cyberpunk] Wide Holographic",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Wide shot, [SUBJECT], Holographic glow, smoggy atmosphere, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_065",
+    "name": "[Cyberpunk] Wide Neon",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Wide shot, [SUBJECT], Neon pink and cyan, rainy reflections, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_066",
+    "name": "[Cyberpunk] First-person Neon",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "First-person perspective, [SUBJECT], Neon pink and cyan, rainy reflections, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_067",
+    "name": "[Cyberpunk] Wide Neon",
+    "category": "Cyberpunk",
+    "camera": "Wide shot",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Wide shot, [SUBJECT], Neon pink and cyan, rainy reflections, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_068",
+    "name": "[Cyberpunk] Low Neon",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Neon pink and cyan, rainy reflections, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_069",
+    "name": "[Cyberpunk] First-person Neon",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "First-person perspective, [SUBJECT], Neon pink and cyan, rainy reflections, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_070",
+    "name": "[Cyberpunk] Close-up Harsh",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Harsh LED lighting, dark shadows, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_071",
+    "name": "[Cyberpunk] First-person Holographic",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "First-person perspective, [SUBJECT], Holographic glow, smoggy atmosphere, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_072",
+    "name": "[Cyberpunk] Close-up Neon",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Neon pink and cyan, rainy reflections, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_073",
+    "name": "[Cyberpunk] Close-up Neon",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Neon pink and cyan, rainy reflections, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_074",
+    "name": "[Cyberpunk] First-person Holographic",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "First-person perspective, [SUBJECT], Holographic glow, smoggy atmosphere, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_075",
+    "name": "[Cyberpunk] Close-up Holographic",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Holographic glow, smoggy atmosphere, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_076",
+    "name": "[Cyberpunk] Close-up Holographic",
+    "category": "Cyberpunk",
+    "camera": "Close-up on mechanical details",
+    "lighting": "Holographic glow, smoggy atmosphere",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Close-up on mechanical details, [SUBJECT], Holographic glow, smoggy atmosphere, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "close-up",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_077",
+    "name": "[Cyberpunk] Low Harsh",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Harsh LED lighting, dark shadows, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_078",
+    "name": "[Cyberpunk] Low Neon",
+    "category": "Cyberpunk",
+    "camera": "Low angle looking up at skyscrapers",
+    "lighting": "Neon pink and cyan, rainy reflections",
+    "quality": "Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "prompt_template": "Low angle looking up at skyscrapers, [SUBJECT], Neon pink and cyan, rainy reflections, Unreal Engine 5 render, ray tracing, 8k, hyper-realistic",
+    "keywords": [
+      "cyberpunk",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cyberpunk_079",
+    "name": "[Cyberpunk] First-person Harsh",
+    "category": "Cyberpunk",
+    "camera": "First-person perspective",
+    "lighting": "Harsh LED lighting, dark shadows",
+    "quality": "Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "prompt_template": "First-person perspective, [SUBJECT], Harsh LED lighting, dark shadows, Cyberpunk 2077 aesthetic, gritty textures, masterpiece",
+    "keywords": [
+      "cyberpunk",
+      "first-person",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_080",
+    "name": "[Watercolor] Flat Even",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Even wash lighting",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Flat portrait view, [SUBJECT], Even wash lighting, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_081",
+    "name": "[Watercolor] Wide Even",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Even wash lighting",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Wide scenic view, [SUBJECT], Even wash lighting, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_082",
+    "name": "[Watercolor] Wide Dreamy",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Wide scenic view, [SUBJECT], Dreamy ethereal glow, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_083",
+    "name": "[Watercolor] Wide Dreamy",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Wide scenic view, [SUBJECT], Dreamy ethereal glow, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_084",
+    "name": "[Watercolor] Soft Dreamy",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Soft close-up, [SUBJECT], Dreamy ethereal glow, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_085",
+    "name": "[Watercolor] Flat Gentle",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Flat portrait view, [SUBJECT], Gentle sunlight filtering, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_086",
+    "name": "[Watercolor] Flat Dreamy",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Flat portrait view, [SUBJECT], Dreamy ethereal glow, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_087",
+    "name": "[Watercolor] Soft Even",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Even wash lighting",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Soft close-up, [SUBJECT], Even wash lighting, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_088",
+    "name": "[Watercolor] Flat Gentle",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Flat portrait view, [SUBJECT], Gentle sunlight filtering, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_089",
+    "name": "[Watercolor] Wide Gentle",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Wide scenic view, [SUBJECT], Gentle sunlight filtering, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_090",
+    "name": "[Watercolor] Wide Even",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Even wash lighting",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Wide scenic view, [SUBJECT], Even wash lighting, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_091",
+    "name": "[Watercolor] Soft Gentle",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Soft close-up, [SUBJECT], Gentle sunlight filtering, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_092",
+    "name": "[Watercolor] Soft Gentle",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Soft close-up, [SUBJECT], Gentle sunlight filtering, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_093",
+    "name": "[Watercolor] Flat Dreamy",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Flat portrait view, [SUBJECT], Dreamy ethereal glow, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_094",
+    "name": "[Watercolor] Soft Even",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Even wash lighting",
+    "quality": "Concept art, splash art, delicate paper texture",
+    "prompt_template": "Soft close-up, [SUBJECT], Even wash lighting, Concept art, splash art, delicate paper texture",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_095",
+    "name": "[Watercolor] Flat Even",
+    "category": "Watercolor",
+    "camera": "Flat portrait view",
+    "lighting": "Even wash lighting",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Flat portrait view, [SUBJECT], Even wash lighting, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "flat",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_096",
+    "name": "[Watercolor] Wide Gentle",
+    "category": "Watercolor",
+    "camera": "Wide scenic view",
+    "lighting": "Gentle sunlight filtering",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Wide scenic view, [SUBJECT], Gentle sunlight filtering, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_watercolor_097",
+    "name": "[Watercolor] Soft Dreamy",
+    "category": "Watercolor",
+    "camera": "Soft close-up",
+    "lighting": "Dreamy ethereal glow",
+    "quality": "Traditional watercolor painting, visible brushstrokes, high quality",
+    "prompt_template": "Soft close-up, [SUBJECT], Dreamy ethereal glow, Traditional watercolor painting, visible brushstrokes, high quality",
+    "keywords": [
+      "watercolor",
+      "soft",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_098",
+    "name": "[3D Render] Wide Global",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Wide panorama, [SUBJECT], Global illumination, bounced light, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_099",
+    "name": "[3D Render] Wide Studio",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Wide panorama, [SUBJECT], Studio lighting, soft box, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_100",
+    "name": "[3D Render] Isometric Candy-colored",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Isometric view, [SUBJECT], Candy-colored neon rim lights, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_101",
+    "name": "[3D Render] Macro Studio",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Macro shot, [SUBJECT], Studio lighting, soft box, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_102",
+    "name": "[3D Render] Macro Global",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Macro shot, [SUBJECT], Global illumination, bounced light, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_103",
+    "name": "[3D Render] Dynamic Global",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Global illumination, bounced light, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_104",
+    "name": "[3D Render] Dynamic Studio",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Studio lighting, soft box, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_105",
+    "name": "[3D Render] Dynamic Studio",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Studio lighting, soft box, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_106",
+    "name": "[3D Render] Macro Candy-colored",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Macro shot, [SUBJECT], Candy-colored neon rim lights, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_107",
+    "name": "[3D Render] Isometric Candy-colored",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Isometric view, [SUBJECT], Candy-colored neon rim lights, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_108",
+    "name": "[3D Render] Isometric Global",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Isometric view, [SUBJECT], Global illumination, bounced light, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_109",
+    "name": "[3D Render] Dynamic Candy-colored",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Candy-colored neon rim lights, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_110",
+    "name": "[3D Render] Wide Candy-colored",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Wide panorama, [SUBJECT], Candy-colored neon rim lights, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_111",
+    "name": "[3D Render] Dynamic Candy-colored",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Candy-colored neon rim lights, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_112",
+    "name": "[3D Render] Isometric Studio",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Isometric view, [SUBJECT], Studio lighting, soft box, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_113",
+    "name": "[3D Render] Dynamic Global",
+    "category": "3D Render",
+    "camera": "Dynamic floating angle",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Dynamic floating angle, [SUBJECT], Global illumination, bounced light, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_114",
+    "name": "[3D Render] Wide Global",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Wide panorama, [SUBJECT], Global illumination, bounced light, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_115",
+    "name": "[3D Render] Isometric Studio",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Isometric view, [SUBJECT], Studio lighting, soft box, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_116",
+    "name": "[3D Render] Macro Global",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Macro shot, [SUBJECT], Global illumination, bounced light, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_117",
+    "name": "[3D Render] Wide Candy-colored",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Wide panorama, [SUBJECT], Candy-colored neon rim lights, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_118",
+    "name": "[3D Render] Macro Candy-colored",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Candy-colored neon rim lights",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Macro shot, [SUBJECT], Candy-colored neon rim lights, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_119",
+    "name": "[3D Render] Isometric Global",
+    "category": "3D Render",
+    "camera": "Isometric view",
+    "lighting": "Global illumination, bounced light",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Isometric view, [SUBJECT], Global illumination, bounced light, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "isometric",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_120",
+    "name": "[3D Render] Macro Studio",
+    "category": "3D Render",
+    "camera": "Macro shot",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Octane render, 4k, Cinema4D, glossy materials, cute",
+    "prompt_template": "Macro shot, [SUBJECT], Studio lighting, soft box, Octane render, 4k, Cinema4D, glossy materials, cute",
+    "keywords": [
+      "3d render",
+      "macro",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_3d render_121",
+    "name": "[3D Render] Wide Studio",
+    "category": "3D Render",
+    "camera": "Wide panorama",
+    "lighting": "Studio lighting, soft box",
+    "quality": "Pixar style, subsurface scattering, highly detailed 3D",
+    "prompt_template": "Wide panorama, [SUBJECT], Studio lighting, soft box, Pixar style, subsurface scattering, highly detailed 3D",
+    "keywords": [
+      "3d render",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_122",
+    "name": "[Vintage/Retro] Static Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Static tripod shot, [SUBJECT], Sepia tone, low contrast, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_123",
+    "name": "[Vintage/Retro] Medium Faded",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Medium shot, [SUBJECT], Faded colors, light leaks, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_124",
+    "name": "[Vintage/Retro] Medium Flash",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Medium shot, [SUBJECT], Flash photography, harsh direct light, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_125",
+    "name": "[Vintage/Retro] Static Faded",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Static tripod shot, [SUBJECT], Faded colors, light leaks, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_126",
+    "name": "[Vintage/Retro] Static Faded",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Static tripod shot, [SUBJECT], Faded colors, light leaks, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_127",
+    "name": "[Vintage/Retro] Medium Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Medium shot, [SUBJECT], Sepia tone, low contrast, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_128",
+    "name": "[Vintage/Retro] Static Flash",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Static tripod shot, [SUBJECT], Flash photography, harsh direct light, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_129",
+    "name": "[Vintage/Retro] Medium Faded",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Medium shot, [SUBJECT], Faded colors, light leaks, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_130",
+    "name": "[Vintage/Retro] Slightly Flash",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Flash photography, harsh direct light, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_131",
+    "name": "[Vintage/Retro] Medium Flash",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Medium shot, [SUBJECT], Flash photography, harsh direct light, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_132",
+    "name": "[Vintage/Retro] Slightly Flash",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Flash photography, harsh direct light, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_133",
+    "name": "[Vintage/Retro] Static Flash",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Flash photography, harsh direct light",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Static tripod shot, [SUBJECT], Flash photography, harsh direct light, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_134",
+    "name": "[Vintage/Retro] Medium Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Medium shot",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Medium shot, [SUBJECT], Sepia tone, low contrast, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "medium",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_135",
+    "name": "[Vintage/Retro] Slightly Faded",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Faded colors, light leaks, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_136",
+    "name": "[Vintage/Retro] Slightly Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1950s Kodachrome, classic Hollywood look, 35mm film",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Sepia tone, low contrast, 1950s Kodachrome, classic Hollywood look, 35mm film",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_137",
+    "name": "[Vintage/Retro] Static Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Static tripod shot",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Static tripod shot, [SUBJECT], Sepia tone, low contrast, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_138",
+    "name": "[Vintage/Retro] Slightly Sepia",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Sepia tone, low contrast",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Sepia tone, low contrast, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_vintage_retro_139",
+    "name": "[Vintage/Retro] Slightly Faded",
+    "category": "Vintage/Retro",
+    "camera": "Slightly shaky handheld",
+    "lighting": "Faded colors, light leaks",
+    "quality": "1990s VHS aesthetic, film grain, nostalgic",
+    "prompt_template": "Slightly shaky handheld, [SUBJECT], Faded colors, light leaks, 1990s VHS aesthetic, film grain, nostalgic",
+    "keywords": [
+      "vintage/retro",
+      "slightly",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_140",
+    "name": "[Fantasy] Epic Dark",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Epic wide shot, [SUBJECT], Dark fantasy shadows, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_141",
+    "name": "[Fantasy] Low Dark",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Dark fantasy shadows, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_142",
+    "name": "[Fantasy] Over-the-shoulder Ethereal",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Ethereal magical lighting, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_143",
+    "name": "[Fantasy] Over-the-shoulder Dark",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Dark fantasy shadows, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_144",
+    "name": "[Fantasy] Over-the-shoulder Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Bioluminescent glow",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Bioluminescent glow, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_145",
+    "name": "[Fantasy] Epic Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Bioluminescent glow",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Epic wide shot, [SUBJECT], Bioluminescent glow, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_146",
+    "name": "[Fantasy] Epic Ethereal",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Epic wide shot, [SUBJECT], Ethereal magical lighting, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_147",
+    "name": "[Fantasy] Low Dark",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Dark fantasy shadows, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_148",
+    "name": "[Fantasy] Over-the-shoulder Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Bioluminescent glow",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Bioluminescent glow, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_149",
+    "name": "[Fantasy] Epic Ethereal",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Epic wide shot, [SUBJECT], Ethereal magical lighting, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_150",
+    "name": "[Fantasy] Epic Dark",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Epic wide shot, [SUBJECT], Dark fantasy shadows, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_151",
+    "name": "[Fantasy] Over-the-shoulder Dark",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Dark fantasy shadows",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Dark fantasy shadows, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_152",
+    "name": "[Fantasy] Low Ethereal",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Ethereal magical lighting, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_153",
+    "name": "[Fantasy] Low Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Bioluminescent glow",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Bioluminescent glow, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_154",
+    "name": "[Fantasy] Low Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Bioluminescent glow",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Bioluminescent glow, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_155",
+    "name": "[Fantasy] Over-the-shoulder Ethereal",
+    "category": "Fantasy",
+    "camera": "Over-the-shoulder mystical view",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Over-the-shoulder mystical view, [SUBJECT], Ethereal magical lighting, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_156",
+    "name": "[Fantasy] Epic Bioluminescent",
+    "category": "Fantasy",
+    "camera": "Epic wide shot",
+    "lighting": "Bioluminescent glow",
+    "quality": "Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "prompt_template": "Epic wide shot, [SUBJECT], Bioluminescent glow, Lord of the Rings style, intricate fantasy armor, masterpiece, 8k",
+    "keywords": [
+      "fantasy",
+      "epic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_fantasy_157",
+    "name": "[Fantasy] Low Ethereal",
+    "category": "Fantasy",
+    "camera": "Low angle hero shot",
+    "lighting": "Ethereal magical lighting",
+    "quality": "Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "prompt_template": "Low angle hero shot, [SUBJECT], Ethereal magical lighting, Elden Ring aesthetic, grimdark fantasy, highly detailed",
+    "keywords": [
+      "fantasy",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_158",
+    "name": "[Cinematic] High Soft",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Soft diffused lighting",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "High angle, [SUBJECT], Soft diffused lighting, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_159",
+    "name": "[Cinematic] High Cinematic",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Cinematic teal and orange",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "High angle, [SUBJECT], Cinematic teal and orange, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_160",
+    "name": "[Cinematic] Dutch Moody",
+    "category": "Cinematic",
+    "camera": "Dutch angle",
+    "lighting": "Moody chiaroscuro",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Dutch angle, [SUBJECT], Moody chiaroscuro, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "dutch",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_161",
+    "name": "[Anime] Worm's Soft",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Soft pastel lighting",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Worm's eye view, [SUBJECT], Soft pastel lighting, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_162",
+    "name": "[Cinematic] Slow Cinematic",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Cinematic teal and orange",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Cinematic teal and orange, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_163",
+    "name": "[Cinematic] High Harsh",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Harsh contrast",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "High angle, [SUBJECT], Harsh contrast, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_164",
+    "name": "[Cinematic] High Moonlight",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Moonlight",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "High angle, [SUBJECT], Moonlight, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_165",
+    "name": "[Cinematic] Slow Neon",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Neon rim light",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Neon rim light, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_166",
+    "name": "[Cinematic] Low Moody",
+    "category": "Cinematic",
+    "camera": "Low angle",
+    "lighting": "Moody chiaroscuro",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Low angle, [SUBJECT], Moody chiaroscuro, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "low",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_167",
+    "name": "[Cinematic] Extreme Moonlight",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Moonlight",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Extreme close-up, [SUBJECT], Moonlight, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_168",
+    "name": "[Cinematic] Over-the-shoulder Harsh",
+    "category": "Cinematic",
+    "camera": "Over-the-shoulder",
+    "lighting": "Harsh contrast",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Over-the-shoulder, [SUBJECT], Harsh contrast, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "over-the-shoulder",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_169",
+    "name": "[Cinematic] Dutch Moonlight",
+    "category": "Cinematic",
+    "camera": "Dutch angle",
+    "lighting": "Moonlight",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Dutch angle, [SUBJECT], Moonlight, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "dutch",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_170",
+    "name": "[Anime] Focus Soft",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Soft pastel lighting",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Focus on eyes, [SUBJECT], Soft pastel lighting, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_171",
+    "name": "[Cinematic] Drone Cinematic",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Cinematic teal and orange",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Drone view, [SUBJECT], Cinematic teal and orange, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_172",
+    "name": "[Cinematic] Pan Soft",
+    "category": "Cinematic",
+    "camera": "Pan left",
+    "lighting": "Soft diffused lighting",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Pan left, [SUBJECT], Soft diffused lighting, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "pan",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_173",
+    "name": "[Cinematic] Dutch Golden",
+    "category": "Cinematic",
+    "camera": "Dutch angle",
+    "lighting": "Golden hour",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Dutch angle, [SUBJECT], Golden hour, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "dutch",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_174",
+    "name": "[Cinematic] Slow Harsh",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Harsh contrast",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Harsh contrast, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_175",
+    "name": "[Cinematic] Pan Harsh",
+    "category": "Cinematic",
+    "camera": "Pan left",
+    "lighting": "Harsh contrast",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Pan left, [SUBJECT], Harsh contrast, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "pan",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_176",
+    "name": "[Cinematic] Extreme Golden",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Golden hour",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Extreme close-up, [SUBJECT], Golden hour, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_177",
+    "name": "[Anime] Worm's Dark",
+    "category": "Anime",
+    "camera": "Worm's eye view",
+    "lighting": "Dark moody ambiance",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Worm's eye view, [SUBJECT], Dark moody ambiance, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "worm's",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_178",
+    "name": "[Anime] Wide Backlit",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Backlit glow, lens flare, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_179",
+    "name": "[Cinematic] Slow Neon",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Neon rim light",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Neon rim light, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_180",
+    "name": "[Anime] Static Backlit",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Static emotional profile, [SUBJECT], Backlit glow, lens flare, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_181",
+    "name": "[Cinematic] Drone Moody",
+    "category": "Cinematic",
+    "camera": "Drone view",
+    "lighting": "Moody chiaroscuro",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Drone view, [SUBJECT], Moody chiaroscuro, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "drone",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_182",
+    "name": "[Anime] Static Vibrant",
+    "category": "Anime",
+    "camera": "Static emotional profile",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Studio Ghibli style, cel-shaded, highly detailed",
+    "prompt_template": "Static emotional profile, [SUBJECT], Vibrant colors, dramatic shadows, Studio Ghibli style, cel-shaded, highly detailed",
+    "keywords": [
+      "anime",
+      "static",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_183",
+    "name": "[Cinematic] Extreme Volumetric",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Extreme close-up, [SUBJECT], Volumetric fog and god rays, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_184",
+    "name": "[Cinematic] High Cinematic",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Cinematic teal and orange",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "High angle, [SUBJECT], Cinematic teal and orange, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_185",
+    "name": "[Cinematic] Pan Harsh",
+    "category": "Cinematic",
+    "camera": "Pan left",
+    "lighting": "Harsh contrast",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Pan left, [SUBJECT], Harsh contrast, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "pan",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_186",
+    "name": "[Cinematic] Extreme Harsh",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Harsh contrast",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Extreme close-up, [SUBJECT], Harsh contrast, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_187",
+    "name": "[Anime] Wide Vibrant",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Vibrant colors, dramatic shadows",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Vibrant colors, dramatic shadows, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_188",
+    "name": "[Cinematic] Tilt Soft",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Soft diffused lighting",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Soft diffused lighting, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_189",
+    "name": "[Cinematic] Dutch Neon",
+    "category": "Cinematic",
+    "camera": "Dutch angle",
+    "lighting": "Neon rim light",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Dutch angle, [SUBJECT], Neon rim light, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "dutch",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_190",
+    "name": "[Cinematic] Tracking Harsh",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Harsh contrast",
+    "quality": "4k, high resolution, stunning textures",
+    "prompt_template": "Tracking shot, [SUBJECT], Harsh contrast, 4k, high resolution, stunning textures",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_191",
+    "name": "[Anime] Dynamic Backlit",
+    "category": "Anime",
+    "camera": "Dynamic action angle",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Dynamic action angle, [SUBJECT], Backlit glow, lens flare, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "dynamic",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_192",
+    "name": "[Cinematic] Slow Volumetric",
+    "category": "Cinematic",
+    "camera": "Slow dolly zoom",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Slow dolly zoom, [SUBJECT], Volumetric fog and god rays, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "slow",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_193",
+    "name": "[Anime] Wide Dark",
+    "category": "Anime",
+    "camera": "Wide establishing shot",
+    "lighting": "Dark moody ambiance",
+    "quality": "Mappa style, intense action, fluid animation",
+    "prompt_template": "Wide establishing shot, [SUBJECT], Dark moody ambiance, Mappa style, intense action, fluid animation",
+    "keywords": [
+      "anime",
+      "wide",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_194",
+    "name": "[Cinematic] High Moonlight",
+    "category": "Cinematic",
+    "camera": "High angle",
+    "lighting": "Moonlight",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "High angle, [SUBJECT], Moonlight, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "high",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_195",
+    "name": "[Cinematic] Pan Volumetric",
+    "category": "Cinematic",
+    "camera": "Pan left",
+    "lighting": "Volumetric fog and god rays",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Pan left, [SUBJECT], Volumetric fog and god rays, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "pan",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_anime_196",
+    "name": "[Anime] Focus Backlit",
+    "category": "Anime",
+    "camera": "Focus on eyes",
+    "lighting": "Backlit glow, lens flare",
+    "quality": "Makoto Shinkai style, breathtaking scenery, 4k",
+    "prompt_template": "Focus on eyes, [SUBJECT], Backlit glow, lens flare, Makoto Shinkai style, breathtaking scenery, 4k",
+    "keywords": [
+      "anime",
+      "focus",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_197",
+    "name": "[Cinematic] Tilt Harsh",
+    "category": "Cinematic",
+    "camera": "Tilt up",
+    "lighting": "Harsh contrast",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tilt up, [SUBJECT], Harsh contrast, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tilt",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_198",
+    "name": "[Cinematic] Extreme Harsh",
+    "category": "Cinematic",
+    "camera": "Extreme close-up",
+    "lighting": "Harsh contrast",
+    "quality": "Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "prompt_template": "Extreme close-up, [SUBJECT], Harsh contrast, Masterpiece, ultra-detailed, cinematic grading, ARRI Alexa",
+    "keywords": [
+      "cinematic",
+      "extreme",
+      "epic",
+      "style"
+    ]
+  },
+  {
+    "id": "skill_cinematic_199",
+    "name": "[Cinematic] Tracking Moonlight",
+    "category": "Cinematic",
+    "camera": "Tracking shot",
+    "lighting": "Moonlight",
+    "quality": "8k, photorealistic, shot on 35mm lens, depth of field",
+    "prompt_template": "Tracking shot, [SUBJECT], Moonlight, 8k, photorealistic, shot on 35mm lens, depth of field",
+    "keywords": [
+      "cinematic",
+      "tracking",
+      "epic",
+      "style"
+    ]
+  }
+]

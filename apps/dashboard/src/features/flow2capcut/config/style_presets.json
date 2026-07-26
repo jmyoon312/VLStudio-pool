@@ -1,0 +1,795 @@
+{
+  "version": "1.2",
+  "total_count": 95,
+  "categories": [
+    {
+      "id": "animation",
+      "name_en": "Animation",
+      "name_ko": "애니메이션 스타일",
+      "icon": "🎌"
+    },
+    {
+      "id": "photography",
+      "name_en": "Photography",
+      "name_ko": "사실적/사진 스타일",
+      "icon": "📷"
+    },
+    {
+      "id": "film",
+      "name_en": "Film & Drama",
+      "name_ko": "영화/드라마 스타일",
+      "icon": "🎬"
+    },
+    {
+      "id": "asian-traditional",
+      "name_en": "Asian Traditional",
+      "name_ko": "한국/동양 전통",
+      "icon": "🏯"
+    },
+    {
+      "id": "western-art",
+      "name_en": "Western Art",
+      "name_ko": "서양 전통 예술",
+      "icon": "🎨"
+    },
+    {
+      "id": "illustration",
+      "name_en": "Illustration",
+      "name_ko": "일러스트/드로잉",
+      "icon": "✏️"
+    },
+    {
+      "id": "digital-art",
+      "name_en": "Digital Art",
+      "name_ko": "디지털/모던 아트",
+      "icon": "💻"
+    },
+    {
+      "id": "scifi-fantasy",
+      "name_en": "Sci-Fi & Fantasy",
+      "name_ko": "SF/판타지 장르",
+      "icon": "🚀"
+    },
+    {
+      "id": "game-3d",
+      "name_en": "Game & 3D",
+      "name_ko": "게임/3D 스타일",
+      "icon": "🎮"
+    },
+    {
+      "id": "effects",
+      "name_en": "Special Effects",
+      "name_ko": "특수 효과/기법",
+      "icon": "📸"
+    },
+    {
+      "id": "misc",
+      "name_en": "Miscellaneous",
+      "name_ko": "기타/특수 스타일",
+      "icon": "🎭"
+    }
+  ],
+  "styles": [
+    {
+      "id": "korean-ani",
+      "name_ko": "한국 애니",
+      "name_en": "Korean Anime",
+      "category": "animation",
+      "prompt_en": "Modern Korean webtoon animation style, manhwa aesthetic, clean sharp linework, high quality, vibrant colors, detailed characters, contemporary Korean animation"
+    },
+    {
+      "id": "ghibli",
+      "name_ko": "지브리",
+      "name_en": "Studio Ghibli",
+      "category": "animation",
+      "prompt_en": "Japanese anime watercolor style, soft pastel tones, whimsical, hand-drawn feel, lush nature backgrounds, gentle lighting, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "disney-pixar",
+      "name_ko": "디즈니/픽사",
+      "name_en": "Disney/Pixar",
+      "category": "animation",
+      "prompt_en": "Modern 3D animation style, expressive characters, family-friendly, subsurface scattering skin, soft global illumination, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "cartoon-3d",
+      "name_ko": "Cartoon 3D",
+      "name_en": "Cartoon 3D",
+      "category": "animation",
+      "prompt_en": "3D cartoon style, CGI animation, soft lighting, vibrant colors, expressive characters, rounded shapes, subsurface scattering, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "korean-romance-webtoon",
+      "name_ko": "한국 로맨스 웹툰",
+      "name_en": "Korean Romance Webtoon",
+      "category": "animation",
+      "prompt_en": "Korean romance webtoon style, soft pastel colors, delicate facial features, sparkling eyes, romantic atmosphere, manhwa illustration, clean linework, emotional expression, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "semi-animation",
+      "name_ko": "세미 애니메이션",
+      "name_en": "Semi-Animation",
+      "category": "animation",
+      "prompt_en": "Semi-animation style, modern Korean illustration, clean lines, soft shading, YouTube thumbnail style, informational illustration, casual realistic anime hybrid, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "stick-figure",
+      "name_ko": "스틱맨",
+      "name_en": "Stick Figure",
+      "category": "animation",
+      "prompt_en": "Stick figure style, simple line drawing, minimal black lines on white background, circle head with stick body, extremely simple and clean, meme style illustration, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "90s-anime",
+      "name_ko": "90년대 애니",
+      "name_en": "90s Anime",
+      "category": "animation",
+      "prompt_en": "90s retro anime style, classic cel shading, nostalgic atmosphere, VHS aesthetic, vintage anime aesthetic, detailed background, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "manhwa",
+      "name_ko": "만화/웹툰",
+      "name_en": "Manhwa/Webtoon",
+      "category": "animation",
+      "prompt_en": "High quality Korean manhwa webtoon style, dynamic dramatic angles, bold clean ink lines, striking cel shading, intense atmosphere, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "chibi",
+      "name_ko": "치비",
+      "name_en": "Chibi",
+      "category": "animation",
+      "prompt_en": "Extremely cute chibi style, large expressive eyes, small adorable body, kawaii aesthetic, pastel colors, clean anime style, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "sd-character",
+      "name_ko": "SD 캐릭터",
+      "name_en": "SD Character",
+      "category": "animation",
+      "prompt_en": "Super deformed SD character style, 2-3 head-to-body ratio, large expressive head, tiny cute body, chibi figurine look, bold outlines, colorful, anime figure collectible style, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "makoto-shinkai",
+      "name_ko": "신카이 마코토",
+      "name_en": "Makoto Shinkai",
+      "category": "animation",
+      "prompt_en": "Japanese anime scenery style, beautiful detailed skies, lens flare, emotional scenery, photorealistic backgrounds, volumetric clouds, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "claymation",
+      "name_ko": "클레이메이션",
+      "name_en": "Claymation",
+      "category": "animation",
+      "prompt_en": "High quality claymation stop-motion style, textured clay figures, intricate handmade miniature sets, soft studio lighting, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "dreamworks",
+      "name_ko": "드림웍스",
+      "name_en": "DreamWorks",
+      "category": "animation",
+      "prompt_en": "Western 3D CG cartoon style, exaggerated expressions, cinematic lighting, rich textures, dynamic poses, stylized realism, animated feature film quality, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "illumination",
+      "name_ko": "일루미네이션",
+      "name_en": "Illumination",
+      "category": "animation",
+      "prompt_en": "Rounded 3D character style, bright saturated colors, simple shapes, family-friendly, soft gradients, cheerful cartoon, big expressive eyes, smooth plastic-like shading, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "disney-classic-2d",
+      "name_ko": "클래식 디즈니 2D",
+      "name_en": "Classic Disney 2D",
+      "category": "animation",
+      "prompt_en": "Classic 2D animation style, hand-drawn cel animation, 1990s golden age animation era, painted backgrounds, expressive line art, warm color palette, soft shading, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "looney-tunes",
+      "name_ko": "루니 툰",
+      "name_en": "Looney Tunes",
+      "category": "animation",
+      "prompt_en": "Classic American cartoon style, 1940s-1950s era, bold black outlines, flat cel shading, rubber-hose limbs, exaggerated slapstick, vintage cartoon, limited color palette, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "cartoon-network",
+      "name_ko": "카툰 네트워크",
+      "name_en": "Cartoon Network",
+      "category": "animation",
+      "prompt_en": "Western indie TV cartoon style, flat colors, noodle limbs, quirky character design, bold simple shapes, playful proportions, clean vector-like lines, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "rick-and-morty",
+      "name_ko": "릭 앤 모티",
+      "name_en": "Rick and Morty",
+      "category": "animation",
+      "prompt_en": "Adult animated sci-fi comedy style, wobbly lines, flat shading, absurdist cartoon, simple eyes with small pupils, Western adult animation, crude humorous drawing, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "samurai-jack",
+      "name_ko": "사무라이 잭",
+      "name_en": "Samurai Jack",
+      "category": "animation",
+      "prompt_en": "Minimalist action cartoon style, geometric shapes, angular character design, cinematic composition, limited palette, strong silhouettes, stylized Western animation, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "south-park",
+      "name_ko": "사우스 파크",
+      "name_en": "South Park",
+      "category": "animation",
+      "prompt_en": "Cutout paper animation style, flat 2D construction paper look, simple geometric shapes, basic facial features, pastel colors, crude comedy cartoon, layered paper craft, masterpiece, highest quality, highly detailed, flawless composition, trending on artstation, vivid colors"
+    },
+    {
+      "id": "photorealistic",
+      "name_ko": "실사",
+      "name_en": "Photorealistic",
+      "category": "photography",
+      "prompt_en": "Photorealistic, cinematic, high detail photography, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "semi-realistic",
+      "name_ko": "반실사",
+      "name_en": "Semi-Realistic",
+      "category": "photography",
+      "prompt_en": "Semi-realistic, stylized realism, digital art, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "portrait",
+      "name_ko": "인물 사진",
+      "name_en": "Portrait",
+      "category": "photography",
+      "prompt_en": "Professional portrait photography, studio lighting, bokeh, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "cinematic",
+      "name_ko": "시네마틱",
+      "name_en": "Cinematic",
+      "category": "photography",
+      "prompt_en": "Cinematic film still, dramatic lighting, movie scene, anamorphic, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "documentary",
+      "name_ko": "다큐멘터리",
+      "name_en": "Documentary",
+      "category": "photography",
+      "prompt_en": "Documentary photography style, natural lighting, authentic feel, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "fashion",
+      "name_ko": "패션 화보",
+      "name_en": "Fashion",
+      "category": "photography",
+      "prompt_en": "High fashion photography, editorial style, glamorous lighting, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "street-photo",
+      "name_ko": "스트릿 포토",
+      "name_en": "Street Photography",
+      "category": "photography",
+      "prompt_en": "Street photography, candid, urban, authentic moments, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "drone-aerial",
+      "name_ko": "드론/항공",
+      "name_en": "Drone/Aerial",
+      "category": "photography",
+      "prompt_en": "Drone aerial photography, birds eye view, landscape, 8k resolution, photorealistic, RAW photo, DSLR, sharp focus, volumetric lighting, masterpiece, award winning photography, highly detailed"
+    },
+    {
+      "id": "kdrama",
+      "name_ko": "K-드라마",
+      "name_en": "K-Drama",
+      "category": "film",
+      "prompt_en": "Korean drama style, romantic lighting, soft focus, emotional, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "sageuk",
+      "name_ko": "사극",
+      "name_en": "Sageuk",
+      "category": "film",
+      "prompt_en": "Korean historical drama (sageuk) style, Joseon era, traditional costumes, palace settings, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "noir",
+      "name_ko": "느와르",
+      "name_en": "Film Noir",
+      "category": "film",
+      "prompt_en": "Film noir style, high contrast black and white, dramatic shadows, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "thriller",
+      "name_ko": "스릴러",
+      "name_en": "Thriller",
+      "category": "film",
+      "prompt_en": "Thriller movie style, suspenseful atmosphere, dark tones, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "horror",
+      "name_ko": "호러/공포",
+      "name_en": "Horror",
+      "category": "film",
+      "prompt_en": "Horror style, creepy atmosphere, unsettling, dark shadows, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "melodrama",
+      "name_ko": "멜로드라마",
+      "name_en": "Melodrama",
+      "category": "film",
+      "prompt_en": "Melodrama style, emotional, warm tones, romantic atmosphere, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "blockbuster",
+      "name_ko": "블록버스터",
+      "name_en": "Blockbuster",
+      "category": "film",
+      "prompt_en": "Hollywood blockbuster style, epic scale, dramatic action, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "indie-film",
+      "name_ko": "인디 영화",
+      "name_en": "Indie Film",
+      "category": "film",
+      "prompt_en": "Indie film aesthetic, natural lighting, intimate, artistic, cinematic lighting, 35mm film photography, IMAX, dramatic composition, masterpiece, epic scale, highly detailed, cinematic color grading"
+    },
+    {
+      "id": "minhwa",
+      "name_ko": "민화",
+      "name_en": "Minhwa",
+      "category": "asian-traditional",
+      "prompt_en": "Korean folk painting (minhwa), traditional colors, symbolic imagery, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "ink-wash",
+      "name_ko": "수묵화",
+      "name_en": "Ink Wash",
+      "category": "asian-traditional",
+      "prompt_en": "East Asian ink wash painting, sumi-e, traditional brush strokes, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "dancheong",
+      "name_ko": "단청",
+      "name_en": "Dancheong",
+      "category": "asian-traditional",
+      "prompt_en": "Korean traditional dancheong patterns, temple art, vibrant traditional colors, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "ukiyo-e",
+      "name_ko": "우키요에",
+      "name_en": "Ukiyo-e",
+      "category": "asian-traditional",
+      "prompt_en": "Japanese ukiyo-e woodblock print style, traditional, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "chinese-painting",
+      "name_ko": "중국화",
+      "name_en": "Chinese Painting",
+      "category": "asian-traditional",
+      "prompt_en": "Traditional Chinese painting, landscape, misty mountains, calligraphic, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "hanbok-portrait",
+      "name_ko": "한복 초상",
+      "name_en": "Hanbok Portrait",
+      "category": "asian-traditional",
+      "prompt_en": "Traditional Korean hanbok portrait style, elegant, historical, museum quality, masterpiece, exquisite detail, masterful brushwork, traditional aesthetic, fine art"
+    },
+    {
+      "id": "watercolor",
+      "name_ko": "수채화",
+      "name_en": "Watercolor",
+      "category": "western-art",
+      "prompt_en": "Watercolor painting style, soft edges, artistic, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "oil-painting",
+      "name_ko": "유화",
+      "name_en": "Oil Painting",
+      "category": "western-art",
+      "prompt_en": "Oil painting style, rich textures, classical art, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "impressionist",
+      "name_ko": "인상파",
+      "name_en": "Impressionist",
+      "category": "western-art",
+      "prompt_en": "Impressionist painting, visible brushstrokes, light and color, Monet style, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "renaissance",
+      "name_ko": "르네상스",
+      "name_en": "Renaissance",
+      "category": "western-art",
+      "prompt_en": "Renaissance art style, classical composition, religious themes, da Vinci, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "baroque",
+      "name_ko": "바로크",
+      "name_en": "Baroque",
+      "category": "western-art",
+      "prompt_en": "Baroque style, dramatic lighting, rich colors, Rembrandt, Caravaggio, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "expressionist",
+      "name_ko": "표현주의",
+      "name_en": "Expressionist",
+      "category": "western-art",
+      "prompt_en": "Expressionist style, emotional, distorted forms, bold colors, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "surrealist",
+      "name_ko": "초현실주의",
+      "name_en": "Surrealist",
+      "category": "western-art",
+      "prompt_en": "Surrealist style, dreamlike, impossible scenes, Dali, Magritte, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "art-nouveau",
+      "name_ko": "아르누보",
+      "name_en": "Art Nouveau",
+      "category": "western-art",
+      "prompt_en": "Art Nouveau style, organic curves, decorative, Mucha, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "art-deco",
+      "name_ko": "아르데코",
+      "name_en": "Art Deco",
+      "category": "western-art",
+      "prompt_en": "Art Deco style, geometric, glamorous, 1920s aesthetic, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "romanticism",
+      "name_ko": "낭만주의",
+      "name_en": "Romanticism",
+      "category": "western-art",
+      "prompt_en": "Romanticism style, dramatic landscapes, emotion, sublime nature, museum quality fine art, masterpiece, highly detailed, classical composition, masterful technique, elegant"
+    },
+    {
+      "id": "sketch",
+      "name_ko": "연필 스케치",
+      "name_en": "Pencil Sketch",
+      "category": "illustration",
+      "prompt_en": "Pencil sketch, hand-drawn, graphite, detailed linework, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "charcoal",
+      "name_ko": "목탄화",
+      "name_en": "Charcoal",
+      "category": "illustration",
+      "prompt_en": "Charcoal drawing, dramatic shadows, textured, expressive, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "pen-ink",
+      "name_ko": "펜화",
+      "name_en": "Pen & Ink",
+      "category": "illustration",
+      "prompt_en": "Pen and ink illustration, detailed linework, crosshatching, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "colored-pencil",
+      "name_ko": "색연필",
+      "name_en": "Colored Pencil",
+      "category": "illustration",
+      "prompt_en": "Colored pencil illustration, soft blending, textured, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "children-book",
+      "name_ko": "동화책",
+      "name_en": "Children's Book",
+      "category": "illustration",
+      "prompt_en": "Children book illustration, cute, colorful, friendly, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "editorial",
+      "name_ko": "에디토리얼",
+      "name_en": "Editorial",
+      "category": "illustration",
+      "prompt_en": "Editorial illustration, conceptual, magazine style, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "botanical",
+      "name_ko": "보태니컬",
+      "name_en": "Botanical",
+      "category": "illustration",
+      "prompt_en": "Botanical illustration, detailed plants and flowers, scientific art, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "fashion-sketch",
+      "name_ko": "패션 스케치",
+      "name_en": "Fashion Sketch",
+      "category": "illustration",
+      "prompt_en": "Fashion design sketch, elongated figures, stylized, masterpiece, highly detailed illustration, crisp lines, perfect composition, trending on artstation, digital artwork"
+    },
+    {
+      "id": "concept-art",
+      "name_ko": "컨셉 아트",
+      "name_en": "Concept Art",
+      "category": "digital-art",
+      "prompt_en": "Professional concept art, detailed, game/movie production quality, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "digital-art",
+      "name_ko": "디지털 아트",
+      "name_en": "Digital Art",
+      "category": "digital-art",
+      "prompt_en": "Modern digital illustration, clean, professional, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "fantasy-art",
+      "name_ko": "판타지 아트",
+      "name_en": "Fantasy Art",
+      "category": "digital-art",
+      "prompt_en": "Epic fantasy art, magical, detailed environments, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "dark-fantasy",
+      "name_ko": "다크 판타지",
+      "name_en": "Dark Fantasy",
+      "category": "digital-art",
+      "prompt_en": "Dark fantasy, gothic, moody atmosphere, dramatic, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "graphic-novel",
+      "name_ko": "그래픽 노블",
+      "name_en": "Graphic Novel",
+      "category": "digital-art",
+      "prompt_en": "Graphic novel style, comic book art, dramatic panels, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "vector-art",
+      "name_ko": "벡터 아트",
+      "name_en": "Vector Art",
+      "category": "digital-art",
+      "prompt_en": "Vector illustration, clean lines, flat colors, modern, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "vaporwave",
+      "name_ko": "베이퍼웨이브",
+      "name_en": "Vaporwave",
+      "category": "digital-art",
+      "prompt_en": "Vaporwave aesthetic, 80s/90s nostalgia, neon pink and blue, glitch, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "synthwave",
+      "name_ko": "신스웨이브",
+      "name_en": "Synthwave",
+      "category": "digital-art",
+      "prompt_en": "Synthwave style, retro futurism, neon grid, sunset, masterpiece, stunning digital art, 8k resolution, highly detailed, vibrant, trending on artstation, perfect composition"
+    },
+    {
+      "id": "cyberpunk",
+      "name_ko": "사이버펑크",
+      "name_en": "Cyberpunk",
+      "category": "scifi-fantasy",
+      "prompt_en": "Cyberpunk style, neon lights, futuristic, dystopian, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "steampunk",
+      "name_ko": "스팀펑크",
+      "name_en": "Steampunk",
+      "category": "scifi-fantasy",
+      "prompt_en": "Steampunk style, Victorian era, brass and copper, mechanical, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "sci-fi",
+      "name_ko": "SF/공상과학",
+      "name_en": "Sci-Fi",
+      "category": "scifi-fantasy",
+      "prompt_en": "Science fiction style, futuristic technology, space, advanced civilization, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "post-apocalyptic",
+      "name_ko": "포스트아포칼립스",
+      "name_en": "Post-Apocalyptic",
+      "category": "scifi-fantasy",
+      "prompt_en": "Post-apocalyptic style, ruins, survival, desolate, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "space-opera",
+      "name_ko": "스페이스 오페라",
+      "name_en": "Space Opera",
+      "category": "scifi-fantasy",
+      "prompt_en": "Space opera style, epic space battles, alien worlds, grand scale, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "mythological",
+      "name_ko": "신화/전설",
+      "name_en": "Mythological",
+      "category": "scifi-fantasy",
+      "prompt_en": "Mythological style, gods, legends, epic fantasy, masterpiece, epic scale, highly detailed concept art, 8k resolution, cinematic lighting, breathtaking environment, immersive"
+    },
+    {
+      "id": "3d-render",
+      "name_ko": "3D 렌더",
+      "name_en": "3D Render",
+      "category": "game-3d",
+      "prompt_en": "3D rendered, CGI, realistic lighting, octane render, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "low-poly",
+      "name_ko": "로우폴리",
+      "name_en": "Low Poly",
+      "category": "game-3d",
+      "prompt_en": "Low poly 3D style, geometric, modern game aesthetic, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "pixel-art",
+      "name_ko": "픽셀 아트",
+      "name_en": "Pixel Art",
+      "category": "game-3d",
+      "prompt_en": "Pixel art style, retro game aesthetics, 8-bit, 16-bit, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "isometric",
+      "name_ko": "아이소메트릭",
+      "name_en": "Isometric",
+      "category": "game-3d",
+      "prompt_en": "Isometric view, game art style, detailed scenes, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "unreal-engine",
+      "name_ko": "언리얼 엔진",
+      "name_en": "Unreal Engine",
+      "category": "game-3d",
+      "prompt_en": "Unreal Engine 5 quality, hyperrealistic, RTX, photogrammetry, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "nintendo",
+      "name_ko": "닌텐도 스타일",
+      "name_en": "Nintendo Style",
+      "category": "game-3d",
+      "prompt_en": "Japanese console game style, colorful, playful, whimsical adventure aesthetic, clean 3D, bright fantasy world, Unreal Engine 5 render, octane render, ray tracing, 8k resolution, highly detailed 3D model, volumetric lighting, masterpiece"
+    },
+    {
+      "id": "vintage",
+      "name_ko": "빈티지/레트로",
+      "name_en": "Vintage/Retro",
+      "category": "effects",
+      "prompt_en": "Vintage retro style, aged look, nostalgic, film grain, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "sepia",
+      "name_ko": "세피아",
+      "name_en": "Sepia",
+      "category": "effects",
+      "prompt_en": "Sepia tone, old photograph, nostalgic, antique feel, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "monochrome",
+      "name_ko": "모노크롬",
+      "name_en": "Monochrome",
+      "category": "effects",
+      "prompt_en": "Monochrome black and white, artistic, high contrast, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "double-exposure",
+      "name_ko": "이중노출",
+      "name_en": "Double Exposure",
+      "category": "effects",
+      "prompt_en": "Double exposure effect, overlapping images, artistic blend, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "long-exposure",
+      "name_ko": "장노출",
+      "name_en": "Long Exposure",
+      "category": "effects",
+      "prompt_en": "Long exposure photography, light trails, motion blur, silky water, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "tilt-shift",
+      "name_ko": "틸트시프트",
+      "name_en": "Tilt-Shift",
+      "category": "effects",
+      "prompt_en": "Tilt-shift miniature effect, selective focus, toy-like, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "hdr",
+      "name_ko": "HDR",
+      "name_en": "HDR",
+      "category": "effects",
+      "prompt_en": "HDR photography, high dynamic range, vivid colors, detailed shadows, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "infrared",
+      "name_ko": "적외선",
+      "name_en": "Infrared",
+      "category": "effects",
+      "prompt_en": "Infrared photography style, surreal colors, white foliage, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "glitch",
+      "name_ko": "글리치",
+      "name_en": "Glitch",
+      "category": "effects",
+      "prompt_en": "Glitch art, digital distortion, RGB split, corrupted data aesthetic, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "silhouette",
+      "name_ko": "실루엣",
+      "name_en": "Silhouette",
+      "category": "effects",
+      "prompt_en": "Silhouette style, backlit, dramatic outlines, shadow figures, masterpiece, visually stunning, highly detailed, perfect composition, atmospheric, creative effect, award winning"
+    },
+    {
+      "id": "pop-art",
+      "name_ko": "팝아트",
+      "name_en": "Pop Art",
+      "category": "misc",
+      "prompt_en": "Pop art style, bold colors, Ben-Day dots, Warhol, Lichtenstein, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "minimalist",
+      "name_ko": "미니멀",
+      "name_en": "Minimalist",
+      "category": "misc",
+      "prompt_en": "Minimalist style, simple shapes, clean lines, limited colors, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "abstract",
+      "name_ko": "추상화",
+      "name_en": "Abstract",
+      "category": "misc",
+      "prompt_en": "Abstract art, non-representational, shapes and colors, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "collage",
+      "name_ko": "콜라주",
+      "name_en": "Collage",
+      "category": "misc",
+      "prompt_en": "Collage art style, mixed media, cut paper, layered images, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "stained-glass",
+      "name_ko": "스테인드글라스",
+      "name_en": "Stained Glass",
+      "category": "misc",
+      "prompt_en": "Stained glass window style, colorful glass segments, leadlines, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "mosaic",
+      "name_ko": "모자이크",
+      "name_en": "Mosaic",
+      "category": "misc",
+      "prompt_en": "Mosaic art style, small tiles, Byzantine, decorative, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "graffiti",
+      "name_ko": "그래피티",
+      "name_en": "Graffiti",
+      "category": "misc",
+      "prompt_en": "Street art graffiti style, spray paint, urban, bold, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "propaganda",
+      "name_ko": "프로파간다",
+      "name_en": "Propaganda",
+      "category": "misc",
+      "prompt_en": "Propaganda poster style, bold graphics, political art, Soviet/WPA, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "pastel",
+      "name_ko": "파스텔",
+      "name_en": "Pastel",
+      "category": "misc",
+      "prompt_en": "Soft pastel style, gentle colors, dreamy, light, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "neon",
+      "name_ko": "네온",
+      "name_en": "Neon",
+      "category": "misc",
+      "prompt_en": "Neon glow style, bright glowing lights, dark background, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "paper-cut",
+      "name_ko": "페이퍼컷",
+      "name_en": "Paper Cut",
+      "category": "misc",
+      "prompt_en": "Paper cut art style, layered paper, shadows, dimensional, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    },
+    {
+      "id": "origami",
+      "name_ko": "종이접기",
+      "name_en": "Origami",
+      "category": "misc",
+      "prompt_en": "Origami style, folded paper aesthetic, geometric, clean, masterpiece, highly detailed, striking visual, perfect composition, unique artistic style, 8k resolution"
+    }
+  ]
+}
