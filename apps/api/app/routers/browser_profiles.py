@@ -23,7 +23,7 @@ class BrowserProfileResponse(BaseModel):
     name: str
     user_data_dir: str
     created_at: datetime
-    tags: List[str] = [] # [NEW]
+    tags: Optional[List[str]] = [] # [NEW]
     daily_gen_count: int = 0
     last_gen_at: Optional[datetime] = None
     tiktok_count: int = 0
@@ -36,15 +36,24 @@ class BrowserProfileResponse(BaseModel):
 # === Endpoints ===
 
 @router.get("/", response_model=List[BrowserProfileResponse])
+@router.get("", response_model=List[BrowserProfileResponse])
 def get_browser_profiles(db: Session = Depends(get_db)):
     """List all browser profiles"""
     profiles = db.query(models.BrowserProfile).all()
     results = []
     for p in profiles:
-        resp = BrowserProfileResponse.from_orm(p)
-        resp.tiktok_count = len(p.tiktok_channels)
-        resp.insta_count = len(p.instagram_channels)
-        resp.notebooklm_count = len(p.notebooklm_accounts)
+        resp = BrowserProfileResponse(
+            id=p.id,
+            name=p.name,
+            user_data_dir=p.user_data_dir,
+            created_at=p.created_at or datetime.now(),
+            tags=p.tags or [],
+            daily_gen_count=p.daily_gen_count or 0,
+            last_gen_at=getattr(p, 'last_gen_at', None),
+            tiktok_count=len(getattr(p, 'tiktok_channels', []) or []),
+            insta_count=len(getattr(p, 'instagram_channels', []) or []),
+            notebooklm_count=len(getattr(p, 'notebooklm_accounts', []) or []),
+        )
         results.append(resp)
     return results
 

@@ -35,7 +35,6 @@ import {
     Star,
     Heart,
     BookOpen,
-    FileSpreadsheet
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -95,7 +94,6 @@ export const getMenuGroups = (captainId: string | null): MenuGroup[] => [
         items: [
             { name: '통합 계정 & 육성 관리', path: '/incubator', icon: Users, highlight: true },
             { name: '자동화 작업 대기열', path: '/work-queue', icon: Activity, highlight: true },
-            { name: '대량 임시 등록 (Excel)', path: '/bulk-creator', icon: FileSpreadsheet, highlight: true },
         ]
     },
     {

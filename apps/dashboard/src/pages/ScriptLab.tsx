@@ -120,7 +120,7 @@ const ScriptLab = () => {
         queryKey: ['videos', 'script', 'strict_mode_v1'], // [FIX] Rotated key to bust stale cache
         queryFn: async () => {
             // [FIX] Must explicitly request 'script' mode, otherwise backend defaults to 'video' and returns 0 scripts.
-            const res = await api.get<Video[]>('/videos', {
+            const res = await api.get<Video[]>('/videos/', {
                 params: {
                     mode: 'script',
                     limit: 1000,

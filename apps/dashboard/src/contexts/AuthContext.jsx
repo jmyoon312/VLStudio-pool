@@ -16,7 +16,34 @@ import {
   calculateTrialStatus
 } from '../firebase/firestore'
 
-// Context 생성
+const IS_DEV = import.meta.env.DEV
+const VITE_DEV_BYPASS_AUTH = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true'
+
+const DEV_MOCK_USER = Object.freeze({
+  uid: 'dev-bypass-user',
+  email: 'dev@viraloop.local',
+  displayName: 'Dev User',
+  photoURL: '',
+  emailVerified: true,
+  isAnonymous: false,
+  getIdToken: async () => 'dev-mock-token',
+  toJSON: () => ({ uid: 'dev-bypass-user' }),
+})
+
+const DUMMY_USER_DATA = Object.freeze({
+  id: 'viraloop',
+  createdAt: new Date().toISOString(),
+})
+
+const DEV_SUBSCRIPTION = Object.freeze({
+  isActive: true,
+  canExport: true,
+  exportsRemaining: Infinity,
+  daysRemaining: Infinity,
+  isExpired: false,
+  status: 'active',
+})
+
 const AuthContext = createContext(null)
 
 // 사용자 미인증/사인아웃 상태
@@ -79,19 +106,23 @@ export function AuthProvider({ children }) {
 
   // Firebase Auth 상태 변화 감지
   useEffect(() => {
+    if (IS_DEV && VITE_DEV_BYPASS_AUTH) {
+      console.log('[AuthContext] DEV_BYPASS_AUTH: injecting mock user')
+      setUser(DEV_MOCK_USER)
+      setUserData(DUMMY_USER_DATA)
+      setSubscription(DEV_SUBSCRIPTION)
+      setLoading(false)
+      return
+    }
+
     const unsubscribe = onAuthChange((firebaseUser) => {
       console.log('[AuthContext] Auth state changed:', firebaseUser?.email)
 
-      // 어떤 auth 변경이든 — sign-in/out/switch — in-flight fetch 를 즉시 무효화한다.
-      // (이전 구현은 token 을 fetchUserData 진입 시에만 올렸기 때문에,
-      //  sign-out 직후 / 전환 후 effect 가 돌기 전 윈도우에서 stale 응답이 통과해
-      //  user=null 인데 subscription=active 같은 누수가 가능했다.)
       fetchTokenRef.current += 1
       currentUidRef.current = firebaseUser?.uid ?? null
 
       setUser(firebaseUser)
 
-      // 로그인 진행 중에는 loading을 false로 바꾸지 않음 (login()의 finally에서 처리)
       if (!loginInProgressRef.current) {
         setLoading(false)
       }
@@ -143,17 +174,14 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!user?.uid) return
 
-    // 새 uid 로 전환되는 즉시 이전 사용자 상태를 비우고 loading 으로 잠금.
-    // calculateTrialStatus(null) 은 trial(canExport:true)을 돌려주므로 절대 그 경로로 통과시키면 안 됨.
+    if (user.uid === 'dev-bypass-user') return
+
     setUserData(null)
     setSubscription(SUBSCRIPTION_LOADING)
 
     fetchUserData(user.uid).catch(() => {
-      // 에러는 fetchUserData 내부에서 setError 처리됨. 여기서는 unhandled rejection 방지만.
     })
 
-    // cleanup 자체로는 in-flight Firestore 호출을 취소할 수 없지만,
-    // fetchTokenRef 가 다음 effect 진입 시 ++ 되어 stale 응답을 가려낸다.
   }, [user?.uid, fetchUserData])
 
   // Google 로그인

@@ -922,12 +922,29 @@ class BrowserProfile(Base):
     name = Column(String) # e.g. "Gaming Brand"
     user_data_dir = Column(String) # Path: userdata/profiles/{uuid}
     user_agent = Column(String, nullable=True)
+    tags = Column(JSON, default=list)
+    daily_gen_count = Column(Integer, default=0)
+    last_gen_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     
     # Relationships
     tiktok_channels = relationship("TikTokChannel", back_populates="browser_profile", cascade="all, delete-orphan")
     instagram_channels = relationship("InstagramChannel", back_populates="browser_profile", cascade="all, delete-orphan")
     notebooklm_accounts = relationship("NotebookLMAccount", back_populates="browser_profile", cascade="all, delete-orphan")
+
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    name_en = Column(String, nullable=True)
+    folder_name = Column(String, nullable=True)
+    parent_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    level = Column(Integer, default=0)
+    is_fixed = Column(Boolean, default=False)
+    ai_generated = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.now)
 
 
 class TikTokChannel(Base):

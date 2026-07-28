@@ -7,18 +7,20 @@ import { ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material'
 import { pixelingTheme } from './theme/pixeling'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-// Intercept console.error to log to server
+// Intercept console.error to log to server (Electron only)
 const originalConsoleError = console.error;
 console.error = (...args) => {
   originalConsoleError(...args);
-  try {
-    fetch('http://localhost:37643/log-error', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: args.map(a => String(a)).join(' ') })
-    }).catch(() => {});
-  } catch (e) {}
+  if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+    try {
+      fetch('http://localhost:37643/log-error', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: args.map(a => String(a)).join(' ') })
+      }).catch(() => {});
+    } catch (e) {}
+  }
 };
 
 // Configure global Axios defaults for packaged Electron env (file:/// protocol)

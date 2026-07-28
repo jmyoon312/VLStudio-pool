@@ -26,7 +26,12 @@ SCOPES = [
     'https://www.googleapis.com/auth/yt-analytics-monetary.readonly'
 ]
 
-REDIRECT_URI = 'http://127.0.0.1:8000/api/oauth2/callback'
+def _get_redirect_uri(request_url: str) -> str:
+    from urllib.parse import urlparse
+    parsed = urlparse(request_url)
+    scheme = parsed.scheme or "https"
+    host = parsed.netloc or "127.0.0.1:8000"
+    return f"{scheme}://{host}/api/oauth2/callback"
 
 
 @router.get("/oauth2/authorize/{profile_id}")

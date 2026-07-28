@@ -5,6 +5,16 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
+export function uint8ArrayToBase64(bytes: Uint8Array): string {
+    const chunkSize = 0x8000;
+    const chunks: string[] = [];
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        chunks.push(String.fromCharCode.apply(null, chunk as unknown as number[]));
+    }
+    return btoa(chunks.join(''));
+}
+
 // Utility: Sentence-based Line Breaking
 export const formatTextWithLineBreaks = (text: string): string => {
     if (!text) return "";

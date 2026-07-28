@@ -88,7 +88,7 @@ from app.routers import (
     ai_agent, ai_media, analytics_endpoints, approval, assets, auth, 
     automation_endpoints, brand_channels, bridge_api, bridge_audio, 
     bridge_config, bridge_config_v2, bridge_search, browser_profiles, browser,
-    callback, captain_analytics, channel_refresh, channels, 
+    callback, captain_analytics, categories, channel_refresh, channels, 
     creative, creative_script_endpoints, custom_links, dashboard, channel_dna, 
     beats_editor, extension, files, hermes, image_gen, insights, 
     instagram_channels, logs, maintenance, mcp, mcp_registry,
@@ -454,6 +454,7 @@ app.include_router(videos.router, prefix="/api/videos", tags=["media"])
 app.include_router(script_writer.router, prefix="/api/script", tags=["creative"])
 
 app.include_router(research.router, prefix="/api", tags=["research"])
+app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
 app.include_router(custom_links.router, prefix="/api/custom-links", tags=["ops"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["analytics"])
 

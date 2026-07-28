@@ -700,6 +700,80 @@ class ProfileBase(BaseModel):
 class Profile(ProfileBase):
     pass
 
+# Multi-Platform Account Schemas
+class TikTokChannelCreate(BaseModel):
+    id: str  # username/handle
+    nickname: Optional[str] = None
+    google_email: Optional[str] = None
+    platform_username: Optional[str] = None
+    cookies_json: Optional[str] = None
+    follower_count: Optional[int] = 0
+
+class TikTokChannelUpdate(BaseModel):
+    nickname: Optional[str] = None
+    status: Optional[str] = None
+    cookies_json: Optional[str] = None
+    platform_username: Optional[str] = None
+    follower_count: Optional[int] = None
+
+class TikTokChannel(BaseModel):
+    id: str
+    nickname: Optional[str] = None
+    profile_id: str
+    status: str
+    last_uploaded_at: Optional[datetime] = None
+    cookies_json: Optional[str] = None
+    cookies_updated_at: Optional[datetime] = None
+    google_email: Optional[str] = None
+    platform_username: Optional[str] = None
+    follower_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class InstagramChannelCreate(BaseModel):
+    id: str  # username
+    nickname: Optional[str] = None
+    google_email: Optional[str] = None
+    platform_username: Optional[str] = None
+    cookies_json: Optional[str] = None
+    follower_count: Optional[int] = 0
+
+class InstagramChannelUpdate(BaseModel):
+    nickname: Optional[str] = None
+    status: Optional[str] = None
+    cookies_json: Optional[str] = None
+    platform_username: Optional[str] = None
+    follower_count: Optional[int] = None
+
+class InstagramChannel(BaseModel):
+    id: str
+    nickname: Optional[str] = None
+    profile_id: str
+    status: str
+    last_uploaded_at: Optional[datetime] = None
+    cookies_json: Optional[str] = None
+    cookies_updated_at: Optional[datetime] = None
+    google_email: Optional[str] = None
+    platform_username: Optional[str] = None
+    follower_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# Profile with Multi-Platform Accounts
+class ProfileDetail(Profile):
+    tiktok_channels: list[TikTokChannel] = []
+    instagram_channels: list[InstagramChannel] = []
+    brand_channels: list[BrandChannel] = []
+
+    class Config:
+        from_attributes = True
+
 # --- [Phase 5: Industrial Management Schemas] ---
 
 class ContainerStatus(BaseModel):

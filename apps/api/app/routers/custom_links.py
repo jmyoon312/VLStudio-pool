@@ -5,10 +5,12 @@ from .. import crud, models, schemas, database
 
 router = APIRouter(tags=["custom-links"])
 
+@router.get("", response_model=List[schemas.CustomLink])
 @router.get("/", response_model=List[schemas.CustomLink])
 def read_custom_links(db: Session = Depends(database.get_db)):
     return crud.get_custom_links(db)
 
+@router.post("", response_model=schemas.CustomLink)
 @router.post("/", response_model=schemas.CustomLink)
 def create_custom_link(link: schemas.CustomLinkCreate, db: Session = Depends(database.get_db)):
     return crud.create_custom_link(db=db, link=link)

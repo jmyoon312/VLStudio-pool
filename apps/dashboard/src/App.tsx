@@ -37,7 +37,6 @@ import LoginPage from './pages/LoginPage';
 import ScriptLab from './pages/ScriptLab';
 import OperationsDashboard from './pages/OperationsDashboard';
 import WorkQueue from './pages/WorkQueue';  // [NEW] Work Queue
-import BulkCreator from './pages/BulkCreator';  // [NEW] Bulk Creator
 import DdalkkakUI from './pages/DdalkkakUI';
 import ResourceGuidePage from './pages/ResourceGuidePage';
 import CaptainDashboard from './pages/CaptainDashboard';  // [NEW] Phase 3
@@ -163,7 +162,6 @@ function MainAppContent() {
 
                     <Route path="/resource-guide" element={<ResourceGuidePage />} />
                     <Route path="/work-queue" element={<WorkQueue />} /> {/* [NEW] Work Queue */}
-<Route path="/bulk-creator" element={<BulkCreator />} /> {/* [NEW] Bulk Creator */}
 
 
                     <Route path="/reports" element={<ReportsPage />} /> {/* [NEW] */}

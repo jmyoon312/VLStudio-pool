@@ -21,7 +21,8 @@ export default defineConfig({
         '__APP_VERSION__': JSON.stringify('0.9.10'),
         '__BUILD_NUMBER__': JSON.stringify('538'),
         '__BUILD_TARGET__': JSON.stringify('nsis'),
-        '__FUNCTION_SUFFIX__': JSON.stringify('_prod')
+        '__FUNCTION_SUFFIX__': JSON.stringify('_prod'),
+        'import.meta.env.VITE_DEV_BYPASS_AUTH': JSON.stringify('true'),
     },
     server: {
         host: '0.0.0.0', // Allow External Access
