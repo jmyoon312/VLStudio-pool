@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchWithRetry } from "@/lib/utils";
+import { fetchWithRetry, uint8ArrayToBase64 } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,8 @@ import { useToast } from "@/components/ui/use-toast";
 import {
     Upload, FileVideo, Workflow, CheckCircle, XCircle, Clock,
     Play, Pause, Trash2, Edit, Eye, PlaySquare, Send, Settings, RotateCcw, AlertTriangle,
-    Shield, Clock4, Hash, Paperclip, FileCheck, Files, Filter, Search, ArrowUpDown, FolderOpen, Save, Rocket
+    Shield, Clock4, Hash, Paperclip, FileCheck, Files, Filter, Search, ArrowUpDown, FolderOpen, Save, Rocket,
+    FileSpreadsheet, Layers, ArrowRight, Table, Columns2
 } from 'lucide-react';
 
 const WorkQueue = () => {
@@ -29,15 +30,20 @@ const WorkQueue = () => {
     const [isPlayerOpen, setIsPlayerOpen] = useState(false);
     const [playingItem, setPlayingItem] = useState<any>(null);
     const [editingItem, setEditingItem] = useState<any>(null);
+    const [showBulkImport, setShowBulkImport] = useState(false);
     const [wsConnections, setWsConnections] = useState<Map<number, WebSocket>>(new Map());
     const [dateFilter, setDateFilter] = useState('all');
     const [limit, setLimit] = useState(20);
     const [searchExternalId, setSearchExternalId] = useState('');
     const [batchId, setBatchId] = useState('');
+    const [channels, setChannels] = useState<any[]>([]);
+    const [tiktokChannels, setTiktokChannels] = useState<any[]>([]);
+    const [instagramChannels, setInstagramChannels] = useState<any[]>([]);
 
     useEffect(() => {
         loadQueueItems();
         loadStats();
+        loadAllChannels();
         const interval = setInterval(() => { loadQueueItems(); loadStats(); }, 5000);
         return () => clearInterval(interval);
     }, [activeTab, dateFilter, limit, searchExternalId, batchId]);
@@ -87,6 +93,22 @@ const WorkQueue = () => {
         try {
             const response = await fetchWithRetry('/api/work-queue/stats');
             setStats(await response.json());
+        } catch (_) { }
+    };
+
+    const loadAllChannels = async () => {
+        try {
+            const [r1, r2, r3] = await Promise.all([
+                fetchWithRetry('/api/youtube/all'),
+                fetchWithRetry('/api/tiktok-channels/'),
+                fetchWithRetry('/api/instagram-channels/'),
+            ]);
+            if (r1.ok) {
+                const data = await r1.json();
+                setChannels(Array.isArray(data) ? data : []);
+            }
+            if (r2.ok) setTiktokChannels(await r2.json());
+            if (r3.ok) setInstagramChannels(await r3.json());
         } catch (_) { }
     };
 
@@ -192,28 +214,50 @@ const WorkQueue = () => {
     };
 
     const handleAttachVideo = async (itemId: number) => {
-        try {
-            let videoPath = '';
-            if ((window as any).electronAPI?.selectVideoFile) {
-                const r = await (window as any).electronAPI.selectVideoFile();
-                if (r.success && r.path) videoPath = r.path;
-            }
-            if (!videoPath) {
-                toast({ variant: "destructive", title: "파일을 선택하지 않음" });
-                return;
-            }
-            const res = await fetchWithRetry(`/api/work-queue/items/${itemId}/attach`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ video_file_path: videoPath }) });
-            if (res.ok) { toast({ title: "영상 첨부 완료", description: "승인 대기 상태로 변경됨" }); loadQueueItems(); }
-            else throw await res.json();
-        } catch (e: any) { toast({ variant: "destructive", title: "첨부 실패", description: e?.detail || '서버 오류' }); }
+        const item = queueItems.find(q => q.id === itemId);
+        if (!item || item.status !== 'DRAFT') {
+            toast({ variant: "destructive", title: "첨부 불가", description: "DRAFT 상태의 항목만 영상 첨부가 가능합니다" });
+            return;
+        }
+        setEditingItem(item);
+        setIsAddDialogOpen(true);
     };
 
     const handleFinalize = async (itemId: number) => {
+        const item = queueItems.find(q => q.id === itemId);
+        if (!item?.video_file_path) {
+            toast({ variant: "destructive", title: "영상 필요", description: "먼저 영상을 첨부해 주세요" });
+            return;
+        }
         try {
             const res = await fetchWithRetry(`/api/work-queue/items/${itemId}/finalize`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ approval_required: false }) });
             if (res.ok) { const d = await res.json(); toast({ title: "즉시 등록", description: d.upload_queued ? "대기열 등록됨" : "승인 대기" }); loadQueueItems(); }
             else throw await res.json();
         } catch (e: any) { toast({ variant: "destructive", title: "등록 실패", description: e?.detail || '서버 오류' }); }
+    };
+
+    const handleUpdateItem = async (itemId: number, updates: any) => {
+        try {
+            const res = await fetchWithRetry(`/api/work-queue/items/${itemId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
+            if (res.ok) { toast({ title: "업데이트 완료" }); loadQueueItems(); }
+            else throw await res.json();
+        } catch (e: any) { toast({ variant: "destructive", title: "업데이트 실패", description: e?.detail || '서버 오류' }); }
+    };
+
+    const handleUpdateUploadMethod = (itemId: number, method: string) => {
+        handleUpdateItem(itemId, { upload_method: method });
+    };
+
+    const handleUpdateChannel = (itemId: number, platform: string, channelId: string) => {
+        const item = queueItems.find(q => q.id === itemId);
+        const currentConfigs = item?.platform_configs || {};
+        const key = platform === 'youtube' ? 'channel_id' : 'account_id';
+        handleUpdateItem(itemId, {
+            platform_configs: {
+                ...currentConfigs,
+                [platform]: { ...(currentConfigs[platform] || {}), [key]: channelId }
+            }
+        });
     };
 
     const toggleItemSelection = (itemId: number) => setSelectedItems(prev => prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]);
@@ -228,11 +272,19 @@ const WorkQueue = () => {
                     <h1 className="text-2xl font-bold tracking-tight text-foreground">자동화 작업 대기열</h1>
                     <p className="text-sm text-muted-foreground mt-0.5">HITL 승인 및 업로드 오케스트레이션</p>
                 </div>
-                <Button
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                    onClick={() => { setEditingItem(null); setIsAddDialogOpen(true); }}>
-                    <Upload className="w-4 h-4 mr-2" /> 새 항목
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                        onClick={() => { setEditingItem(null); setIsAddDialogOpen(true); }}>
+                        <Edit className="w-4 h-4 mr-2" /> 수동 등록
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="border-indigo-300 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                        onClick={() => { setShowBulkImport(true); }}>
+                        <FileSpreadsheet className="w-4 h-4 mr-2" /> 일괄 등록
+                    </Button>
+                </div>
             </div>
 
             {queueItems.some(item => item.approval_status === 'PENDING') && (
@@ -284,6 +336,7 @@ const WorkQueue = () => {
 
             <VideoPlayerDialog isOpen={isPlayerOpen} setIsOpen={setIsPlayerOpen} item={playingItem} />
             <AddVideoDialog isOpen={isAddDialogOpen} setIsOpen={setIsAddDialogOpen} onSuccess={() => { loadQueueItems(); setEditingItem(null); }} initialData={editingItem} />
+            <BulkImportDialog isOpen={showBulkImport} setIsOpen={setShowBulkImport} onSuccess={() => loadQueueItems()} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -317,7 +370,7 @@ const WorkQueue = () => {
                     ) : (
                         <div className="grid gap-3">
                             {queueItems.map(item => (
-                                <QueueItemCard key={item.id} item={item} onApprove={handleApprove} onReject={handleReject} onDelete={handleDelete} onEdit={(i: any) => { setEditingItem(i); setIsAddDialogOpen(true); }} onPlay={(i: any) => { setPlayingItem(i); setIsPlayerOpen(true); }} onAttach={handleAttachVideo} onFinalize={handleFinalize} getStatusBadge={getStatusBadge} getApprovalBadge={getApprovalBadge} selectedItems={selectedItems} toggleItemSelection={toggleItemSelection} />
+                                <QueueItemCard key={item.id} item={item} onApprove={handleApprove} onReject={handleReject} onDelete={handleDelete} onEdit={(i: any) => { setEditingItem(i); setIsAddDialogOpen(true); }} onPlay={(i: any) => { setPlayingItem(i); setIsPlayerOpen(true); }} onAttach={handleAttachVideo} onFinalize={handleFinalize} onUpdateUploadMethod={handleUpdateUploadMethod} onUpdateChannel={handleUpdateChannel} channels={channels} tiktokChannels={tiktokChannels} instagramChannels={instagramChannels} getStatusBadge={getStatusBadge} getApprovalBadge={getApprovalBadge} selectedItems={selectedItems} toggleItemSelection={toggleItemSelection} />
                             ))}
                             {queueItems.length >= limit && (
                                 <Button variant="outline" className="w-full mt-2" onClick={() => setLimit(prev => prev + 20)}>더 불러오기 ({queueItems.length})</Button>
@@ -330,7 +383,7 @@ const WorkQueue = () => {
     );
 };
 
-const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, onAttach, onFinalize, getStatusBadge, getApprovalBadge, selectedItems, toggleItemSelection }: any) => {
+const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, onAttach, onFinalize, onUpdateUploadMethod, onUpdateChannel, channels, tiktokChannels, instagramChannels, getStatusBadge, getApprovalBadge, selectedItems, toggleItemSelection }: any) => {
     const [expanded, setExpanded] = useState(false);
     return (
         <Card className="hover:shadow-md transition-shadow bg-card border-border select-none" onMouseEnter={e => { if (e.buttons === 1 && !selectedItems.includes(item.id)) toggleItemSelection(item.id); }}>
@@ -364,20 +417,71 @@ const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, on
                             </div>
                         )}
                         {expanded && (
-                            <div className="mt-3 p-3 bg-muted/50 rounded-lg text-xs space-y-2 border border-border">
+                            <div className="mt-3 p-3 bg-muted/50 rounded-lg text-xs space-y-3 border border-border">
                                 <div className="grid grid-cols-2 gap-3">
+                                    <div><span className="font-semibold text-muted-foreground">제목</span><p className="text-foreground mt-0.5">{item.title || '--'}</p></div>
                                     <div><span className="font-semibold text-muted-foreground">설명</span><p className="text-foreground mt-0.5">{item.description || '--'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">파일 경로</span><p className="font-mono text-[10px] text-muted-foreground mt-0.5 truncate">{item.video_file_path || '--'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">업로드 방식</span><p className="mt-0.5">{item.upload_method || 'API'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">플랫폼 설정</span><p className="mt-0.5">{item.platform_configs?.youtube?.privacy || '기본값'}</p></div>
                                 </div>
-                                {item.failure_reason && <p className="text-destructive text-xs pt-2 border-t border-border"><strong>실패 사유:</strong> {item.failure_reason}</p>}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div><span className="font-semibold text-muted-foreground">파일 경로</span><p className="font-mono text-[10px] text-muted-foreground mt-0.5 truncate">{item.video_file_path || '--'}</p></div>
+                                    <div><span className="font-semibold text-muted-foreground">상태</span><p className="mt-0.5">{item.status} ({item.approval_status})</p></div>
+                                </div>
+                                {item.upload_progress > 0 && (
+                                    <div><span className="font-semibold text-muted-foreground">업로드 진행률</span><p className="mt-0.5 text-indigo-600 font-medium">{item.upload_progress}%</p></div>
+                                )}
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div><span className="font-semibold text-muted-foreground">소스 유형</span><p className="mt-0.5">{item.source_type || 'MANUAL'}</p></div>
+                                    <div><span className="font-semibold text-muted-foreground">업로드 방식</span><p className="mt-0.5">{item.upload_method || 'API'}</p></div>
+                                    <div><span className="font-semibold text-muted-foreground">우선순위</span><p className="mt-0.5">{item.upload_priority ?? 0}</p></div>
+                                </div>
+                                <div><span className="font-semibold text-muted-foreground">태그</span><p className="mt-0.5">{item.tags?.length ? item.tags.join(', ') : '--'}</p></div>
+                                <div><span className="font-semibold text-muted-foreground">해시태그</span><p className="mt-0.5">{item.hashtags?.length ? item.hashtags.join(' ') : '--'}</p></div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div><span className="font-semibold text-muted-foreground">외부 ID</span><p className="font-mono text-[10px] mt-0.5">{item.source_external_id || '--'}</p></div>
+                                    <div><span className="font-semibold text-muted-foreground">배치 ID</span><p className="font-mono text-[10px] mt-0.5 truncate">{item.source_batch_id || '--'}</p></div>
+                                </div>
+                                {item.platform_configs && (
+                                    <div className="border-t border-border pt-2">
+                                        <span className="font-semibold text-muted-foreground">플랫폼 설정</span>
+                                        <div className="mt-1 grid grid-cols-2 gap-2">
+                                            {item.platform_configs.youtube && (
+                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-blue-600 dark:text-blue-400 font-medium">YouTube</p><p className="text-[10px]">공개: {item.platform_configs.youtube.privacy || '--'} | 헤드리스: {String(item.platform_configs.youtube.headless_mode || false)}</p></div>
+                                            )}
+                                            {item.platform_configs.tiktok && (
+                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-pink-600 dark:text-pink-400 font-medium">TikTok</p><p className="text-[10px]">공개: {item.platform_configs.tiktok.privacy || '--'} | 댓글: {String(item.platform_configs.tiktok.allow_comments ?? true)}</p></div>
+                                            )}
+                                            {item.platform_configs.instagram && (
+                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-purple-600 dark:text-purple-400 font-medium">Instagram</p><p className="text-[10px]">피드 공유: {String(item.platform_configs.instagram.share_to_feed || false)}</p></div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                {item.scheduled_upload_time && (
+                                    <div><span className="font-semibold text-muted-foreground">예약 시간</span><p className="mt-0.5">{new Date(item.scheduled_upload_time).toLocaleString('ko-KR')}</p></div>
+                                )}
+                                {item.uploaded_urls && (
+                                    <div><span className="font-semibold text-muted-foreground">업로드 URL</span><p className="font-mono text-[10px] mt-0.5 break-all">{JSON.stringify(item.uploaded_urls)}</p></div>
+                                )}
+                                {item.enable_shopping_tag && (
+                                    <div><span className="font-semibold text-muted-foreground">쇼핑 태그 키워드</span><p className="mt-0.5">{item.shopping_tag_keyword || '--'}</p></div>
+                                )}
+                                {item.failure_reason && <p className="text-destructive pt-2 border-t border-border"><strong>실패 사유:</strong> {item.failure_reason}</p>}
                             </div>
                         )}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                         {(item.status === 'DRAFT' || !item.video_file_path) && (
                             <>
+                                <Select value={item.upload_method || 'BROWSER_AUTO'} onValueChange={(v) => onUpdateUploadMethod(item.id, v)}>
+                                    <SelectTrigger className="h-8 w-[110px] text-[11px] bg-background border-border">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="API">Google API</SelectItem>
+                                        <SelectItem value="BROWSER_AUTO">브라우저 자동</SelectItem>
+                                        <SelectItem value="MANUAL">수동</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <Button size="sm" variant="outline" onClick={() => onAttach(item.id)} className="h-8 text-xs border-border"><Paperclip className="w-3.5 h-3.5 mr-1" />영상 첨부</Button>
                                 <Button size="sm" variant="outline" onClick={() => onFinalize(item.id)} className="h-8 text-xs border-orange-200 text-orange-600 hover:bg-orange-50"><Rocket className="w-3.5 h-3.5 mr-1" />즉시 등록</Button>
                             </>
@@ -392,7 +496,38 @@ const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, on
                         <Button size="sm" variant="ghost" onClick={() => onEdit(item)} className="h-8 w-8 p-0"><Edit className="w-4 h-4" /></Button>
                         <Button size="sm" variant="ghost" onClick={() => onDelete(item.id)} className="h-8 w-8 p-0 text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></Button>
                     </div>
+            </div>
+            {expanded && item.target_platforms?.length > 0 && (
+                <div className="mt-2 ml-8 p-2 bg-muted/40 rounded-lg border border-border grid grid-cols-3 gap-2 text-xs">
+                    {item.target_platforms.includes('youtube') && (
+                        <div>
+                            <span className="text-blue-600 dark:text-blue-400 font-medium text-[10px]">YouTube 채널</span>
+                            <Select value={(item.platform_configs?.youtube?.channel_id) || ''} onValueChange={(v) => onUpdateChannel(item.id, 'youtube', v)}>
+                                <SelectTrigger className="h-7 text-[10px] mt-0.5 bg-background"><SelectValue placeholder="채널 선택" /></SelectTrigger>
+                                <SelectContent>{channels.map((ch: any) => <SelectItem key={ch.channel_id} value={ch.channel_id}>{ch.channel_name || ch.title} ({ch.subscriber_count?.toLocaleString()}명)</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    {item.target_platforms.includes('tiktok') && (
+                        <div>
+                            <span className="text-pink-600 dark:text-pink-400 font-medium text-[10px]">TikTok 계정</span>
+                            <Select value={(item.platform_configs?.tiktok?.account_id) || ''} onValueChange={(v) => onUpdateChannel(item.id, 'tiktok', v)}>
+                                <SelectTrigger className="h-7 text-[10px] mt-0.5 bg-background"><SelectValue placeholder="계정 선택" /></SelectTrigger>
+                                <SelectContent>{tiktokChannels.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.nickname || c.id}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    {item.target_platforms.includes('instagram') && (
+                        <div>
+                            <span className="text-purple-600 dark:text-purple-400 font-medium text-[10px]">Instagram 계정</span>
+                            <Select value={(item.platform_configs?.instagram?.account_id) || ''} onValueChange={(v) => onUpdateChannel(item.id, 'instagram', v)}>
+                                <SelectTrigger className="h-7 text-[10px] mt-1 bg-background"><SelectValue placeholder="계정 선택" /></SelectTrigger>
+                                <SelectContent>{instagramChannels.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.nickname || c.id}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </div>
+            )}
             </CardContent>
         </Card>
     );
@@ -436,7 +571,29 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
     useEffect(() => {
         if (isOpen) {
             if (initialData) {
-                setForm({ ...defaultForm, ...initialData, source_external_id: initialData.source_external_id || '', tags: Array.isArray(initialData.tags) ? initialData.tags.join(', ') : (initialData.tags || ''), hashtags: Array.isArray(initialData.hashtags) ? initialData.hashtags.join(' ') : (initialData.hashtags || ''), platform_configs: initialData.platform_configs || defaultForm.platform_configs, scheduleMode: initialData.scheduled_upload_time ? 'scheduled' : 'immediate', scheduledTime: initialData.scheduled_upload_time ? (initialData.scheduled_upload_time.includes('T') ? initialData.scheduled_upload_time : initialData.scheduled_upload_time.replace(' ', 'T')).slice(0, 16) : '' });
+                const pc = initialData.platform_configs || {};
+                const mergedConfigs = {
+                    youtube: { ...defaultForm.platform_configs.youtube, ...(pc.youtube || {}) },
+                    tiktok: { ...defaultForm.platform_configs.tiktok, ...(pc.tiktok || {}) },
+                    instagram: { ...defaultForm.platform_configs.instagram, ...(pc.instagram || {}) },
+                };
+                const safeData: any = {};
+                for (const key of Object.keys(initialData)) {
+                    if (initialData[key] != null) safeData[key] = initialData[key];
+                }
+                setForm({
+                    ...defaultForm,
+                    ...safeData,
+                    source_external_id: safeData.source_external_id || '',
+                    video_file_path: safeData.video_file_path || '',
+                    description: safeData.description || '',
+                    tags: Array.isArray(safeData.tags) ? safeData.tags.join(', ') : (safeData.tags || ''),
+                    hashtags: Array.isArray(safeData.hashtags) ? safeData.hashtags.join(' ') : (safeData.hashtags || ''),
+                    platform_configs: mergedConfigs,
+                    target_platforms: safeData.target_platforms || defaultForm.target_platforms,
+                    scheduleMode: safeData.scheduled_upload_time ? 'scheduled' : 'immediate',
+                    scheduledTime: safeData.scheduled_upload_time ? (safeData.scheduled_upload_time.includes('T') ? safeData.scheduled_upload_time : safeData.scheduled_upload_time.replace(' ', 'T')).slice(0, 16) : '',
+                });
             } else setForm(defaultForm);
         }
         loadChannels();
@@ -457,7 +614,7 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
             if (!r.ok) throw new Error();
             const data = await r.json();
             setChannels(Array.isArray(data) ? data : []);
-            if (data.length > 0 && !form.platform_configs.youtube.channel_id) setForm(prev => ({ ...prev, platform_configs: { ...prev.platform_configs, youtube: { ...prev.platform_configs.youtube, channel_id: data[0].channel_id } } }));
+            if (data.length > 0 && !form.platform_configs?.youtube?.channel_id) setForm(prev => ({ ...prev, platform_configs: { ...prev.platform_configs, youtube: { ...(prev.platform_configs?.youtube || {}), channel_id: data[0].channel_id } } }));
         } catch (_) { setChannels([]); }
     };
 
@@ -482,7 +639,7 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
     const handleDraftSave = async () => {
         if (!form.title.trim()) { toast({ variant: "destructive", title: "필수", description: "제목은 필수입니다" }); return; }
 
-        const payload = {
+        const payload: any = {
             title: form.title,
             description: form.description,
             tags: form.tags.split(',').map((t: string) => t.trim()).filter(Boolean),
@@ -493,6 +650,7 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
             platform_configs: form.platform_configs,
             upload_method: form.upload_method
         };
+        if (form.video_file_path) payload.video_file_path = form.video_file_path;
 
         try {
             const url = initialData ? `/api/work-queue/items/${initialData.id}` : '/api/work-queue/items/draft';
@@ -506,8 +664,6 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
     const handleImmediateSubmit = async (e: any) => {
         e.preventDefault();
         if (!form.title.trim()) { toast({ variant: "destructive", title: "필수", description: "제목은 필수입니다" }); return; }
-        if (!form.video_file_path.trim()) { toast({ variant: "destructive", title: "필수", description: "영상 파일을 선택해주세요" }); return; }
-        if (form.target_platforms.includes('youtube') && !form.platform_configs.youtube.channel_id) { toast({ variant: "destructive", title: "필수", description: "채널을 선택해주세요" }); return; }
 
         const payload = {
             ...form,
@@ -515,16 +671,81 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
             hashtags: form.hashtags.split(/[ ,]+/).map((t: string) => t.startsWith('#') ? t : `#${t}`).filter((t: string) => t.length > 1),
             source_external_id: form.source_external_id,
             scheduled_upload_time: form.scheduleMode === 'scheduled' ? form.scheduledTime : null,
-            video_file_path: form.video_file_path
         };
 
+        const isEditingDraft = initialData && (initialData.status === 'DRAFT' || initialData.status === 'PENDING');
+        const videoChanged = isEditingDraft && form.video_file_path && form.video_file_path !== initialData.video_file_path;
+
+        // Validation: must have video unless it's an existing draft with video already attached
+        const alreadyHasVideo = isEditingDraft && initialData.video_file_path && !videoChanged;
+        if (!form.video_file_path.trim() && !alreadyHasVideo) {
+            toast({ variant: "destructive", title: "필수", description: "영상 파일을 선택해주세요" });
+            return;
+        }
+        if (form.target_platforms.includes('youtube') && !form.platform_configs.youtube.channel_id) {
+            toast({ variant: "destructive", title: "필수", description: "채널을 선택해주세요" });
+            return;
+        }
+
         try {
-            const url = initialData ? `/api/work-queue/items/${initialData.id}` : '/api/work-queue/items';
-            const method = initialData ? 'PATCH' : 'POST';
-            const r = await fetchWithRetry(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (r.ok) { toast({ title: "등록됨", description: "대기열에 추가되었습니다" }); setIsOpen(false); onSuccess(); setForm(defaultForm); }
-            else { const e = await r.json(); toast({ variant: "destructive", title: "오류", description: e.detail }); }
-        } catch (_) { toast({ variant: "destructive", title: "오류", description: "등록 실패" }); }
+            if (isEditingDraft) {
+                // Step 1: Update metadata
+                const metaPayload: any = {
+                    title: payload.title,
+                    description: payload.description,
+                    hashtags: payload.hashtags,
+                    tags: payload.tags,
+                    source_external_id: payload.source_external_id,
+                    source_type: payload.source_type,
+                    target_platforms: payload.target_platforms,
+                    platform_configs: payload.platform_configs,
+                    upload_method: payload.upload_method,
+                    scheduled_upload_time: payload.scheduled_upload_time,
+                };
+                const r1 = await fetchWithRetry(`/api/work-queue/items/${initialData.id}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(metaPayload)
+                });
+                if (!r1.ok) { const e = await r1.json(); throw new Error(e.detail || 'Metadata update failed'); }
+
+                // Step 2: Attach video if changed
+                if (videoChanged) {
+                    const r2 = await fetchWithRetry(`/api/work-queue/items/${initialData.id}/attach`, {
+                        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ video_file_path: form.video_file_path })
+                    });
+                    if (!r2.ok) { const e = await r2.json(); throw new Error(e.detail || 'Video attach failed'); }
+                }
+
+                // Step 3: Finalize (DRAFT/PENDING → QUEUED + trigger upload)
+                const r3 = await fetchWithRetry(`/api/work-queue/items/${initialData.id}/finalize`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        approval_required: false,
+                        upload_method: form.upload_method,
+                        target_platforms: form.target_platforms,
+                        scheduled_upload_time: form.scheduleMode === 'scheduled' ? form.scheduledTime : null,
+                    })
+                });
+                if (!r3.ok) { const e = await r3.json(); throw new Error(e.detail || 'Finalize failed'); }
+                const f3 = await r3.json();
+                toast({ title: "등록됨", description: f3.upload_queued ? "대기열 등록 및 업로드 시작됨" : "대기열에 등록됨" });
+            } else {
+                // New item: use the full POST with video
+                const fullPayload = { ...payload, video_file_path: form.video_file_path };
+                const r = await fetchWithRetry('/api/work-queue/items', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fullPayload)
+                });
+                if (r.ok) { toast({ title: "등록됨", description: "대기열에 추가되었습니다" }); }
+                else { const e = await r.json(); toast({ variant: "destructive", title: "오류", description: e.detail }); return; }
+            }
+            setIsOpen(false);
+            onSuccess();
+            setForm(defaultForm);
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "등록 실패", description: err?.message || '서버 오류' });
+        }
     };
 
     return (
@@ -641,6 +862,290 @@ const AddVideoDialog = ({ isOpen, setIsOpen, onSuccess, initialData }: any) => {
                         </div>
                     </div>
                 </form>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+const BulkImportDialog = ({ isOpen, setIsOpen, onSuccess }: { isOpen: boolean; setIsOpen: (v: boolean) => void; onSuccess: () => void }) => {
+    const { toast } = useToast();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [parsedRows, setParsedRows] = useState<any[]>([]);
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [batchId, setBatchId] = useState('');
+    const [sendStatus, setSendStatus] = useState<'idle' | 'sending' | 'done'>('idle');
+    const cachedFileBytes = useRef<Uint8Array | null>(null);
+    const cachedFileName = useRef<string>('');
+
+    const parseCSVField = (line: string): string[] => {
+        const fields: string[] = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inQuotes) {
+                if (ch === '"') {
+                    if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
+                    else { inQuotes = false; }
+                } else { current += ch; }
+            } else {
+                if (ch === '"') { inQuotes = true; }
+                else if (ch === ',') { fields.push(current.trim()); current = ''; }
+                else { current += ch; }
+            }
+        }
+        fields.push(current.trim());
+        return fields;
+    };
+
+    const parseCSV = (text: string) => {
+        const lines = text.split('\n').filter(l => l.trim());
+        if (lines.length < 2) { toast({ variant: "destructive", title: "Invalid CSV", description: "Need at least 2 rows (header + data)" }); return; }
+        const h = parseCSVField(lines[0]);
+        const rows = lines.slice(1).map(line => {
+            const vals = parseCSVField(line);
+            const obj: any = {};
+            h.forEach((k, i) => obj[k] = vals[i] ?? '');
+            return obj;
+        });
+        setHeaders(h);
+        normalizeRows(rows, h);
+    };
+
+    const parseExcel = async (file: File, rawBytes?: Uint8Array) => {
+        try {
+            const XLSX = await import('xlsx');
+            const ab = rawBytes || new Uint8Array(await file.arrayBuffer());
+            const workbook = XLSX.read(ab, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1, defval: '' });
+            if (json.length < 2) { toast({ variant: "destructive", title: "Invalid Excel", description: "Need at least 2 rows" }); return; }
+            const h = json[0].map((c: any) => String(c || '').trim());
+            setHeaders(h);
+            const rows = json.slice(1).map(row => {
+                const obj: any = {};
+                h.forEach((k: string, i: number) => obj[k] = row[i] != null ? String(row[i]).trim() : '');
+                return obj;
+            });
+            normalizeRows(rows, h);
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Excel parse error", description: err?.message || 'Failed to read file' });
+        }
+    };
+
+    const normalizeRows = (rows: any[], h: string[]) => {
+        const tCol = h.find(h => ['title', '제목', 'name'].includes(h.toLowerCase()));
+        const dCol = h.find(h => ['description', 'desc', '설명'].includes(h.toLowerCase()));
+        const eCol = h.find(h => ['external_id', 'id', '외부id'].includes(h.toLowerCase()));
+        const hCol = h.find(h => ['hashtags'].includes(h.toLowerCase()));
+        const tagCol = h.find(h => ['tags', '태그'].includes(h.toLowerCase()));
+        const umCol = h.find(h => ['upload_method', '업로드방식'].includes(h.toLowerCase()));
+        const platCol = h.find(h => ['platforms', '플랫폼'].includes(h.toLowerCase()));
+        const ppCol = h.find(h => ['platform_privacy', '공개설정'].includes(h.toLowerCase()));
+        const stCol = h.find(h => ['scheduled_time', '예약시간'].includes(h.toLowerCase()));
+
+        if (!tCol) {
+            toast({ variant: "destructive", title: "title 컬럼 없음", description: "title, 제목, name 중 하나의 컬럼이 반드시 필요합니다. 템플릿을 다운로드하여 참고하세요." });
+            return;
+        }
+
+        let skipped = 0;
+        const mapped: any[] = [];
+        rows.forEach((r, i) => {
+            const titleVal = String(r[tCol] || '').trim();
+            if (!titleVal) { skipped++; return; }
+
+            const hashtagsRaw = hCol ? String(r[hCol] || '') : '';
+            const tagsRaw = tagCol ? String(r[tagCol] || '') : '';
+
+            const item: any = {
+                external_id: (eCol ? String(r[eCol] || '') : `row_${i + 1}`).trim() || `row_${i + 1}`,
+                title: titleVal,
+                description: (dCol ? String(r[dCol] || '') : ''),
+                hashtags: hashtagsRaw.split(/[ ,]+/).map((t: string) => t.startsWith('#') ? t : `#${t}`).filter((t: string) => t.length > 1),
+                tags: tagsRaw.split(',').map((t: string) => t.trim()).filter(Boolean),
+                upload_method: umCol ? String(r[umCol] || '').trim() || 'BROWSER_AUTO' : 'BROWSER_AUTO',
+                target_platforms: platCol ? String(r[platCol] || '').split(',').map((p: string) => p.trim()).filter(Boolean) : ['youtube'],
+                platform_privacy: ppCol ? String(r[ppCol] || '').trim().toLowerCase() || 'public' : 'public',
+                scheduled_time: stCol ? String(r[stCol] || '').trim() || null : null,
+            };
+            if (item.target_platforms.length === 0) item.target_platforms = ['youtube'];
+
+            mapped.push(item)
+        });
+
+        setParsedRows(mapped);
+        if (skipped > 0) {
+            toast({ title: `${mapped.length} rows parsed`, description: `${skipped}개 항목은 title이 없어 건너뛰었습니다. 총 ${mapped.length}개를 등록합니다.` });
+        } else {
+            toast({ title: `${mapped.length} rows parsed`, description: `Columns: ${h.join(', ')}` });
+        }
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        cachedFileName.current = file.name;
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (ext === 'csv') {
+            const text = await file.text();
+            cachedFileBytes.current = new TextEncoder().encode(text);
+            parseCSV(text);
+        } else if (ext === 'xlsx' || ext === 'xls') {
+            const ab = await file.arrayBuffer();
+            const bytes = new Uint8Array(ab);
+            cachedFileBytes.current = bytes;
+            await parseExcel(file, bytes);
+        } else {
+            toast({ variant: "destructive", title: "Unsupported", description: "Only .csv and .xlsx files are supported" });
+        }
+    };
+
+    const handleSendDrafts = async () => {
+        if (!parsedRows.length) return;
+        setSendStatus('sending');
+        try {
+            const fileName = cachedFileName.current;
+            const bytes = cachedFileBytes.current;
+            if (bytes && fileName.endsWith('.xlsx')) {
+                const base64 = uint8ArrayToBase64(bytes);
+                const res = await fetchWithRetry('/api/work-queue/bulk/upload-file', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ base64_file: base64, file_name: fileName, source_batch_id: batchId || undefined })
+                });
+                if (!res.ok) {
+                    const errBody = await res.json().catch(() => ({}));
+                    throw new Error(errBody.detail || `Server error ${res.status}`);
+                }
+                const result = await res.json();
+                if (result.batch_id) setBatchId(result.batch_id);
+                toast({ title: `${result.count} drafts created`, description: `Batch: ${result.batch_id?.substring(0, 8)}...` });
+                setSendStatus('done');
+                setIsOpen(false);
+                onSuccess();
+                return;
+            }
+            const items = parsedRows.map(r => {
+                const platformConfigs: any = {};
+                if (r.platform_privacy) {
+                    r.target_platforms?.forEach((p: string) => {
+                        platformConfigs[p] = { ...(platformConfigs[p] || {}), privacy: r.platform_privacy };
+                    });
+                }
+                return {
+                    title: r.title,
+                    description: r.description || '',
+                    hashtags: r.hashtags || [],
+                    tags: r.tags || [],
+                    source_external_id: r.external_id,
+                    source_type: 'BULK_IMPORT',
+                    upload_method: r.upload_method || 'BROWSER_AUTO',
+                    target_platforms: r.target_platforms || ['youtube'],
+                    platform_configs: Object.keys(platformConfigs).length ? platformConfigs : null,
+                    scheduled_upload_time: r.scheduled_time || null,
+                };
+            });
+            const res = await fetchWithRetry('/api/work-queue/items/bulk/import', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items, source_batch_id: batchId || undefined })
+            });
+            if (!res.ok) {
+                const errBody = await res.json().catch(() => ({}));
+                throw new Error(errBody.detail || `Server error ${res.status}`);
+            }
+            const result = await res.json();
+            if (result.batch_id) setBatchId(result.batch_id);
+            toast({ title: `${result.count} imported items`, description: `Batch: ${result.batch_id?.substring(0, 8)}...` });
+            setSendStatus('done');
+            setIsOpen(false);
+            onSuccess();
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Import failed", description: err?.message || 'Server error' });
+            setSendStatus('idle');
+        }
+    };
+
+    const reset = () => { setParsedRows([]); setHeaders([]); setBatchId(''); setSendStatus('idle'); cachedFileBytes.current = null; cachedFileName.current = ''; if (fileInputRef.current) fileInputRef.current.value = ''; };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if (!v) reset(); }}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card text-foreground border-border">
+                <DialogHeader><DialogTitle>일괄 등록</DialogTitle><DialogDescription>CSV 또는 Excel 파일로 여러 항목을 한번에 대기열에 등록합니다</DialogDescription></DialogHeader>
+                <div className="space-y-4">
+                    <Card className="border-2 border-dashed border-border hover:border-indigo-300 transition-colors">
+                        <CardContent className="p-8 text-center">
+                            <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} className="hidden" id="bulk-import-file-input" />
+                            <label htmlFor="bulk-import-file-input" className="cursor-pointer block">
+                                <Layers className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                                <h3 className="font-semibold text-foreground mb-1">CSV 또는 Excel 파일 선택</h3>
+                                <div className="text-xs text-muted-foreground mb-4">.csv / .xlsx 지원. 첫 행 = 컬럼 헤더</div>
+                                <span className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+                                    <FileSpreadsheet className="w-4 h-4 mr-2" />파일 선택
+                                </span>
+                            </label>
+                            <div className="text-xs text-muted-foreground mt-3 flex gap-3 justify-center">
+                                <a href="/api/work-queue/template/csv" download className="text-indigo-600 hover:underline flex items-center gap-1"><FileSpreadsheet className="w-3 h-3" />.csv 템플릿</a>
+                                <a href="/api/work-queue/template/xlsx" download className="text-indigo-600 hover:underline flex items-center gap-1"><FileSpreadsheet className="w-3 h-3" />.xlsx 템플릿</a>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {parsedRows.length > 0 && (
+                        <>
+                            <div className="bg-muted/40 rounded-lg p-3 border border-border">
+                                <div className="text-xs text-muted-foreground">검출된 컬럼: {headers.map(h => (
+                                    <Badge key={h} variant="outline" className="ml-1 text-[11px]">{h}</Badge>
+                                ))}</div>
+                                <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-1">
+                                    매핑:{" "}
+                                    <Badge variant="outline" className="text-[11px]">title→제목</Badge>
+                                    <Badge variant="outline" className="text-[11px]">description→설명</Badge>
+                                    <Badge variant="outline" className="text-[11px]">external_id→외부ID</Badge>
+                                    <Badge variant="outline" className="text-[11px]">hashtags→해시태그</Badge>
+                                    <Badge variant="outline" className="text-[11px]">tags→태그</Badge>
+                                    <Badge variant="outline" className="text-[11px]">upload_method→업로드방식</Badge>
+                                    <Badge variant="outline" className="text-[11px]">platforms→플랫폼</Badge>
+                                    <Badge variant="outline" className="text-[11px]">platform_privacy→공개설정</Badge>
+                                    <Badge variant="outline" className="text-[11px]">scheduled_time→예약시간</Badge>
+                                </div>
+                            </div>
+
+                            <div className="max-h-64 overflow-auto rounded border border-border">
+                                <table className="w-full text-xs border-collapse">
+                                    <thead><tr className="bg-muted/50">
+                                        <th className="p-2 text-left border-b w-8">#</th>
+                                        <th className="p-2 text-left border-b">외부 ID</th>
+                                        <th className="p-2 text-left border-b">제목</th>
+                                        <th className="p-2 text-left border-b">설명</th>
+                                        <th className="p-2 text-left border-b">해시태그</th>
+                                        <th className="p-2 text-left border-b">플랫폼</th>
+                                        <th className="p-2 text-left border-b">공개</th>
+                                        <th className="p-2 text-left border-b">예약</th>
+                                    </tr></thead>
+                                    <tbody>{parsedRows.slice(0, 100).map((row: any, i: number) => (
+                                        <tr key={i} className="hover:bg-muted/30">
+                                            <td className="p-2 text-xs text-muted-foreground border-b">{i + 1}</td>
+                                            <td className="p-2 text-xs font-mono border-b">{row.external_id}</td>
+                                            <td className="p-2 text-sm truncate max-w-48 border-b">{row.title}</td>
+                                            <td className="p-2 text-xs text-muted-foreground truncate max-w-64 border-b">{row.description}</td>
+                                            <td className="p-2 text-xs text-muted-foreground max-w-32 border-b truncate">{row.hashtags?.join(' ') || '--'}</td>
+                                            <td className="p-2 text-xs text-muted-foreground border-b">{row.target_platforms?.join(', ') || 'youtube'}</td>
+                                            <td className="p-2 text-xs text-muted-foreground border-b">{row.platform_privacy || 'public'}</td>
+                                            <td className="p-2 text-xs text-muted-foreground border-b">{row.scheduled_time || '--'}</td>
+                                        </tr>
+                                    ))}</tbody>
+                                </table>
+                                {parsedRows.length > 100 && <div className="text-xs text-muted-foreground p-2">처음 100개 / 총 {parsedRows.length}개 항목</div>}
+                            </div>
+                        </>
+                    )}
+                </div>
+                <div className="flex justify-between gap-2 pt-3 border-t">
+                    <Button variant="outline" onClick={() => { setIsOpen(false); reset(); }}>취소</Button>
+                    <Button onClick={handleSendDrafts} disabled={sendStatus === 'sending' || !parsedRows.length} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                        {sendStatus === 'sending' ? '저장 중...' : sendStatus === 'done' ? '수신됨' : <><ArrowRight className="w-4 h-4 mr-2" /> 대기열로 보내기 ({parsedRows.length})</>}
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     );

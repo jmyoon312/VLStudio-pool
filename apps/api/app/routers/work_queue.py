@@ -43,6 +43,8 @@ class WorkQueueItemUpdate(BaseModel):
     description: Optional[str] = None
     hashtags: Optional[List[str]] = None
     tags: Optional[List[str]] = None
+    video_file_path: Optional[str] = None
+    source_external_id: Optional[str] = None
     approval_status: Optional[str] = None
     upload_method: Optional[str] = None
     target_platforms: Optional[List[str]] = None
@@ -59,7 +61,7 @@ class WorkQueueItemResponse(BaseModel):
     description: Optional[str] = None
     hashtags: Optional[List[str]] = None
     tags: Optional[List[str]] = None
-    video_file_path: str
+    video_file_path: Optional[str] = None
     # Source & Quality
     source_type: Optional[str] = None
     source_batch_id: Optional[str] = None
@@ -778,23 +780,56 @@ def bulk_upload_file(
     created = []
 
     title_col = next((h for h in headers if h.lower() in ("title", "제목", "name")), None)
-    desc_col = next((h for h in headers if h.lower() in ("description", "desc", "설명", "desc")), None)
+    desc_col = next((h for h in headers if h.lower() in ("description", "desc", "설명")), None)
     ext_col = next((h for h in headers if h.lower() in ("external_id", "외부id", "id")), None)
+    hashtag_col = next((h for h in headers if h.lower() in ("hashtags",)), None)
+    tag_col = next((h for h in headers if h.lower() in ("tags", "태그")), None)
+    um_col = next((h for h in headers if h.lower() in ("upload_method", "업로드방식")), None)
+    plat_col = next((h for h in headers if h.lower() in ("platforms", "플랫폼")), None)
+    pp_col = next((h for h in headers if h.lower() in ("platform_privacy", "공개설정")), None)
+    st_col = next((h for h in headers if h.lower() in ("scheduled_time", "예약시간")), None)
 
     for row in rows:
         title = row.get(title_col, "") if title_col else f"Item {len(created) + 1}"
         description = row.get(desc_col, "") if desc_col else ""
         external_id = row.get(ext_col, "") if ext_col else f"{batch_id}_{len(created) + 1:04d}"
 
+        hashtags_raw = row.get(hashtag_col, "") if hashtag_col else ""
+        tags_raw = row.get(tag_col, "") if tag_col else ""
+        parsed_hashtags = [t if t.startswith('#') else f"#{t}" for t in hashtags_raw.split() if t.strip()] if hashtags_raw else None
+        parsed_tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else None
+
+        upload_method = row.get(um_col, "").strip() if um_col else None
+        if not upload_method:
+            upload_method = data.default_upload_method or "BROWSER_AUTO"
+
+        platforms_raw = row.get(plat_col, "").strip() if plat_col else ""
+        target_platforms = [p.strip() for p in platforms_raw.split(",") if p.strip()] if platforms_raw else (data.default_target_platforms or ["youtube"])
+
+        privacy = row.get(pp_col, "").strip().lower() if pp_col else None
+        platform_configs = {}
+        if privacy and target_platforms:
+            for p in target_platforms:
+                platform_configs[p] = {"privacy": privacy}
+
+        scheduled_raw = row.get(st_col, "").strip() if st_col else ""
+        scheduled_upload_time = None
+        if scheduled_raw:
+            try:
+                scheduled_upload_time = datetime.fromisoformat(scheduled_raw)
+            except ValueError:
+                pass
+
         queue_item = models.WorkQueueItem(
             title=title.strip() or f"Item {len(created) + 1}",
             description=description.strip(),
-            hashtags=None,
-            tags=None,
+            hashtags=parsed_hashtags,
+            tags=parsed_tags,
             source_type="BULK_IMPORT",
-            upload_method=data.default_upload_method or "BROWSER_AUTO",
-            target_platforms=data.default_target_platforms or ["youtube"],
-            platform_configs={},
+            upload_method=upload_method or "BROWSER_AUTO",
+            target_platforms=target_platforms,
+            platform_configs=platform_configs,
+            scheduled_upload_time=scheduled_upload_time,
             source_batch_id=batch_id,
             source_external_id=external_id,
             source_metadata={"original_row": row},
@@ -818,6 +853,71 @@ def bulk_upload_file(
         "count": len(created),
         "items": created
     }
+
+# === Template Download Endpoints ===
+
+TEMPLATE_COLUMNS = [
+    "title", "description", "hashtags", "tags",
+    "external_id", "upload_method", "platforms", "platform_privacy", "scheduled_time"
+]
+
+TEMPLATE_SAMPLE_ROWS = [
+    ["재미있는 고양이 영상", "고양이가 장난감과 노는 모습을 담은 영상입니다", "#cat #funny", "cat,funny", "cat_001", "BROWSER_AUTO", "youtube", "private", ""],
+    ["하늘 풍경 타임랩스", "아름다운 노을과 구름의 변화를 담았습니다", "#sky #timelapse", "sky, timelapse, nature", "sky_002", "API", "youtube,tiktok", "unlisted", "2026-08-01 09:00"],
+]
+
+import csv
+import io
+import tempfile
+from fastapi.responses import StreamingResponse, FileResponse
+
+HAS_OPENPYXL = False
+try:
+    import openpyxl
+    HAS_OPENPYXL = True
+except ImportError:
+    pass
+
+def _generate_template_csv():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(TEMPLATE_COLUMNS)
+    for row in TEMPLATE_SAMPLE_ROWS:
+        writer.writerow(row)
+    return output.getvalue().encode("utf-8-sig")
+
+@router.get("/template/csv")
+def download_template_csv():
+    content = _generate_template_csv()
+    return StreamingResponse(
+        io.BytesIO(content),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=VLStudio_work_queue_template.csv"}
+    )
+
+@router.get("/template/xlsx")
+def download_template_xlsx():
+    if not HAS_OPENPYXL:
+        raise HTTPException(status_code=501, detail="openpyxl is not installed. Install with: pip install openpyxl")
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Work Queue Template"
+    ws.append(TEMPLATE_COLUMNS)
+    for row in TEMPLATE_SAMPLE_ROWS:
+        ws.append(row)
+    tmp = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
+    try:
+        wb.save(tmp.name)
+        tmp.close()
+        return FileResponse(
+            tmp.name,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            filename="VLStudio_work_queue_template.xlsx",
+            background=None,
+        )
+    except Exception:
+        os.unlink(tmp.name)
+        raise
 
 
 @router.get("/stats")
