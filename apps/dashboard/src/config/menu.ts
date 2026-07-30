@@ -69,8 +69,10 @@ export const getMenuGroups = (captainId: string | null): MenuGroup[] => [
         title: "🎬 인공지능 창작 스튜디오",
         defaultExpanded: true,
         items: [
+            { name: '더우인 쇼츠 수집', path: '/douyin-search', icon: Globe, highlight: true },
             { name: '딸깍 자동 생성', path: '/ddalkkak', icon: Zap, highlight: true },
             { name: '에이전트 스튜디오', path: '/agent-studio', icon: BrainCircuit, highlight: true },
+            { name: '씬 커터 (다중 슬롯 컷팅)', path: '/scene-cutter', icon: Scissors, highlight: true },
             { name: '대본 생성 및 편집', path: '/script-writer', icon: Edit },
             { name: '미디어 일괄 생성', path: '/creative-studio', icon: Clapperboard },
             { name: '다국어 목소리 합성', path: '/multi-tts', icon: Mic },

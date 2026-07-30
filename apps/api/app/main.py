@@ -5,6 +5,7 @@
 # Status: Audited & Certified (100% Core Coverage)
 
 from fastapi import FastAPI, Request, APIRouter, HTTPException, Body, Form
+import datetime
 import time
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -99,7 +100,8 @@ from app.routers import (
     tiktok_channels, tools, upload_rules, video, videos, wisdom,
     work_queue, youtube_channels, veo_prompt_agent,
     ddalkkak_proxy, queue_management, processing_verification, dashboard_reports, 
-    health_deployment, ml_ab_search, operations, network
+    health_deployment, ml_ab_search, operations, network,
+    douyin_shorts_router
 )
 from app import job_queue, crud, models, scheduler
 from app.utils.path_utils import normalize_path
@@ -361,10 +363,12 @@ if sys.platform == 'win32':
 
 # --- Status & Health ---
 @app.get("/health")
-def health_check(): return {"status": "healthy"}
+def health_check():
+    return {"status": "healthy", "time": datetime.datetime.utcnow().isoformat()}
 
 @app.get("/api/health")
-def health_check_api(): return {"status": "healthy"}
+def health_check_api():
+    return {"status": "healthy", "time": datetime.datetime.utcnow().isoformat()}
 
 @app.get("/status_bypass")
 def get_network_status_bypass():
@@ -466,6 +470,7 @@ app.include_router(studio.router, prefix="/api/studio", tags=["studio"])
 app.include_router(video.router, prefix="/api/video", tags=["video"])
 app.include_router(ddalkkak_proxy.router, prefix="/api")
 app.include_router(ddalkkak_proxy.direct_router, prefix="/api")
+app.include_router(douyin_shorts_router.router)
 app.include_router(files.router, prefix="/api/files", tags=["files"])
 # app.include_router(callback.router, prefix="/api/callback", tags=["callback"])
 app.include_router(extension.router, prefix="/api/extension", tags=["extension"])

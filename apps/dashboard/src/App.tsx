@@ -38,6 +38,8 @@ import ScriptLab from './pages/ScriptLab';
 import OperationsDashboard from './pages/OperationsDashboard';
 import WorkQueue from './pages/WorkQueue';  // [NEW] Work Queue
 import DdalkkakUI from './pages/DdalkkakUI';
+import SceneCutter from './pages/SceneCutter';
+import SmartDouyinSearch from './components/SmartDouyinSearch';
 import ResourceGuidePage from './pages/ResourceGuidePage';
 import CaptainDashboard from './pages/CaptainDashboard';  // [NEW] Phase 3
 import CaptainQuarters from './pages/CaptainQuarters';  // [NEW] Phase 4.1
@@ -123,7 +125,9 @@ function MainAppContent() {
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/douyin-search" element={<SmartDouyinSearch />} />
                     <Route path="/ddalkkak" element={<DdalkkakUI />} />
+                    <Route path="/scene-cutter" element={<SceneCutter />} />
                     <Route path="/ai-copilot" element={<AICoPilotStudio />} /> {/* [NEW] AI Copilot Studio */}
                     <Route path="/flow2capcut" element={
                         <RouteErrorBoundary>

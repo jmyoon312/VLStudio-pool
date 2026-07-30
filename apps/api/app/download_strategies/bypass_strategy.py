@@ -283,23 +283,202 @@ class V2OBDownloader:
 
 # 3. Smart Fallback Downloader (Douyin Only for now)
 class DouyinSmartDownloader:
-    """Tries V2OB (Douyin) first, falls back to TikVideo on failure."""
+    """Tries CloakDouyinDownloader first, then V2OB, then TikVideo."""
     def download(self, video_url, output_dir, headless=True):
-        print("Strategy: Attempting Primary (V2OB - Douyin)...")
+        print("Strategy: Attempting Primary (CloakDouyin - direct aweme_detail API)...")
         try:
-            # Try V2OB first
-            v2ob = V2OBDownloader('douyin')
-            result = v2ob.download(video_url, output_dir, headless)
-            
+            cloak = CloakDouyinDownloader()
+            result = cloak.download(video_url, output_dir, headless)
             if result.get('status') == 'success':
                 return result
-            else:
-                raise Exception(result.get('error', 'Unknown Error from V2OB'))
-                
+            print(f"CloakDouyin failed: {result.get('error', 'unknown')}. Trying V2OB...")
         except Exception as e:
-            print(f"Primary Strategy (V2OB) Failed: {e}. Switching to Fallback (TikVideo)...")
-            try:
-                tik = TikVideoDownloader()
-                return tik.download(video_url, output_dir, headless)
-            except Exception as fallback_error:
-                 return {'status': 'failed', 'error': f'Both strategies failed. Primary: {e}, Fallback: {fallback_error}'}
+            print(f"CloakDouyin exception: {e}. Trying V2OB...")
+
+        try:
+            v2ob = V2OBDownloader('douyin')
+            result = v2ob.download(video_url, output_dir, headless)
+            if result.get('status') == 'success':
+                return result
+            print(f"V2OB failed: {result.get('error', 'unknown')}. Trying TikVideo...")
+        except Exception as e:
+            print(f"V2OB exception: {e}. Trying TikVideo...")
+
+        try:
+            tik = TikVideoDownloader()
+            return tik.download(video_url, output_dir, headless)
+        except Exception as fallback_error:
+            return {'status': 'failed', 'error': f'All strategies failed. Last error: {fallback_error}'}
+
+
+# 4. CloakDouyinDownloader — cloakbrowser + aweme_detail API (direct, no 3rd-party)
+class CloakDouyinDownloader:
+    """Uses cloakbrowser stealth browser to intercept Douyin's aweme_detail API,
+       extract the CDN video URL, and download via requests."""
+
+    def download(self, video_url, output_dir, headless=True):
+        try:
+            import cloakbrowser
+        except ImportError:
+            return {'status': 'failed', 'error': 'cloakbrowser not installed'}
+        try:
+            import requests
+        except ImportError:
+            return {'status': 'failed', 'error': 'requests not available'}
+
+        aweme_id = self._extract_aweme_id(video_url)
+        if not aweme_id:
+            return {'status': 'failed', 'error': f'Could not parse aweme_id from {video_url[:80]}'}
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        try:
+            with cloakbrowser.launch_context(
+                headless=headless,
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+                locale='zh-CN',
+                viewport={'width': 1920, 'height': 1080},
+                stealth_args=True,
+            ) as context:
+                page = context.new_page()
+
+                # Visit Douyin to establish cookies
+                page.goto('https://www.douyin.com/', wait_until='domcontentloaded', timeout=30000)
+                page.wait_for_timeout(2000)
+
+                # Capture aweme_detail response
+                detail_data = {}
+                def on_response(resp):
+                    nonlocal detail_data
+                    if detail_data:
+                        return
+                    if f'aweme_id={aweme_id}' in resp.url and 'aweme/v1/web/aweme/detail' in resp.url:
+                        try:
+                            body = resp.body()
+                            data = json.loads(body.decode('utf-8'))
+                            detail_data = data.get('aweme_detail', {})
+                        except:
+                            pass
+
+                page.on('response', on_response)
+
+                # Navigate to video
+                page.goto(video_url, wait_until='domcontentloaded', timeout=30000)
+                page.wait_for_timeout(3000)
+
+                if not detail_data:
+                    print('[CloakDouyin] API response not captured, trying direct extraction...')
+                    detail_data = self._try_extract_video_from_page(page)
+
+                if not detail_data:
+                    return {'status': 'failed', 'error': 'Could not extract video data. Page blocked or video unavailable.'}
+
+                video_info = detail_data.get('video', {})
+                author_info = detail_data.get('author', {})
+                stats_info = detail_data.get('statistics', {})
+                description_detail = detail_data.get('desc', '')
+
+                # Get video CDN URL
+                video_cdn_url = None
+                play_addr = video_info.get('download_addr') or video_info.get('play_addr') or {}
+                if not play_addr:
+                    bit_rates = video_info.get('bit_rate', [])
+                    for br in bit_rates:
+                        pa = br.get('play_addr', {})
+                        if pa.get('url_list'):
+                            play_addr = pa
+                            break
+
+                url_list = play_addr.get('url_list', [])
+                if url_list:
+                    video_cdn_url = url_list[0]
+
+                if not video_cdn_url:
+                    # Fallback: try to find in bit_rate list
+                    for br in video_info.get('bit_rate', []):
+                        for u in b.get('play_addr', {}).get('url_list', []):
+                            if u:
+                                video_cdn_url = u
+                                break
+                        if video_cdn_url:
+                            break
+
+                if not video_cdn_url:
+                    return {'status': 'failed', 'error': 'No video CDN URL found in aweme_detail'}
+
+                # Download mp4
+                filename = f"douyin_{aweme_id}.mp4"
+                save_path = os.path.join(output_dir, filename)
+
+                print(f'[CloakDouyin] Downloading from CDN: {video_cdn_url[:100]}...')
+                resp = requests.get(video_cdn_url, stream=True, timeout=120, headers={
+                    'Referer': 'https://www.douyin.com/',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                })
+                resp.raise_for_status()
+
+                with open(save_path, 'wb') as f:
+                    for chunk in resp.iter_content(8192):
+                        f.write(chunk)
+
+                duration_sec = (video_info.get('duration', 0) or 0) / 1000.0
+                view_count = stats_info.get('digg_count', 0) or 0
+                uploader_name = author_info.get('nickname', '')
+
+                print(f'[CloakDouyin] Success: {save_path}')
+                return {
+                    'status': 'success',
+                    'file_path': save_path,
+                    'thumbnail_path': None,
+                    'metadata': {
+                        'id': str(aweme_id),
+                        'title': description_detail or f'onVideo {aweme_id}',
+                        'uploader': uploader_name or 'douyin',
+                        'duration_sec': duration_sec,
+                        'view_count': view_count,
+                        'upload_date': datetime.now().strftime('%Y%m%d'),
+                    },
+                }
+
+        except Exception as e:
+            print(f'[CloakDouyin] Error: {e}')
+            return {'status': 'failed', 'error': str(e)}
+
+    def _extract_aweme_id(self, url):
+        import re
+        match = re.search(r'(?:video|aweme)(?:/|%2F)([0-9]{15,20})', url)
+        if match:
+            return match.group(1)
+        return None
+
+    def _try_extract_video_from_page(self, page):
+        detail = {}
+        try:
+            import re, json
+            html = page.content()
+            # Try to find __INITIAL_STATE__ or similar
+            match = re.search(r'window\.\w*(?:_DATA|_STATE|_PRELOADED_STATE)\s*=\s*(\{.*?\})\s*;', html, re.DOTALL)
+            if match:
+                raw = match.group(1)
+                if raw:
+                    detail = json.loads(raw)
+                    return detail
+            # Try script[type="application/json"]
+            script_tags = page.locator('script[type="application/json"], script[id*="RENDER"]').all()
+            for tag in script_tags:
+                inner = tag.inner_text()
+                try:
+                    parsed = json.loads(inner)
+                    if isinstance(parsed, dict):
+                        aweme = (
+                            parsed.get('video', {}).get('data', {}).get('awemeDetail')
+                            or parsed.get('awemeDetail')
+                            or parsed.get('item')
+                        )
+                        if aweme:
+                            return aweme
+                except:
+                    pass
+        except:
+            pass
+        return detail
