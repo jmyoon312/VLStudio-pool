@@ -41,6 +41,10 @@ class UploadRequest(BaseModel):
     privacy: str = "public"
     schedule_publish_at: Optional[str] = None
 
+class TypeRequest(BaseModel):
+    text: str
+    press_enter: bool = False
+
 
 # ── endpoints ─────────────────────────────────────────────────
 
@@ -117,3 +121,33 @@ async def list_engines():
     """List available browser engines."""
     from ..services.browser.factory import _engines
     return {"engines": list(_engines.keys())}
+
+
+@router.post("/type-active")
+async def type_into_active_window(req: TypeRequest):
+    """OS macro based paste for Manual Browser Uploads."""
+    try:
+        import pyautogui
+        import pyperclip
+        import time
+
+        # Copy the text to OS clipboard
+        pyperclip.copy(req.text)
+        
+        # Give a small delay before firing the keys just in case
+        time.sleep(0.1)
+        
+        # Press Ctrl+V
+        pyautogui.hotkey('ctrl', 'v')
+        
+        if req.press_enter:
+            time.sleep(0.1)
+            pyautogui.press('enter')
+        
+        return {"status": "success", "length": len(req.text)}
+    except ImportError:
+        logger.error("pyautogui or pyperclip not installed.")
+        raise HTTPException(500, "Macro libraries not installed.")
+    except Exception as e:
+        logger.error(f"Macro injection failed: {e}")
+        raise HTTPException(500, f"Macro injection failed: {e}")

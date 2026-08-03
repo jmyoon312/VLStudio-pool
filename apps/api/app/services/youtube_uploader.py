@@ -112,25 +112,53 @@ class YouTubeUploader:
                 tin_can.last_upload_ip = current_ip
                 db.commit()
 
-            # --- 3. Auth Headers & Network Binding ---
+            # --- 3. Auth Headers & Network Binding (STRICT ISOLATION) ---
             creds = CredentialManager.get_credentials(db, brand_channel.id)
             
-            # [Stealth] Bind to specific network interface if tethering is active
-            interface_ip = adb_service.get_tethering_interface_ip()
-            if interface_ip:
-                logger.info(f"Stealth Fortress: Binding traffic to Mobile Interface ({interface_ip})")
+            import httplib2
+            import google_auth_httplib2
+            
+            # Check if proxy is configured for this account
+            if getattr(tin_can, 'proxy_mode', None) in ['ISP_PROXY', 'DIRECT_LTE'] and getattr(tin_can, 'proxy_host', None):
+                logger.info(f"Stealth Fortress: Binding traffic to SOCKS5 Proxy ({tin_can.proxy_host}:{tin_can.proxy_port})")
                 try:
-                    import httplib2
-                    import google_auth_httplib2
+                    import socks
                     
-                    bound_http = httplib2.Http(source_address=(interface_ip, 0), timeout=600)
+                    proxy_port = int(tin_can.proxy_port) if getattr(tin_can, 'proxy_port', None) else 1080
+                    proxy_info_kwargs = {
+                        'proxy_type': socks.PROXY_TYPE_SOCKS5,
+                        'proxy_host': tin_can.proxy_host,
+                        'proxy_port': proxy_port
+                    }
+                    if getattr(tin_can, 'proxy_username', None) and getattr(tin_can, 'proxy_password', None):
+                        proxy_info_kwargs['proxy_user'] = tin_can.proxy_username
+                        proxy_info_kwargs['proxy_pass'] = tin_can.proxy_password
+                        
+                    proxy_info = httplib2.ProxyInfo(**proxy_info_kwargs)
+                    bound_http = httplib2.Http(proxy_info=proxy_info, timeout=600)
                     authorized_http = google_auth_httplib2.AuthorizedHttp(creds, http=bound_http)
                     service = build("youtube", "v3", http=authorized_http, cache_discovery=False)
+                except ImportError:
+                    logger.error("PySocks module is missing. Cannot route through SOCKS5. ABORTING UPLOAD.")
+                    raise Exception("Stealth Guard: PySocks module is missing. Network isolation failed.")
                 except Exception as e:
-                    logger.warning(f"Stealth Binding Failed ({e}). Falling back to default route.")
-                    service = build("youtube", "v3", credentials=creds, cache_discovery=False)
+                    logger.error(f"SOCKS5 Binding Failed ({e}). ABORTING UPLOAD to prevent IP exposure.")
+                    raise Exception(f"Stealth Guard: Network isolation failed. ({str(e)})")
             else:
-                service = build("youtube", "v3", credentials=creds, cache_discovery=False)
+                # [Fallback] Bind to specific network interface if tethering is active
+                interface_ip = adb_service.get_tethering_interface_ip()
+                if interface_ip:
+                    logger.info(f"Stealth Fortress: Binding traffic to Mobile Interface ({interface_ip})")
+                    try:
+                        bound_http = httplib2.Http(source_address=(interface_ip, 0), timeout=600)
+                        authorized_http = google_auth_httplib2.AuthorizedHttp(creds, http=bound_http)
+                        service = build("youtube", "v3", http=authorized_http, cache_discovery=False)
+                    except Exception as e:
+                        logger.error(f"Interface Binding Failed ({e}). ABORTING UPLOAD to prevent IP exposure.")
+                        raise Exception("Stealth Guard: Interface binding failed.")
+                else:
+                    logger.warning("No Proxy or Tethering IP found. Proceeding with default route (DANGEROUS).")
+                    service = build("youtube", "v3", credentials=creds, cache_discovery=False)
 
             # --- 4. Metadata Preparation (NEW LOGIC) ---
             privacy = yt_config.get('privacy', 'private')

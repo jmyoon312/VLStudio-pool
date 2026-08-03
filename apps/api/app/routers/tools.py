@@ -641,6 +641,16 @@ async def get_voices(engine: str, language: str = None, db: Session = Depends(da
             logger.error(f"Typecast Final Error: {e}")
 
         return [{"id": "error", "name": "❌ Unexpected Typecast Error", "lang": "ko"}]
+        
+    elif engine == "gemini":
+        gemini_voices = [
+            "Zephyr", "Puck", "Charon", "Kore", "Fenrir", "Leda", "Orus", "Aoede", 
+            "Callirrhoe", "Autonoe", "Enceladus", "Iapetus", "Umbriel", "Algieba", 
+            "Despina", "Erinome", "Algenib", "Rasalgethi", "Laomedeia", "Achernar", 
+            "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird", "Zubenelgenubi", 
+            "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat"
+        ]
+        return [{"id": v, "name": f"{v}", "lang": "ko"} for v in gemini_voices]
 
     elif engine == "kokoro":
         # Local Kokoro Voices

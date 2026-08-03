@@ -184,24 +184,21 @@ const Incubator = () => {
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        {networkStatus.monitor?.lte && networkStatus.monitor?.lte?.metric !== 50 && (
-                                            <Button 
-                                                variant="destructive" 
-                                                size="sm" 
-                                                onClick={async () => {
-                                                    try {
-                                                        const res = await api.post('/resources/network/fix-permissions');
-                                                        toast({ title: "격리 최적화 요청", description: res.data.message });
-                                                        loadNetworkStatus();
-                                                    } catch (e) {
-                                                        toast({ variant: "destructive", title: "오류", description: "권한 복구 실패" });
-                                                    }
-                                                }}
-                                            >
-                                                <Shield className="w-4 h-4 mr-2" />
-                                                격리 최적화 (UAC 권한 필요)
-                                            </Button>
-                                        )}
+                                        <Button 
+                                            variant="secondary" 
+                                            size="sm" 
+                                            onClick={async () => {
+                                                try {
+                                                    const res = await api.post('/resources/network/fix-permissions');
+                                                    toast({ title: "안전장치 적용 요청", description: res.data.message });
+                                                } catch (e) {
+                                                    toast({ variant: "destructive", title: "오류", description: "권한 변경 실패" });
+                                                }
+                                            }}
+                                        >
+                                            <Shield className="w-4 h-4 mr-2 text-emerald-500" />
+                                            메인 네트워크 절대 우선권 부여
+                                        </Button>
                                         <Button variant="outline" size="sm" onClick={() => loadNetworkStatus(true)} disabled={isNetworkLoading}>
                                             <RefreshCw className={`w-4 h-4 mr-2 ${isNetworkLoading ? 'animate-spin' : ''}`} />
                                             상태 확인
@@ -341,28 +338,12 @@ const Incubator = () => {
                                             </span>
                                             <span className="font-mono text-foreground bg-muted px-1.5 py-0.5 rounded">
                                                 {networkStatus.system_public_ip === networkStatus.mobile_public_ip && networkStatus.system_public_ip !== 'Unknown' && networkStatus.system_public_ip
-                                                    ? '⚠️ 중복 검출 (격리 최적화 필요)'
+                                                    ? '⚠️ 중복 검출 (프록시 확인 필요)'
                                                     : '완전 독립 (격리 성공)'}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                {/* Metrics Warning Banner */}
-                                {networkStatus.monitor?.lte && networkStatus.monitor?.lte?.metric !== 50 && (
-                                    <div className="relative overflow-hidden rounded-xl bg-rose-500/5 p-5 font-mono text-sm border border-rose-500/20 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-rose-500 opacity-80"></div>
-                                        <div className="flex justify-between items-center mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <XCircle className="w-5 h-5 text-rose-500 animate-pulse" />
-                                                <span className="font-bold text-rose-500 tracking-wide text-[13px]">네트워크 격리 미적용 (경고)</span>
-                                            </div>
-                                        </div>
-                                        <div className="text-[11.5px] leading-relaxed text-foreground bg-card p-3 rounded-lg border border-border shadow-sm">
-                                            <span className="text-rose-500 mr-1">▶</span> 현재 관리자 권한이 없거나 메트릭 설정이 적용되지 않아 시스템 기본 트래픽이 LTE로 유출되고 있습니다. 이중 프록시 완전 격리를 위해 위의 <strong>[격리 최적화]</strong> 버튼을 클릭하여 UAC 권한을 승인하세요.
-                                        </div>
-                                    </div>
-                                )}
 
                                 {/* Matrix Diagnostics */}
                                 <div className="relative overflow-hidden rounded-xl bg-emerald-500/5 p-5 font-mono text-sm border border-emerald-500/20 shadow-sm">

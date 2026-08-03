@@ -26,7 +26,9 @@ const WIZARD_STEPS = [
     { title: "계정 정보", desc: "기본 정보 입력" },
     { title: "브라우저 엔진", desc: "핑거프린트 구성" },
     { title: "네트워크 설정", desc: "프록시 방식 선택" },
-    { title: "로그인 및 검증", desc: "스텔스 구동 확인" }
+    { title: "로그인 및 검증", desc: "스텔스 구동 확인" },
+    { title: "키 등록", desc: "JSON 업로드" },
+    { title: "API 인증", desc: "OAuth2 승인" }
 ];
 
 const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete, initialData }) => {
@@ -343,10 +345,10 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
         }
     };
 
-    // Auto check if step 5
+    // Auto check if step 6
     useEffect(() => {
         let timer: any;
-        if (step === 5 && !isAuthorized) {
+        if (step === 6 && !isAuthorized) {
             timer = setInterval(checkAuthStatus, 5000);
         }
         return () => clearInterval(timer);
@@ -384,7 +386,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                 await axios.post(`${API_BASE}/resources/profiles/${draftId}/confirm?email=${email}&recovery=Imported`);
             } catch (ignore) { }
 
-            setStep(5);
+            setStep(6);
             checkAuthStatus(); // Start checking auth status
         } catch (e: any) {
             console.error("Upload Error:", e);
@@ -713,6 +715,149 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                                 </div>
                             </div>
                         )}
+
+                        {step === 5 && (
+                            <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 text-center">
+                                <div className="bg-white border border-indigo-100 rounded-xl p-8 shadow-sm space-y-6">
+                                    <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-sm text-blue-800">
+                                        <div className="font-bold mb-1">ℹ️ 선택 사항</div>
+                                        <p className="text-xs">
+                                            브라우저 자동화만 사용하는 경우 건너뛰기 가능합니다.<br />
+                                            API 기반 권한 검증이 필요한 경우에만 업로드하세요.
+                                        </p>
+                                    </div>
+
+                                    <div className="text-center space-y-2">
+                                        <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <FileJson className="w-8 h-8 text-indigo-600" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-800">YouTube API 인증 키 등록</h3>
+                                        <p className="text-slate-500 text-sm max-w-md mx-auto">
+                                            Google Cloud Console에서 발급받은 <code className="bg-slate-100 px-1 rounded">client_secret.json</code> 파일을 업로드하세요.
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex justify-center gap-3">
+                                            <input
+                                                type="file"
+                                                accept=".json"
+                                                ref={fileInputRef}
+                                                className="hidden"
+                                                onChange={handleFileUpload}
+                                            />
+                                            <Button
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="h-16 px-8 text-lg bg-white hover:bg-slate-50 gap-3 shadow-xl transition-transform hover:scale-105"
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                                                client_secret.json 업로드
+                                            </Button>
+                                        </div>
+
+                                        <Button
+                                            variant="outline"
+                                            onClick={async () => {
+                                                try {
+                                                    await axios.put(`${API_BASE}/resources/profiles/${draftId}`, {
+                                                        status: 'ACTIVE'
+                                                    });
+                                                    toast({
+                                                        title: "등록 완료",
+                                                        description: "계정이 등록되었습니다. API 인증은 나중에 설정할 수 있습니다."
+                                                    });
+                                                    handleFinishAndClose();
+                                                } catch (error: any) {
+                                                    toast({
+                                                        variant: "destructive",
+                                                        title: "등록 실패",
+                                                        description: error.response?.data?.detail || "상태 업데이트에 실패했습니다."
+                                                    });
+                                                }
+                                            }}
+                                            className="w-full"
+                                        >
+                                            건너뛰기 (브라우저 자동화만 사용)
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 6 && (
+                            <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200 text-center">
+                                <div className="bg-white border border-indigo-100 rounded-xl p-8 shadow-sm text-center space-y-6">
+                                    <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <ShieldCheck className={`w-8 h-8 ${isAuthorized ? 'text-emerald-600' : 'text-amber-600'}`} />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-800">
+                                        {isAuthorized ? "API 인증 완료!" : "OAuth2 API 권한 승인"}
+                                    </h3>
+
+                                    <div className="text-slate-500 text-sm max-w-sm mx-auto space-y-2">
+                                        {isAuthorized ? (
+                                            <p>이제 YouTube API를 정상적으로 사용할 수 있습니다.</p>
+                                        ) : (
+                                            <>
+                                                <p>Google 계정에 로그인하여 YouTube 채널 관리 권한을 승인해야 합니다.</p>
+                                                <div className="bg-amber-50 border border-amber-200 p-3 rounded text-xs text-amber-800 text-left">
+                                                    <strong>💡 주의:</strong> 브라우저에서 <strong>"ViraLoop"</strong> 앱에 대한 모든 권한(YouTube 보기, 분석 확인 등)을 체크해야 합니다.
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {!isAuthorized ? (
+                                        <div className="flex flex-col gap-3">
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    onClick={async () => {
+                                                        try {
+                                                            await axios.post(`${API_BASE}/oauth2/authenticate/${draftId}`);
+                                                            toast({ title: "인증 브라우저 실행", description: "로그인된 창이 열립니다. 권한을 승인해주세요." });
+                                                        } catch (e) {
+                                                            toast({ variant: "destructive", title: "실행 실패", description: "격리 브라우저를 띄울 수 없습니다." });
+                                                        }
+                                                    }}
+                                                    className="flex-1 h-16 bg-blue-600 hover:bg-blue-700 gap-3 shadow-xl text-lg font-bold transition-transform hover:scale-[1.02]"
+                                                    disabled={isLoading}
+                                                >
+                                                    <Lock className="w-5 h-5" />
+                                                    API 권한 승인하기 (격리 접속)
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={checkAuthStatus}
+                                                    disabled={authChecking}
+                                                    className="h-16 w-16 border-blue-200"
+                                                    title="상태 새로고침"
+                                                >
+                                                    <RefreshCw className={`w-5 h-5 ${authChecking ? 'animate-spin' : ''}`} />
+                                                </Button>
+                                            </div>
+
+                                            <div className="flex items-center justify-center gap-4 text-xs text-slate-600 mt-2">
+                                                <button
+                                                    onClick={() => window.open(`${API_BASE}/oauth2/authorize/${draftId}`, '_blank')}
+                                                    className="hover:text-blue-600 underline"
+                                                >
+                                                    수동 브라우저 인증 (비권장)
+                                                </button>
+                                                <span>|</span>
+                                                <span>지정된 Chrome 프로필로 자동 접속됩니다</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="pt-4 animate-in zoom-in-90 duration-300">
+                                            <Button onClick={handleFinishAndClose} className="bg-emerald-600 hover:bg-emerald-700 w-full max-w-xs h-14 text-lg shadow-xl shadow-emerald-100">
+                                                <Check className="w-6 h-6 mr-2" /> 모든 등록 절차 완료
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Guide Modal */}
@@ -771,12 +916,14 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                     </Dialog>
 
                     <DialogFooter className="gap-2">
-                        {step > 1 && step <= 4 && <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={isLoading || isVerifying}>이전</Button>}
+                        {step > 1 && step <= 6 && <Button variant="ghost" onClick={() => setStep(step - 1)} disabled={isLoading || isVerifying}>이전</Button>}
 
                         {step === 1 && <Button onClick={handleImportAccount} disabled={isLoading} className="w-full">계정 가져오기 <ChevronRight className="w-4 h-4 ml-1" /></Button>}
                         {step === 2 && <Button onClick={handleSaveEngine} className="w-full bg-indigo-600" disabled={isLoading}>엔진 구성 및 다음 <ChevronRight className="w-4 h-4 ml-1" /></Button>}
                         {step === 3 && <Button onClick={handleSaveNetwork} className="w-full bg-indigo-600" disabled={isLoading}>네트워크 저장 및 다음 <ChevronRight className="w-4 h-4 ml-1" /></Button>}
-                        {step === 4 && <Button onClick={handleFinishAndClose} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11 shadow-md" disabled={isLoading || isVerifying}>완료 및 닫기</Button>}
+                        {step === 4 && <Button onClick={() => setStep(5)} className="w-full bg-indigo-600" disabled={isLoading || isVerifying}>다음 (키 등록) <ChevronRight className="w-4 h-4 ml-1" /></Button>}
+                        {step === 5 && <Button onClick={() => setStep(6)} className="w-full bg-indigo-600" disabled={isLoading}>다음 (API 인증) <ChevronRight className="w-4 h-4 ml-1" /></Button>}
+                        {step === 6 && <Button onClick={handleFinishAndClose} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11 shadow-md" disabled={isLoading || isVerifying || !isAuthorized}>완료 및 닫기</Button>}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

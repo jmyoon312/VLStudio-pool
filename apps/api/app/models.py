@@ -708,6 +708,8 @@ class ChannelAccessLog(Base):
     timestamp = Column(DateTime, default=datetime.now)
     ip_address = Column(String(50), nullable=True)
     user_agent = Column(String(500), nullable=True)
+    
+    youtube_channel = relationship("YouTubeChannel", back_populates="access_logs")
     success = Column(Boolean, default=True)
     error_message = Column(Text, nullable=True)
     
@@ -931,6 +933,7 @@ class BrowserProfile(Base):
     tiktok_channels = relationship("TikTokChannel", back_populates="browser_profile", cascade="all, delete-orphan")
     instagram_channels = relationship("InstagramChannel", back_populates="browser_profile", cascade="all, delete-orphan")
     notebooklm_accounts = relationship("NotebookLMAccount", back_populates="browser_profile", cascade="all, delete-orphan")
+    douyin_channels = relationship("DouyinChannel", back_populates="browser_profile", cascade="all, delete-orphan")
 
 
 class Category(Base):
@@ -985,6 +988,26 @@ class InstagramChannel(Base):
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     browser_profile = relationship("BrowserProfile", back_populates="instagram_channels")
+
+
+class DouyinChannel(Base):
+    """Douyin Account linked to a Browser Profile"""
+    __tablename__ = "douyin_channels"
+
+    id = Column(String, primary_key=True) # Username (unique)
+    nickname = Column(String, nullable=True)
+    browser_profile_id = Column(String, ForeignKey("browser_profiles.id"))
+    
+    status = Column(String, default="ACTIVE")
+    last_uploaded_at = Column(DateTime, nullable=True)
+    
+    # Metadata
+    follower_count = Column(Integer, default=0)
+    
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    browser_profile = relationship("BrowserProfile", back_populates="douyin_channels")
 
 
 class NotebookLMAccount(Base):

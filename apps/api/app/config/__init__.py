@@ -102,6 +102,12 @@ class Settings(BaseSettings):
     kling_api_key: Optional[str] = None
     luma_api_key: Optional[str] = None
     
+    # TTS Keys
+    typecast_api_keys: list[str] = []
+    elevenlabs_keys: list[str] = []
+    supertone_project_key: Optional[str] = None
+    supertone_model_path: Optional[str] = None
+    
     # AI Models (Schema definition only, actual values driven by DB)
     whisper_model_path: Optional[str] = None
     agent_model: Optional[str] = None

@@ -219,12 +219,18 @@ class NetworkMonitor:
                     is_known_lte = False
                     if any(k in desc for k in ['samsung', 'apple', 'rndis', 'remote ndis', 'mobile', 'remote', 'ndis', 'tether']):
                         is_known_lte = True
-                    elif bus == 15: # USB 
+                    elif bus == 15: # USB
                         is_known_lte = True
                     elif '이더넷' in adp.get('Name') or 'ethernet' in name:
-                        # If it's a secondary Ethernet, it might be the phone
-                        generic_candidates.append((idx, adp.get('Name')))
-                        
+                        # [Fix] USB 포트 변경 시 Windows가 새 인터페이스 인스턴스 생성 가능.
+                        # wired_idx가 이미 확보된 상태에서 등장하는 추가 이더넷 → LTE 우선 후보.
+                        # wired_idx가 없으면 generic_candidates에 추가 (기존 동작 유지).
+                        if wired_idx is not None:
+                            is_known_lte = True
+                            logger.debug(f"🔌 Secondary Ethernet treated as LTE candidate: {adp.get('Name')} ({desc})")
+                        else:
+                            generic_candidates.append((idx, adp.get('Name')))
+
                     if is_known_lte:
                         lte_idx = idx
                         # [Bug 4] lte_name에 실제 OS Alias만 저장 (접미사 오염 금지)
@@ -236,23 +242,34 @@ class NetworkMonitor:
                     generic_candidates.append((idx, adp.get('Name')))
 
                 # Fallback: IP Signature Matching
+                # [Fix] IP 대역 확장: USB 테더링 기기의 다양한 서브넷 포함
+                LTE_IP_PREFIXES = [
+                    "192.168.42.",  # Android USB 테더링 기본
+                    "192.168.43.",  # Android USB 테더링 (일부 기기)
+                    "192.168.44.",  # Android USB 테더링 (일부 기기)
+                    "192.168.49.",  # Android Wi-Fi 핫스팟
+                    "192.168.100.", # 일부 제조사 전용
+                    "172.20.10.",   # iPhone USB 테더링
+                    "10.0.0.",      # 일부 안드로이드/제조사
+                    "10.10.0.",     # 일부 통신사 전용 대역
+                ]
                 if lte_idx is None and generic_candidates:
                     for cand in generic_candidates:
                         c_idx, c_name = cand
                         ip_res = self._get_ip_info(c_idx)
-                        # [Bug 5] 192.168.1. 제거 (공유기 대역과 충돌 방지)
-                        if ip_res and any(p in ip_res for p in ["192.168.42.", "172.20.10.", "192.168.43.", "192.168.49.", "192.168.100."]):
+                        if ip_res and any(p in ip_res for p in LTE_IP_PREFIXES):
                             lte_idx = c_idx
                             # [Bug 4] 실제 Alias만 저장, 디버그 정보는 로그로
                             lte_name = c_name
                             logger.debug(f"🎯 IP-Match Identified LTE: {lte_name} (ip={ip_res})")
                             break
-                    
+
                 # Final fallback: If still nothing, pick the first active non-wifi/non-wired
                 if lte_idx is None and generic_candidates:
                     lte_idx, lte_name = generic_candidates[0]
                     # [Bug 4] Fallback에서도 실제 Alias만 저장 (접미사 붙이지 않음)
                     logger.debug(f"[⚠️ Fallback] 실리주의: Active-Fallback LTE: {lte_name}")
+
             
             except Exception as e:
                 logger.error(f"Adapter Parse Error: {e}")

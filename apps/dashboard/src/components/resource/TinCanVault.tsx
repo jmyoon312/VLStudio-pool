@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Clock, ShieldCheck, Mail, Pencil, Trash2, AlertCircle, Settings, RefreshCw } from 'lucide-react';
+import { Plus, Clock, ShieldCheck, Mail, Pencil, Trash2, AlertCircle, Settings, RefreshCw, FileJson, Lock } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TinCanWizard from './TinCanWizard';
@@ -26,6 +26,18 @@ interface TinCanVaultProps {
     mode?: 'vault' | 'incubator';
 }
 
+const ProfileApiStatus = ({ profileId }: { profileId: string }) => {
+    const { data, isLoading } = useQuery({
+        queryKey: ['oauth-status', profileId],
+        queryFn: async () => (await axios.get(`${API_BASE}/oauth2/status/${profileId}`)).data,
+        staleTime: 60000,
+    });
+
+    if (isLoading) return <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded ml-1 font-semibold animate-pulse border border-slate-200" title="API 상태 확인 중">API ⏳</span>;
+    if (data?.authenticated) return <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded ml-1 font-semibold" title="API 인증 완료">API 🟢</span>;
+    return <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded ml-1 font-semibold" title="API 미인증">API 🟡</span>;
+};
+
 const TinCanVault = ({ mode = 'vault' }: TinCanVaultProps) => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
@@ -40,6 +52,9 @@ const TinCanVault = ({ mode = 'vault' }: TinCanVaultProps) => {
     const [quarantineReason, setQuarantineReason] = useState("");
     const [quickNetworkProfile, setQuickNetworkProfile] = useState<any>(null); // For Quick Network Dialog
     const [syncingId, setSyncingId] = useState<string | null>(null);
+
+    const editFileInputRef = useRef<HTMLInputElement>(null);
+    const [editUploading, setEditUploading] = useState(false);
     
     // For Cultivation Wizard
     const [wizardOpen, setWizardOpen] = useState(false);
@@ -174,6 +189,37 @@ const TinCanVault = ({ mode = 'vault' }: TinCanVaultProps) => {
         }
     };
 
+    const handleEditFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, profileId: string) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        setEditUploading(true);
+        try {
+            await axios.post(`${API_BASE}/resources/profiles/${profileId}/upload-key`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            toast({ title: "업로드 성공", description: "API 키 파일이 성공적으로 저장되었습니다." });
+        } catch (e: any) {
+            console.error("Upload Error:", e);
+            toast({ variant: "destructive", title: "업로드 실패", description: e.response?.data?.detail || "파일 저장에 실패했습니다." });
+        } finally {
+            setEditUploading(false);
+            if (editFileInputRef.current) editFileInputRef.current.value = "";
+        }
+    };
+
+    const handleEditAuth = async (profileId: string) => {
+        try {
+            await axios.post(`${API_BASE}/oauth2/authenticate/${profileId}`);
+            toast({ title: "인증 브라우저 실행", description: "로그인된 창이 열립니다. 권한을 승인해주세요." });
+        } catch (e) {
+            toast({ variant: "destructive", title: "실행 실패", description: "격리 브라우저를 띄울 수 없습니다." });
+        }
+    };
+
     const renderRow = (p: any, isQuarantined: boolean) => {
         const channel = channels?.find((c: any) => c.owner_profile_id === p.id || c.channel_id === p.channel_id);
         
@@ -204,6 +250,7 @@ const TinCanVault = ({ mode = 'vault' }: TinCanVaultProps) => {
                                 🔥 WARMUP
                             </Badge>
                         )}
+                        <ProfileApiStatus profileId={p.id} />
                     </div>
                     
                     {/* 브랜드 채널 정보 및 수집/갱신 버튼 */}
@@ -509,6 +556,48 @@ const TinCanVault = ({ mode = 'vault' }: TinCanVaultProps) => {
                                             <SelectItem value="QUARANTINED">QUARANTINED (격리)</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+                            </div>
+                            
+                            <div className="pt-4 border-t border-slate-100 mt-2">
+                                <Label className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                                    YouTube API 인증 설정
+                                </Label>
+                                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="file"
+                                                accept=".json"
+                                                ref={editFileInputRef}
+                                                className="hidden"
+                                                onChange={(e) => handleEditFileUpload(e, editProfile.id)}
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => editFileInputRef.current?.click()}
+                                                disabled={editUploading}
+                                                className="bg-white"
+                                            >
+                                                {editUploading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <FileJson className="w-4 h-4 mr-2 text-indigo-600" />}
+                                                키 업로드
+                                            </Button>
+                                            
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleEditAuth(editProfile.id)}
+                                                className="bg-blue-600 hover:bg-blue-700"
+                                            >
+                                                <Lock className="w-4 h-4 mr-2" />
+                                                API 권한 승인 (격리 접속)
+                                            </Button>
+                                        </div>
+                                        <p className="text-[11px] text-slate-500">
+                                            ※ JSON 키를 업로드한 후, 권한 승인 버튼을 눌러 스텔스 브라우저에서 인증을 완료하세요.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

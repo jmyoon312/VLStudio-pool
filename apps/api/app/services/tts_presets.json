@@ -1,0 +1,56 @@
+{
+    "narrator": {
+        "voice_id": "typecast/5f9b9f9e162f1c84cb1c6186",
+        "speed": 1.0,
+        "pitch": 0,
+        "rvc_model": null
+    },
+    "male_child": {
+        "voice_id": "supertone-local/M1",
+        "speed": 1.1,
+        "pitch": 1,
+        "rvc_model": null
+    },
+    "male_20s": {
+        "voice_id": "supertone-local/M2",
+        "speed": 1.0,
+        "pitch": 0,
+        "rvc_model": null
+    },
+    "male_40s_50s": {
+        "voice_id": "supertone-local/M3",
+        "speed": 0.9,
+        "pitch": -1,
+        "rvc_model": null
+    },
+    "male_70s": {
+        "voice_id": "supertone-local/M4",
+        "speed": 0.8,
+        "pitch": 0,
+        "rvc_model": null
+    },
+    "female_child": {
+        "voice_id": "supertone-local/F3",
+        "speed": 1.1,
+        "pitch": 1,
+        "rvc_model": null
+    },
+    "female_20s": {
+        "voice_id": "supertone-local/F2",
+        "speed": 1.0,
+        "pitch": 0,
+        "rvc_model": null
+    },
+    "female_40s_50s": {
+        "voice_id": "supertone-local/F3",
+        "speed": 0.9,
+        "pitch": -1,
+        "rvc_model": null
+    },
+    "female_70s": {
+        "voice_id": "supertone-local/F4",
+        "speed": 0.8,
+        "pitch": 0,
+        "rvc_model": null
+    }
+}

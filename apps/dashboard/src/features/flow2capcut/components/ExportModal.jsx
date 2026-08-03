@@ -21,7 +21,7 @@ const PATH_PRESETS = {
   ]
 }
 
-export const ExportModal = ({ isOpen, onClose, onExport, projectName, loading, exportPhase, hasSubtitles, onUpgradeClick }) => {
+export const ExportModal = ({ isOpen, onClose, onExport, projectName, loading, exportPhase, hasSubtitles, onUpgradeClick, allowEmptyPath = false }) => {
   const { t, lang } = useI18n()
   const { isAuthenticated, subscription } = useAuth()
   const { settings: savedSettings, isLoaded, saveSettings } = useExportSettings()
@@ -144,7 +144,7 @@ export const ExportModal = ({ isOpen, onClose, onExport, projectName, loading, e
 
   const handleExport = async () => {
     // 필수 입력 검증
-    if (!fullPath.trim()) {
+    if (!allowEmptyPath && !fullPath.trim()) {
       alert(t('exportModalExtra.pathRequired'))
       return
     }

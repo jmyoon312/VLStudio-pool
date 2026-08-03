@@ -383,6 +383,95 @@ const WorkQueue = () => {
     );
 };
 
+const ManualUploadAssist = ({ item }: { item: any }) => {
+    const { toast } = useToast();
+    const [currentStep, setCurrentStep] = useState(0);
+
+    const steps = [
+        { label: '제목', key: 'title', value: item.title },
+        { label: '설명', key: 'description', value: item.description },
+        { label: '태그', key: 'tags', value: item.tags?.join(', ') },
+        { label: '해시태그', key: 'hashtags', value: item.hashtags?.join(' ') },
+        { label: '영상 경로', key: 'video_file_path', value: item.video_file_path }
+    ].filter(s => s.value);
+
+    const handleInjectText = async (text: string, stepIndex?: number, key?: string) => {
+        if (!text) return;
+        try {
+            const res = await fetchWithRetry('/api/browser/type-active', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    text,
+                    press_enter: key === 'video_file_path' 
+                })
+            });
+            if (res.status === 'success') {
+                toast({ title: "입력 완료", description: "포커스된 입력창에 내용이 입력되었습니다." });
+                if (stepIndex !== undefined && stepIndex < steps.length - 1) {
+                    setCurrentStep(stepIndex + 1);
+                }
+            } else {
+                throw new Error("Failed to inject");
+            }
+        } catch (e) {
+            toast({ title: "입력 실패", description: "클립보드에 복사했습니다. 수동으로 붙여넣어주세요 (Ctrl+V)", variant: "destructive" });
+            navigator.clipboard.writeText(text);
+        }
+    };
+
+    if (steps.length === 0) return null;
+
+    return (
+        <div className="mt-4 p-4 border border-indigo-200 bg-indigo-50/50 dark:bg-indigo-950/20 dark:border-indigo-900 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-indigo-600" />
+                    <h4 className="font-semibold text-sm text-indigo-900 dark:text-indigo-300">수동 업로드 어시스턴트</h4>
+                </div>
+                <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">Step {currentStep + 1} / {steps.length}</Badge>
+            </div>
+            
+            <p className="text-xs text-muted-foreground mb-3">스텔스 브라우저의 입력창을 <b>마우스로 한 번 클릭</b>한 뒤 아래 버튼을 누르면 내용이 자동 입력됩니다.</p>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
+                {steps.map((step, idx) => (
+                    <Button 
+                        key={step.key} 
+                        variant={currentStep === idx ? "default" : "outline"}
+                        size="sm"
+                        className={currentStep === idx ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "border-indigo-200 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:text-indigo-400 dark:hover:bg-indigo-900"}
+                        onClick={() => {
+                            setCurrentStep(idx);
+                            handleInjectText(step.value, idx, step.key);
+                        }}
+                    >
+                        {step.label} 입력
+                    </Button>
+                ))}
+            </div>
+
+            <div className="bg-white dark:bg-background border rounded p-2 text-xs font-mono text-muted-foreground break-all h-20 overflow-y-auto">
+                {steps[currentStep]?.value || '내용 없음'}
+            </div>
+            
+            <div className="mt-3 flex justify-end">
+                <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100 dark:text-indigo-400"
+                    onClick={() => {
+                        const next = (currentStep + 1) % steps.length;
+                        setCurrentStep(next);
+                    }}
+                >
+                    다음 단계 스킵 <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </Button>
+            </div>
+        </div>
+    );
+};
+
 const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, onAttach, onFinalize, onUpdateUploadMethod, onUpdateChannel, channels, tiktokChannels, instagramChannels, getStatusBadge, getApprovalBadge, selectedItems, toggleItemSelection }: any) => {
     const [expanded, setExpanded] = useState(false);
     return (
@@ -417,56 +506,104 @@ const QueueItemCard = ({ item, onApprove, onReject, onDelete, onEdit, onPlay, on
                             </div>
                         )}
                         {expanded && (
-                            <div className="mt-3 p-3 bg-muted/50 rounded-lg text-xs space-y-3 border border-border">
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div><span className="font-semibold text-muted-foreground">제목</span><p className="text-foreground mt-0.5">{item.title || '--'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">설명</span><p className="text-foreground mt-0.5">{item.description || '--'}</p></div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div><span className="font-semibold text-muted-foreground">파일 경로</span><p className="font-mono text-[10px] text-muted-foreground mt-0.5 truncate">{item.video_file_path || '--'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">상태</span><p className="mt-0.5">{item.status} ({item.approval_status})</p></div>
-                                </div>
-                                {item.upload_progress > 0 && (
-                                    <div><span className="font-semibold text-muted-foreground">업로드 진행률</span><p className="mt-0.5 text-indigo-600 font-medium">{item.upload_progress}%</p></div>
-                                )}
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div><span className="font-semibold text-muted-foreground">소스 유형</span><p className="mt-0.5">{item.source_type || 'MANUAL'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">업로드 방식</span><p className="mt-0.5">{item.upload_method || 'API'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">우선순위</span><p className="mt-0.5">{item.upload_priority ?? 0}</p></div>
-                                </div>
-                                <div><span className="font-semibold text-muted-foreground">태그</span><p className="mt-0.5">{item.tags?.length ? item.tags.join(', ') : '--'}</p></div>
-                                <div><span className="font-semibold text-muted-foreground">해시태그</span><p className="mt-0.5">{item.hashtags?.length ? item.hashtags.join(' ') : '--'}</p></div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div><span className="font-semibold text-muted-foreground">외부 ID</span><p className="font-mono text-[10px] mt-0.5">{item.source_external_id || '--'}</p></div>
-                                    <div><span className="font-semibold text-muted-foreground">배치 ID</span><p className="font-mono text-[10px] mt-0.5 truncate">{item.source_batch_id || '--'}</p></div>
-                                </div>
-                                {item.platform_configs && (
-                                    <div className="border-t border-border pt-2">
-                                        <span className="font-semibold text-muted-foreground">플랫폼 설정</span>
-                                        <div className="mt-1 grid grid-cols-2 gap-2">
-                                            {item.platform_configs.youtube && (
-                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-blue-600 dark:text-blue-400 font-medium">YouTube</p><p className="text-[10px]">공개: {item.platform_configs.youtube.privacy || '--'} | 헤드리스: {String(item.platform_configs.youtube.headless_mode || false)}</p></div>
-                                            )}
-                                            {item.platform_configs.tiktok && (
-                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-pink-600 dark:text-pink-400 font-medium">TikTok</p><p className="text-[10px]">공개: {item.platform_configs.tiktok.privacy || '--'} | 댓글: {String(item.platform_configs.tiktok.allow_comments ?? true)}</p></div>
-                                            )}
-                                            {item.platform_configs.instagram && (
-                                                <div className="bg-muted/60 rounded px-2 py-1.5"><p className="text-purple-600 dark:text-purple-400 font-medium">Instagram</p><p className="text-[10px]">피드 공유: {String(item.platform_configs.instagram.share_to_feed || false)}</p></div>
-                                            )}
+                            <div className="mt-4 bg-card rounded-xl border shadow-sm overflow-hidden text-sm">
+                                <div className="p-4 space-y-6">
+                                    {/* Content Info */}
+                                    <div>
+                                        <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">콘텐츠 정보</h5>
+                                        <div className="bg-muted/30 rounded-lg p-3 space-y-3 border border-border/50">
+                                            <div>
+                                                <span className="text-[11px] text-muted-foreground">제목</span>
+                                                <p className="font-medium mt-0.5">{item.title || '--'}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-[11px] text-muted-foreground">설명</span>
+                                                <div className="mt-1 text-xs text-muted-foreground whitespace-pre-wrap max-h-32 overflow-y-auto bg-background/50 p-2 rounded border border-border/50">
+                                                    {item.description || '--'}
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-wrap gap-x-6 gap-y-3 pt-1">
+                                                <div>
+                                                    <span className="text-[11px] text-muted-foreground">태그</span>
+                                                    <p className="mt-0.5 text-xs">{item.tags?.length ? item.tags.join(', ') : '--'}</p>
+                                                </div>
+                                                <div>
+                                                    <span className="text-[11px] text-muted-foreground">해시태그</span>
+                                                    <p className="mt-0.5 text-xs text-blue-500 font-medium">{item.hashtags?.length ? item.hashtags.join(' ') : '--'}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                )}
-                                {item.scheduled_upload_time && (
-                                    <div><span className="font-semibold text-muted-foreground">예약 시간</span><p className="mt-0.5">{new Date(item.scheduled_upload_time).toLocaleString('ko-KR')}</p></div>
-                                )}
-                                {item.uploaded_urls && (
-                                    <div><span className="font-semibold text-muted-foreground">업로드 URL</span><p className="font-mono text-[10px] mt-0.5 break-all">{JSON.stringify(item.uploaded_urls)}</p></div>
-                                )}
-                                {item.enable_shopping_tag && (
-                                    <div><span className="font-semibold text-muted-foreground">쇼핑 태그 키워드</span><p className="mt-0.5">{item.shopping_tag_keyword || '--'}</p></div>
-                                )}
-                                {item.failure_reason && <p className="text-destructive pt-2 border-t border-border"><strong>실패 사유:</strong> {item.failure_reason}</p>}
+
+                                    {/* System & Upload Info */}
+                                    <div>
+                                        <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">시스템 및 업로드 설정</h5>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            <div className="bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                                                <span className="text-[11px] text-muted-foreground block mb-0.5">상태</span>
+                                                <Badge variant="outline" className="font-normal bg-background">{item.status}</Badge>
+                                            </div>
+                                            <div className="bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                                                <span className="text-[11px] text-muted-foreground block mb-0.5">업로드 방식</span>
+                                                <span className="font-medium text-xs text-foreground">{item.upload_method || 'API'}</span>
+                                            </div>
+                                            <div className="bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                                                <span className="text-[11px] text-muted-foreground block mb-0.5">예약 시간</span>
+                                                <span className="font-medium text-xs text-foreground">{item.scheduled_upload_time ? new Date(item.scheduled_upload_time).toLocaleString('ko-KR') : '즉시'}</span>
+                                            </div>
+                                            <div className="bg-muted/30 p-2.5 rounded-lg border border-border/50 col-span-2 md:col-span-3">
+                                                <span className="text-[11px] text-muted-foreground block mb-0.5">파일 경로</span>
+                                                <span className="font-mono text-[11px] text-muted-foreground break-all">{item.video_file_path || '--'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Platform Configs */}
+                                    {item.platform_configs && (
+                                        <div>
+                                            <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">플랫폼 타겟팅</h5>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                {item.platform_configs.youtube && (
+                                                    <div className="flex items-center justify-between p-2 rounded-lg border border-red-100 bg-red-50/30 dark:bg-red-950/20 dark:border-red-900">
+                                                        <span className="text-red-600 dark:text-red-400 font-medium text-xs">YouTube</span>
+                                                        <span className="text-[10px] text-muted-foreground">{item.platform_configs.youtube.privacy || 'public'}</span>
+                                                    </div>
+                                                )}
+                                                {item.platform_configs.tiktok && (
+                                                    <div className="flex items-center justify-between p-2 rounded-lg border border-pink-100 bg-pink-50/30 dark:bg-pink-950/20 dark:border-pink-900">
+                                                        <span className="text-pink-600 dark:text-pink-400 font-medium text-xs">TikTok</span>
+                                                        <span className="text-[10px] text-muted-foreground">{item.platform_configs.tiktok.privacy || 'public'}</span>
+                                                    </div>
+                                                )}
+                                                {item.platform_configs.instagram && (
+                                                    <div className="flex items-center justify-between p-2 rounded-lg border border-purple-100 bg-purple-50/30 dark:bg-purple-950/20 dark:border-purple-900">
+                                                        <span className="text-purple-600 dark:text-purple-400 font-medium text-xs">Instagram</span>
+                                                        <span className="text-[10px] text-muted-foreground">피드: {String(item.platform_configs.instagram.share_to_feed || false)}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Meta / IDs */}
+                                    <div className="flex flex-wrap gap-4 text-[10px] text-muted-foreground pt-4 border-t border-border/50">
+                                        <div><span className="font-medium">External ID:</span> <span className="font-mono">{item.source_external_id || '--'}</span></div>
+                                        <div><span className="font-medium">Batch ID:</span> <span className="font-mono">{item.source_batch_id || '--'}</span></div>
+                                        <div><span className="font-medium">우선순위:</span> {item.upload_priority ?? 0}</div>
+                                        <div><span className="font-medium">소스:</span> {item.source_type || 'MANUAL'}</div>
+                                    </div>
+
+                                    {item.failure_reason && (
+                                        <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-lg">
+                                            <p className="text-red-600 dark:text-red-400 text-xs font-medium">⚠️ 실패 사유</p>
+                                            <p className="text-red-500 text-xs mt-1">{item.failure_reason}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
+                        )}
+                        {item.upload_method === 'MANUAL' && expanded && (
+                            <ManualUploadAssist item={item} />
                         )}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">

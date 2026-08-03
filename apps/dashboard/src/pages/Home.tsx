@@ -72,6 +72,7 @@ const Home = () => {
     });
     
     const [netStatus, setNetStatus] = useState<NetworkStatus | null>(null);
+    const [isNetFetched, setIsNetFetched] = useState(false);
     const [channelsList, setChannelsList] = useState<ChannelItem[]>([]);
     const [queueStats, setQueueStats] = useState<QueueStats>({
         total: 0,
@@ -133,7 +134,17 @@ const Home = () => {
             }
         } catch (e) {
             console.error("Error fetching network status:", e);
+        } finally {
+            setIsNetFetched(true);
         }
+    };
+
+    // IP 표시 헬퍼: null / 빈 문자열 / 실패 문자열 처리
+    const displayIp = (ip: string | null | undefined, fallback: string): { text: string; isPlaceholder: boolean } => {
+        if (!ip || ip.trim() === '' || ip.startsWith('오프라인') || ip === 'Unknown' || ip === 'fail' || ip === 'Not Detected') {
+            return { text: isNetFetched ? fallback : '조회 중...', isPlaceholder: true };
+        }
+        return { text: ip, isPlaceholder: false };
     };
 
     const fetchData = async () => {
@@ -168,7 +179,15 @@ const Home = () => {
     useEffect(() => {
         fetchData();
         const interval = setInterval(fetchData, 8000);
-        return () => clearInterval(interval);
+
+        // 네트워크 상태는 독립적으로 10초 간격 폴링 (블로킹 API와 분리)
+        fetchNetworkStatus();
+        const netInterval = setInterval(() => fetchNetworkStatus(), 10000);
+
+        return () => {
+            clearInterval(interval);
+            clearInterval(netInterval);
+        };
     }, []);
 
     const handleRotateIp = async () => {
@@ -429,16 +448,19 @@ const Home = () => {
                                 <div className="flex items-center justify-between">
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">일반 게이트웨이 (Wi-Fi)</p>
                                     <span className="text-[10px] font-extrabold text-indigo-600 bg-indigo-500/10 px-2 py-0.5 rounded">
-                                        ACTIVE
+                                        {netStatus?.monitor?.wifi?.status === 'Connected' ? 'ACTIVE' : (isNetFetched ? 'UNKNOWN' : '—')}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-xs font-semibold text-foreground">
                                     <span className="text-muted-foreground">로컬 IP:</span>
-                                    <span className="font-mono">{netStatus?.monitor?.wifi?.ip || "192.168.45.218"}</span>
+                                    <span className="font-mono">{displayIp(netStatus?.monitor?.wifi?.ip, '—').text}</span>
                                 </div>
                                 <div className="flex justify-between text-xs font-semibold text-foreground">
                                     <span className="text-muted-foreground">공인 IP:</span>
-                                    <span className="font-mono text-indigo-500 dark:text-indigo-400">{netStatus?.system_public_ip || "조회 중..."}</span>
+                                    {(() => {
+                                        const d = displayIp(netStatus?.system_public_ip, '미조회');
+                                        return <span className={cn('font-mono', d.isPlaceholder ? 'text-muted-foreground animate-pulse' : 'text-indigo-500 dark:text-indigo-400')}>{d.text}</span>;
+                                    })()}
                                 </div>
                             </div>
 
@@ -450,16 +472,19 @@ const Home = () => {
                                         "text-[10px] font-extrabold px-2 py-0.5 rounded",
                                         isLteConnected ? "text-emerald-600 bg-emerald-500/10" : "text-muted-foreground bg-muted"
                                     )}>
-                                        {isLteConnected ? "CONNECTED" : "OFFLINE"}
+                                        {isLteConnected ? "CONNECTED" : (isNetFetched ? "OFFLINE" : "—")}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-xs font-semibold text-foreground">
                                     <span className="text-muted-foreground">로컬 IP:</span>
-                                    <span className="font-mono">{netStatus?.monitor?.lte?.ip || "연결되지 않음"}</span>
+                                    <span className="font-mono">{displayIp(netStatus?.monitor?.lte?.ip, '연결되지 않음').text}</span>
                                 </div>
                                 <div className="flex justify-between text-xs font-semibold text-foreground">
                                     <span className="text-muted-foreground">공인 IP (WAN):</span>
-                                    <span className="font-mono text-emerald-500 dark:text-emerald-400">{netStatus?.mobile_public_ip || "조회 중..."}</span>
+                                    {(() => {
+                                        const d = displayIp(netStatus?.mobile_public_ip, isLteConnected ? '조회 중...' : '미연결');
+                                        return <span className={cn('font-mono', d.isPlaceholder ? 'text-muted-foreground' + (isLteConnected ? ' animate-pulse' : '') : 'text-emerald-500 dark:text-emerald-400')}>{d.text}</span>;
+                                    })()}
                                 </div>
                             </div>
                         </div>

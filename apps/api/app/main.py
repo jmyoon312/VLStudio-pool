@@ -431,7 +431,7 @@ app.include_router(system.router, prefix="/api/system", tags=["ops"])
 app.include_router(resource_manager.router, prefix="/api/resources", tags=["assets"])
 app.include_router(captain_analytics.router, prefix="/api/captain", tags=["analytics"])
 app.include_router(approval.router, prefix="/api", tags=["auth"])
-
+app.include_router(oauth2_auth.router, prefix="/api", tags=["auth"])
 app.include_router(network.router, prefix="/api/network", tags=["ops"])
 app.include_router(resource_manager_automation.router, prefix="/api/automation/resources", tags=["automation"])
 

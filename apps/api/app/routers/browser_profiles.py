@@ -29,6 +29,7 @@ class BrowserProfileResponse(BaseModel):
     tiktok_count: int = 0
     insta_count: int = 0
     notebooklm_count: int = 0
+    douyin_count: int = 0
     
     class Config:
         from_attributes = True
@@ -53,6 +54,7 @@ def get_browser_profiles(db: Session = Depends(get_db)):
             tiktok_count=len(getattr(p, 'tiktok_channels', []) or []),
             insta_count=len(getattr(p, 'instagram_channels', []) or []),
             notebooklm_count=len(getattr(p, 'notebooklm_accounts', []) or []),
+            douyin_count=len(getattr(p, 'douyin_channels', []) or []),
         )
         results.append(resp)
     return results

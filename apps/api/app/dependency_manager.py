@@ -85,29 +85,19 @@ class DependencyManager:
         Returns the path to the FFmpeg executable.
         Priority:
         1. FFMPEG_BINARY environment variable
-        2. User Profile Local AppData media bin folder (Primary Bundled)
-        3. C:\ViraLoopMedia\bin backup path (Secondary Bundled)
-        4. Virtual environment 'Scripts' folder (ensured in PATH)
-        5. WinGet Gyan.FFmpeg package bin folder (ensured in PATH)
-        6. System PATH
+        2. System PATH (Global FFmpeg, preferred for hardware acceleration)
+        3. WinGet Gyan.FFmpeg package bin folder
+        4. User Profile Local AppData media bin folder (Primary Bundled)
+        5. C:\ViraLoopMedia\bin backup path (Secondary Bundled)
         """
         # 1. Check environment variable
         env_ffmpeg = os.environ.get("FFMPEG_BINARY")
         if env_ffmpeg and os.path.exists(env_ffmpeg):
             return env_ffmpeg
 
-        # 2. Check User Local AppData media bin folder (Primary)
         local_app_data = os.environ.get("LOCALAPPDATA")
         if not local_app_data:
             local_app_data = os.path.join(os.path.expanduser("~"), "AppData", "Local")
-        local_ffmpeg = os.path.join(local_app_data, "ViraLoop Studio", "media", "bin", "ffmpeg", "bin", "ffmpeg.exe")
-        if os.path.exists(local_ffmpeg):
-            return local_ffmpeg
-
-        # 3. Check backup path at C:\ViraLoopMedia\bin
-        backup_ffmpeg = r"C:\ViraLoopMedia\bin\ffmpeg\bin\ffmpeg.exe"
-        if os.path.exists(backup_ffmpeg):
-            return backup_ffmpeg
 
         # Ensure venv/Scripts is in PATH
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -131,10 +121,21 @@ class DependencyManager:
                 except Exception:
                     pass
 
-        # 4. Check system PATH (includes WinGet added above)
+        # 2. Check system PATH (includes WinGet added above) - Highly preferred for HW Acceleration
         system_ffmpeg = shutil.which("ffmpeg")
         if system_ffmpeg:
+            # Prevent picking up a dummy or non-working one if possible, but generally trust system PATH
             return system_ffmpeg
+
+        # 3. Check User Local AppData media bin folder (Primary Bundled Fallback)
+        local_ffmpeg = os.path.join(local_app_data, "ViraLoop Studio", "media", "bin", "ffmpeg", "bin", "ffmpeg.exe")
+        if os.path.exists(local_ffmpeg):
+            return local_ffmpeg
+
+        # 4. Check backup path at C:\ViraLoopMedia\bin (Secondary Bundled Fallback)
+        backup_ffmpeg = r"C:\ViraLoopMedia\bin\ffmpeg\bin\ffmpeg.exe"
+        if os.path.exists(backup_ffmpeg):
+            return backup_ffmpeg
 
         # 5. Fallback
         return "ffmpeg"
