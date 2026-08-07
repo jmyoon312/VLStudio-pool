@@ -34,10 +34,10 @@ def _get_redis():
         client = redis_lib.from_url(redis_url, decode_responses=True, socket_connect_timeout=3)
         client.ping()
         _redis_client = client
-        logger.info(f"✅ [RedisQueue] Connected to Redis: {redis_url}")
+        logger.info(f"[OK] [RedisQueue] Connected to Redis: {redis_url}")
         return _redis_client
     except Exception as e:
-        logger.warning(f"⚠️ [RedisQueue] Redis unavailable, using in-memory fallback: {e}")
+        logger.warning(f"[WARN] [RedisQueue] Redis unavailable, using in-memory fallback: {e}")
         return None
 
 
@@ -73,7 +73,7 @@ class RedisTaskQueue:
                 logger.info(f"📥 [RedisQueue] Task pushed: {task_id} | type={task_data.get('type')}")
                 return task_id
             except Exception as e:
-                logger.error(f"❌ [RedisQueue] Push failed, using in-memory: {e}")
+                logger.error(f"[FAIL] [RedisQueue] Push failed, using in-memory: {e}")
 
         # In-memory fallback
         _in_memory_queue.append(payload)
@@ -98,7 +98,7 @@ class RedisTaskQueue:
                     return payload
                 return None
             except Exception as e:
-                logger.error(f"❌ [RedisQueue] Pop failed: {e}")
+                logger.error(f"[FAIL] [RedisQueue] Pop failed: {e}")
 
         # In-memory fallback
         if _in_memory_queue:
@@ -120,7 +120,7 @@ class RedisTaskQueue:
                 cls._set_status_redis(r, task_id, status, data or {})
                 return
             except Exception as e:
-                logger.error(f"❌ [RedisQueue] set_status failed: {e}")
+                logger.error(f"[FAIL] [RedisQueue] set_status failed: {e}")
 
         # In-memory fallback
         if task_id in _in_memory_status:
@@ -139,7 +139,7 @@ class RedisTaskQueue:
                     return json.loads(raw)
                 return None
             except Exception as e:
-                logger.error(f"❌ [RedisQueue] get_status failed: {e}")
+                logger.error(f"[FAIL] [RedisQueue] get_status failed: {e}")
 
         # In-memory fallback
         return _in_memory_status.get(task_id)

@@ -73,7 +73,7 @@ class StrategicCenter:
             return []
             
         interest_names = [i.name for i in interests]
-        logger.info(f"🌐 [StrategicCenter] Synthesizing Blue Oceans from: {interest_names}")
+        logger.info(f"[WEB] [StrategicCenter] Synthesizing Blue Oceans from: {interest_names}")
         
         prompt = f"""
         ACT AS A MARKET SYNTHESIS ENGINE.

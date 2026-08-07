@@ -58,12 +58,12 @@ class PatchrightStealth:
                 port = profile.proxy_port or 8080
                 if profile.proxy_username and profile.proxy_password:
                     proxy_config = {
-                        "server": f"http://{profile.proxy_host}:{port}",
+                        "server": f"socks5://{profile.proxy_host}:{port}",
                         "username": profile.proxy_username,
                         "password": profile.proxy_password
                     }
                 else:
-                    proxy_config = {"server": f"http://{profile.proxy_host}:{port}"}
+                    proxy_config = {"server": f"socks5://{profile.proxy_host}:{port}"}
                 logger.info(f"🔒 [Stealth Shield] Binding ISP Proxy: {profile.proxy_host}:{port}")
             elif profile.proxy_mode == "DIRECT_LTE":
                 # EveryProxy default 8080
@@ -140,10 +140,11 @@ class PatchrightStealth:
                 if profile:
                     if profile.proxy_mode == "ISP_PROXY" and profile.proxy_host:
                         p_port = profile.proxy_port or 8080
+                        protocol = getattr(profile, "proxy_protocol", "http") or "http"
                         if profile.proxy_username and profile.proxy_password:
-                            proxy_str = f"socks5://{profile.proxy_username}:{profile.proxy_password}@{profile.proxy_host}:{p_port}"
+                            proxy_str = f"{protocol}://{profile.proxy_username}:{profile.proxy_password}@{profile.proxy_host}:{p_port}"
                         else:
-                            proxy_str = f"socks5://{profile.proxy_host}:{p_port}"
+                            proxy_str = f"{protocol}://{profile.proxy_host}:{p_port}"
                     elif profile.proxy_mode == "DIRECT_LTE":
                         proxy_str = "8080"
             
@@ -173,7 +174,7 @@ class PatchrightStealth:
             if rotate_ip_on_close:
                 import threading
                 def _wait_and_rotate():
-                    logger.info(f"⏳ Waiting for CloakBrowser (Profile: {profile_id}) to close before rotating IP...")
+                    logger.info(f"[WAIT] Waiting for CloakBrowser (Profile: {profile_id}) to close before rotating IP...")
                     process.wait()
                     logger.info(f"🚪 CloakBrowser closed for profile {profile_id}. Triggering background IP rotation!")
                     from app.services.adb_service import adb_service
@@ -183,7 +184,7 @@ class PatchrightStealth:
                 
             return True
         except Exception as e:
-            logger.error(f"❌ [SAIF-PRO] YouTube launch error: {e}")
+            logger.error(f"[FAIL] [SAIF-PRO] YouTube launch error: {e}")
             return False
 
     def human_delay(self, min_sec: float = 1.0, max_sec: float = 3.0):
@@ -243,7 +244,7 @@ class PatchrightStealth:
                 return {"success": True}
                 
             if "challenge" in current_url or "2fa" in current_url or "approve" in current_url:
-                logger.warning("⚠️ 2FA/Verification detected")
+                logger.warning("[WARN] 2FA/Verification detected")
                 return {
                     "success": False,
                     "requires_2fa": True,
@@ -260,7 +261,7 @@ class PatchrightStealth:
                 
             return {"success": True}
         except Exception as e:
-            logger.error(f"❌ Login sequence error: {e}")
+            logger.error(f"[FAIL] Login sequence error: {e}")
             return {
                 "success": False,
                 "error": f"로그인 중 예외 발생: {str(e)}"
@@ -324,7 +325,7 @@ class PatchrightStealth:
                     pass
                 return res
         except Exception as e:
-            logger.error(f"❌ Direct channel scouting failed: {e}")
+            logger.error(f"[FAIL] Direct channel scouting failed: {e}")
             return {"success": False, "error": str(e)}
 
 # Alias for backward compatibility during refactoring

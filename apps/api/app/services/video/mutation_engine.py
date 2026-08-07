@@ -287,9 +287,9 @@ class MutationEngine:
         ]
 
         try:
-            logger.info(f"🚀 [SAIF-P5] FFmpeg exec (GOP={gop_size}, Rate={audio_rate}Hz, Profile={profile['model']})")
+            logger.info(f"[FALLBACK] [SAIF-P5] FFmpeg exec (GOP={gop_size}, Rate={audio_rate}Hz, Profile={profile['model']})")
             proc = subprocess.run(cmd, check=True, capture_output=True)
-            logger.info(f"✨ [SAIF-P5] Mutation success → {output_path}")
+            logger.info(f"[MAGIC] [SAIF-P5] Mutation success → {output_path}")
 
             # ── 상세 변조 보고서 생성 ──────────────────────────────
             applied_layers = []
@@ -431,7 +431,7 @@ class MutationEngine:
                 "ffmpeg_af": af,
             }
         except subprocess.CalledProcessError as e:
-            logger.error(f"❌ [SAIF-P5] Mutation failed:\n{e.stderr.decode(errors='replace')}")
+            logger.error(f"[FAIL] [SAIF-P5] Mutation failed:\n{e.stderr.decode(errors='replace')}")
             return None
 
     def warp_script(self, original_script: str, channel_id: str) -> str:
@@ -439,7 +439,7 @@ class MutationEngine:
         [SAIF Phase 5] 시맨틱 다각화 (Semantic Mutation)
         - 채널별 독립 어휘 구조로 중복 콘텐츠 클러스터링 감지 차단
         """
-        logger.info(f"📝 [SAIF-P5] Semantic warping for channel {channel_id}...")
+        logger.info(f"[SCRIPT] [SAIF-P5] Semantic warping for channel {channel_id}...")
 
         try:
             from app.llm_manager import get_llm_client
@@ -455,11 +455,11 @@ class MutationEngine:
 
             warped = llm.generate(prompt)
             if warped and len(warped) > 10:
-                logger.info(f"✨ [SAIF-P5] Script warped successfully (Length: {len(warped)})")
+                logger.info(f"[MAGIC] [SAIF-P5] Script warped successfully (Length: {len(warped)})")
                 return warped
 
         except Exception as e:
-            logger.warning(f"⚠️ [SAIF-P5] LLM warping failed, using fallback: {e}")
+            logger.warning(f"[WARN] [SAIF-P5] LLM warping failed, using fallback: {e}")
 
         # Fallback: 간단한 동의어 치환
         replacements = {

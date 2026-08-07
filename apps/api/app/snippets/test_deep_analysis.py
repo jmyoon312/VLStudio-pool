@@ -10,7 +10,7 @@ from app.llm_manager import LLMClient
 from app.config import settings
 
 async def main():
-    print("🚀 [Test] Starting Deep Analysis Test...")
+    print("[FALLBACK] [Test] Starting Deep Analysis Test...")
     
     # Check for a sample video in agent temp
     sample_video = "/app/downloads/_agent_temp/beach_clip.mp4"
@@ -22,7 +22,7 @@ async def main():
         if files:
             sample_video = files[0]
         else:
-            print("❌ No mp4 files found for testing. Please download one first.")
+            print("[FAIL] No mp4 files found for testing. Please download one first.")
             return
 
     print(f"📂 Analyzing: {sample_video}")
@@ -32,7 +32,7 @@ async def main():
     
     try:
         report = await analyzer.deep_analyze(sample_video)
-        print("\n✅ [Result] Analysis Completed Successfully!")
+        print("\n[OK] [Result] Analysis Completed Successfully!")
         print("-" * 50)
         print(f"Dimensions: {report.get('dimensions')}")
         print(f"Pacing Score: {report.get('pacing_score')}")
@@ -43,10 +43,10 @@ async def main():
             import json
             print(json.dumps(report["ai_analysis"], indent=2, ensure_ascii=False))
         else:
-            print("\n⚠️ AI Stage was skipped or failed.")
+            print("\n[WARN] AI Stage was skipped or failed.")
             
     except Exception as e:
-        print(f"❌ Analysis Failed: {e}")
+        print(f"[FAIL] Analysis Failed: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -217,7 +217,7 @@ class FFmpegService:
             output_path
         ]
         
-        logger.info(f"🎬 [Hyperframes] Final assembly: {' '.join(cmd_concat)}")
+        logger.info(f"[VIDEO] [Hyperframes] Final assembly: {' '.join(cmd_concat)}")
         subprocess.run(cmd_concat, check=True, capture_output=True)
         
         # Cleanup segments

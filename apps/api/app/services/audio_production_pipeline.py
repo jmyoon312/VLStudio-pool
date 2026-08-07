@@ -95,7 +95,7 @@ class AudioProductionPipeline:
         if output_dir is None:
             output_dir = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "downloads", "audio_production"
+                "07_Downloads", "audio_production"
             )
         
         self.output_dir = output_dir
@@ -208,11 +208,11 @@ class AudioProductionPipeline:
             )
             
             if mixed_path:
-                logger.info(f"   ✅ Mixed: {mixed_path}")
+                logger.info(f"   [OK] Mixed: {mixed_path}")
             else:
                 # Use voice only if mixing failed
                 mixed_path = voice_path
-                logger.warning("   ⚠️ Mixing failed, using voice only")
+                logger.warning("   [WARN] Mixing failed, using voice only")
             
             return AudioProductionResult(
                 success=True,
@@ -225,7 +225,7 @@ class AudioProductionPipeline:
             )
             
         except Exception as e:
-            logger.error(f"❌ [Audio Pipeline] Failed: {e}")
+            logger.error(f"[FAIL] [Audio Pipeline] Failed: {e}")
             return AudioProductionResult(
                 success=False,
                 error=str(e)

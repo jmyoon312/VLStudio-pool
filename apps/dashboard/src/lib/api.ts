@@ -233,6 +233,23 @@ export interface ScriptRefinementRequest {
     tempo_percentage?: number;
 }
 
+export interface SafetyReviewRequest {
+    current_text: string;
+    provider?: string;
+    model?: string;
+}
+
+export interface SafetyChange {
+    original: string;
+    replacement: string;
+    reason: string;
+}
+
+export interface SafetyReviewResponse {
+    revised_script: string;
+    changes: SafetyChange[];
+}
+
 export interface ScriptStyle {
     id: number;
     name: string;

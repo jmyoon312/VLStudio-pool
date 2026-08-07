@@ -30,37 +30,26 @@ def process_video_for_auto_hd(db: Session, video: models.Video, settings: models
                     reason = f"Velocity Score ({video.velocity_score:.1f}) >= {settings.auto_hd_velocity_threshold}"
         
         if auto_upgrade:
-            print(f"🚀 [AUTO-HD] Triggering HD Upgrade for '{video.title}' | Reason: {reason}")
+            print(f"[FALLBACK] [AUTO-HD] Triggering HD Upgrade for '{video.title}' | Reason: {reason}")
             
             # Trigger Download with force_hd=True
-            root_path = settings.root_download_path if settings else "downloads"
+            # Re-construct path using standardized utils
+            from app.utils.path_utils import get_channel_download_path
             
-            # Re-construct path (Same logic as initial download)
-            # Try to start with category folder if it exists
-            download_path = ""
             channel = video.channel
-            
-            # Lazy load channel if missing (should be joined in query usually, but safe guard)
+            # Lazy load channel if missing
             if not channel and video.channel_id:
                 channel = db.query(models.Channel).filter(models.Channel.id == video.channel_id).first()
 
+            category_name = None
+            channel_name = "Unknown_Channel"
+            
             if channel:
-                # Use Category if available
+                channel_name = channel.folder_name or channel.name
                 if channel.category:
-                    cat_folder = channel.category.folder_name or channel.category.name.replace(" ", "_").strip()
-                    # Sanitize channel name handling
-                    ch_name_clean = (channel.folder_name or channel.name).replace(" ", "_").strip()
-                    download_path = os.path.join(root_path, cat_folder, ch_name_clean)
-                else:
-                    # No Category -> Temp Storage? Or Channel Root?
-                    # Scheduler logic was: _temp_storage / ChannelName
-                    ch_name_clean = (channel.folder_name or channel.name).replace(" ", "_").strip()
-                    download_path = os.path.join(root_path, "_temp_storage", ch_name_clean)
-            else:
-                 # Fallback
-                 download_path = os.path.join(root_path, "_temp_storage", "Unknown_Channel")
-
-            os.makedirs(download_path, exist_ok=True)
+                    category_name = channel.category.folder_name or channel.category.name
+                    
+            download_path = get_channel_download_path(settings, category_name=category_name, channel_name=channel_name)
 
             # Call Downloader
             try:
@@ -87,7 +76,7 @@ def process_video_for_auto_hd(db: Session, video: models.Video, settings: models
                                  os.remove(f)
                                  print(f"   - Deleted: {os.path.basename(f)}")
                          except Exception as del_err:
-                             print(f"   ⚠️ Failed to delete {f}: {del_err}")
+                             print(f"   [WARN] Failed to delete {f}: {del_err}")
                 
                 # Direct subprocess call to yt-dlp (Mirroring manual_hd_download logic)
                 import subprocess
@@ -129,7 +118,7 @@ def process_video_for_auto_hd(db: Session, video: models.Video, settings: models
                 )
                 
                 if result_proc.returncode == 0:
-                    print(f"   ✅ yt-dlp success. scanning for file...")
+                    print(f"   [OK] yt-dlp success. scanning for file...")
                     # Find downloaded file
                     search_pattern_result = os.path.join(download_path, f"{timestamp}_{safe_title}.*")
                     video_files = glob.glob(search_pattern_result)
@@ -169,24 +158,24 @@ def process_video_for_auto_hd(db: Session, video: models.Video, settings: models
                         db.commit()
                         db.refresh(video)
                         
-                        print(f"✅ [AUTO-HD] Upgrade Complete & DB Updated for '{video.title}'")
+                        print(f"[OK] [AUTO-HD] Upgrade Complete & DB Updated for '{video.title}'")
                         return True
                     else:
-                        print(f"❌ [AUTO-HD] Download success but file not found matching {search_pattern_result}")
+                        print(f"[FAIL] [AUTO-HD] Download success but file not found matching {search_pattern_result}")
                 else:
                     error_msg = result_proc.stderr or result_proc.stdout or "Unknown error"
-                    print(f"❌ [AUTO-HD] yt-dlp failed for '{video.title}': {error_msg[:200]}")
+                    print(f"[FAIL] [AUTO-HD] yt-dlp failed for '{video.title}': {error_msg[:200]}")
                     
             except Exception as e:
-                print(f"❌ [AUTO-HD] Error downloading '{video.title}': {e}")
+                print(f"[FAIL] [AUTO-HD] Error downloading '{video.title}': {e}")
                 import traceback
                 traceback.print_exception(type(e), e, e.__traceback__)
         
     except Exception as e:
         try:
-            print(f"❌ [AUTO-HD] Error processing video '{video.title}': {e}".encode('utf-8', errors='ignore').decode('utf-8'))
+            print(f"[FAIL] [AUTO-HD] Error processing video '{video.title}': {e}".encode('utf-8', errors='ignore').decode('utf-8'))
         except:
-            print("❌ [AUTO-HD] Critical error in processing video (Print failed)")
+            print("[FAIL] [AUTO-HD] Critical error in processing video (Print failed)")
         
     return False
 
@@ -195,7 +184,7 @@ def scan_all_videos_for_auto_hd(db: Session):
     Scans ALL videos in the database and triggers Auto HD for any that qualify.
     This is intended to be run as a background task when settings change.
     """
-    print("🔄 [AUTO-HD] Starting manual scan for Auto HD upgrades...")
+    print("[REFRESH] [AUTO-HD] Starting manual scan for Auto HD upgrades...")
     settings = crud.get_settings(db)
     if not settings:
         return
@@ -227,11 +216,11 @@ def scan_all_videos_for_auto_hd(db: Session):
         filters.append(models.Video.velocity_score >= settings.auto_hd_velocity_threshold)
         
     if not filters:
-        print("⚠️ [AUTO-HD] No thresholds set. Skipping scan.")
+        print("[WARN] [AUTO-HD] No thresholds set. Skipping scan.")
         return
 
     candidates = query.filter(or_(*filters)).all()
-    print(f"🔍 [AUTO-HD] Found {len(candidates)} candidates matching thresholds. Checking HD status...")
+    print(f"[SEARCH] [AUTO-HD] Found {len(candidates)} candidates matching thresholds. Checking HD status...")
     
     upgraded_count = 0
     for video in candidates:
@@ -239,5 +228,5 @@ def scan_all_videos_for_auto_hd(db: Session):
         if process_video_for_auto_hd(db, video, settings):
             upgraded_count += 1
             
-    print(f"✅ [AUTO-HD] Manual scan complete. Upgraded {upgraded_count} videos.")
+    print(f"[OK] [AUTO-HD] Manual scan complete. Upgraded {upgraded_count} videos.")
 

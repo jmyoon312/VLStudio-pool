@@ -22,7 +22,7 @@ class TelegramNotifier:
 
     async def send_message(self, text: str):
         if not self.token or "YOUR_BOT_TOKEN" in self.token:
-            logger.warning("⚠️ Telegram Token이 설정되지 않아 알림을 보낼 수 없습니다.")
+            logger.warning("[WARN] Telegram Token이 설정되지 않아 알림을 보낼 수 없습니다.")
             return False
             
         try:
@@ -34,19 +34,19 @@ class TelegramNotifier:
                 }
                 response = await client.post(self.api_url, json=payload)
                 if response.status_code == 200:
-                    logger.info("✅ 텔레그램 알림 발송 성공")
+                    logger.info("[OK] 텔레그램 알림 발송 성공")
                     return True
                 else:
-                    logger.error(f"❌ 텔레그램 발송 실패: {response.text}")
+                    logger.error(f"[FAIL] 텔레그램 발송 실패: {response.text}")
                     return False
         except Exception as e:
-            logger.error(f"❌ 텔레그램 알림 중 에러 발생: {e}")
+            logger.error(f"[FAIL] 텔레그램 알림 중 에러 발생: {e}")
             return False
 
     async def notify_approval_required(self, mission_id: str, node_label: str):
         """승인 대기 알림 발송"""
         msg = (
-            f"🚀 <b>ViraLoop 승인 요청</b>\n\n"
+            f"[FALLBACK] <b>ViraLoop 승인 요청</b>\n\n"
             f"📍 <b>미션:</b> {mission_id}\n"
             f"🚧 <b>단계:</b> {node_label}\n\n"
             f"에이전트가 작업을 준비했습니다. 대시보드에서 검토 후 <b>승인</b>해주세요!"

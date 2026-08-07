@@ -71,7 +71,7 @@ class AutomationOrchestrator:
         page = None
         
         try:
-            logger.info(f"🚀 Starting automation for profile {profile_id}")
+            logger.info(f"[FALLBACK] Starting automation for profile {profile_id}")
             
             # Create browser instance (Background mode)
             page = self.stealth.create_page(profile_id)
@@ -107,14 +107,14 @@ class AutomationOrchestrator:
                     login_result = self.stealth.login_google(page, profile.email, profile.password)
                     
                     if login_result["success"]:
-                        logger.info("✅ Auto-login successful!")
+                        logger.info("[OK] Auto-login successful!")
                         results["steps"].append({
                             "step": "login_check",
                             "success": True,
                             "message": "Auto-login successful (human-like)"
                         })
                     elif login_result.get("requires_2fa"):
-                        logger.warning("⚠️ 2FA/Verification required - manual intervention needed")
+                        logger.warning("[WARN] 2FA/Verification required - manual intervention needed")
                         results["steps"].append({
                             "step": "login_check",
                             "success": False,
@@ -124,7 +124,7 @@ class AutomationOrchestrator:
                         results["overall_success"] = False
                         return results
                     else:
-                        logger.error(f"❌ Auto-login failed: {login_result.get('error')}")
+                        logger.error(f"[FAIL] Auto-login failed: {login_result.get('error')}")
                         results["steps"].append({
                             "step": "login_check",
                             "success": False,
@@ -177,7 +177,7 @@ class AutomationOrchestrator:
                     if not channel_result["success"]:
                         results["overall_success"] = False
             else:
-                logger.info("🔍 Manual Mode: Detecting active channel...")
+                logger.info("[SEARCH] Manual Mode: Detecting active channel...")
                 detect_result = self.channel_creator.detect_active_channel(page)
                 
                 results["steps"].append({
@@ -209,11 +209,11 @@ class AutomationOrchestrator:
                     if not admin_result["success"]:
                         results["overall_success"] = False
             
-            logger.info(f"✅ Automation completed for profile {profile_id}")
+            logger.info(f"[OK] Automation completed for profile {profile_id}")
             return results
             
         except Exception as e:
-            logger.error(f"❌ Automation failed: {e}")
+            logger.error(f"[FAIL] Automation failed: {e}")
             import traceback
             logger.error(traceback.format_exc())
             results["overall_success"] = False

@@ -96,4 +96,4 @@ theme_converter.py
 # Dashboard - exclude build/dev artifacts
 apps/dashboard/dev/
 apps/dashboard/.npmrc
-apps/dashboard/src/**/firebase/config.js
+apps/dashboard/src/**/firebase/config.jsapps/api/test_out/

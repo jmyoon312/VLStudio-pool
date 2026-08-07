@@ -25,7 +25,7 @@ class ADBBridge:
         Soft: Fast Data Toggle.
         Hard: Deeper Airplane Mode Reset.
         """
-        logger.info(f"🔄 [Stealth] IP Rotation Triggered (Method: {method})")
+        logger.info(f"[REFRESH] [Stealth] IP Rotation Triggered (Method: {method})")
         try:
             if method == 'soft':
                 self._run_adb(['shell', 'svc', 'data', 'disable'])
@@ -36,10 +36,10 @@ class ADBBridge:
                 time.sleep(2)
                 self._run_adb(['shell', 'svc', 'data', 'enable'])
             
-            logger.info("✅ [Stealth] IP Rotation Complete")
+            logger.info("[OK] [Stealth] IP Rotation Complete")
             return True
         except Exception as e:
-            logger.error(f"❌ [Stealth] IP Rotation Failed: {e}")
+            logger.error(f"[FAIL] [Stealth] IP Rotation Failed: {e}")
             return False
 
     def get_mobile_public_ip(self) -> str:

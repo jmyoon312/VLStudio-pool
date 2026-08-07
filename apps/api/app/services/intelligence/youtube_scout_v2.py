@@ -49,7 +49,7 @@ class YouTubeScoutV2:
             }
             
         except Exception as e:
-            logger.error(f"🔥 Critical error during scraping: {e}")
+            logger.error(f"[FIRE] Critical error during scraping: {e}")
             return {}
 
     @staticmethod

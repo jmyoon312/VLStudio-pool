@@ -37,6 +37,7 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     id = Column(String, primary_key=True, index=True) # UUID
+    name = Column(String, nullable=True) # [NEW] Brand Folder Name
     email = Column(String, unique=True, index=True, nullable=True)
     password = Column(String, nullable=True)
     recovery_email = Column(String, nullable=True)
@@ -74,6 +75,7 @@ class Profile(Base):
     
     # [NEW] Multi-Proxy & Networking settings
     proxy_mode = Column(String, default="DIRECT") # DIRECT_LTE, NETSHARE, ISP_PROXY
+    proxy_protocol = Column(String, default="http") # http, socks5
     proxy_host = Column(String, nullable=True)    # 127.0.0.1 or ISP Proxy IP
     proxy_port = Column(String, nullable=True)    # 8080 or ISP Proxy Port
     proxy_username = Column(String, nullable=True)
@@ -192,6 +194,9 @@ class Channel(Base):
     last_error = Column(Text, nullable=True)
     
     worker_id = Column(Integer, nullable=True) # [Legacy Support]
+    category_id = Column(Integer, ForeignKey("categories.id"), nullable=True) # [NEW]
+    
+    category = relationship("Category") # [NEW]
     
     # If channel is deleted, delete all videos (Cascade)
     videos = relationship("Video", back_populates="channel", cascade="all, delete-orphan")
@@ -693,7 +698,7 @@ class ChannelAccess(Base):
     created_at = Column(DateTime, default=datetime.now)
     
     # Relationships
-    youtube_channel = relationship("YouTubeChannel", back_populates="accesses")
+    youtube_channel = relationship(YouTubeChannel, back_populates="accesses")
     profile = relationship("Profile", backref="youtube_channel_access")
 
 
@@ -709,12 +714,11 @@ class ChannelAccessLog(Base):
     ip_address = Column(String(50), nullable=True)
     user_agent = Column(String(500), nullable=True)
     
-    youtube_channel = relationship("YouTubeChannel", back_populates="access_logs")
+    youtube_channel = relationship(YouTubeChannel, back_populates="access_logs")
     success = Column(Boolean, default=True)
     error_message = Column(Text, nullable=True)
     
     # Relationships
-    youtube_channel = relationship("YouTubeChannel", back_populates="access_logs")
     profile = relationship("Profile", backref="youtube_access_logs")
 
 
@@ -757,7 +761,7 @@ class ChannelAnalytics(Base):
     last_updated = Column(DateTime, default=datetime.now)
     
     # Relationship
-    channel = relationship("YouTubeChannel", back_populates="analytics")
+    channel = relationship(YouTubeChannel, back_populates="analytics")
 
 
 # ============================================
@@ -789,7 +793,7 @@ class ChannelDailyStats(Base):
     created_at = Column(DateTime, default=datetime.now)
     
     # Relationship
-    channel = relationship("YouTubeChannel", backref="daily_stats")
+    channel = relationship(YouTubeChannel, backref="daily_stats")
 
 
 class VideoMetadataCache(Base):
@@ -928,6 +932,10 @@ class BrowserProfile(Base):
     daily_gen_count = Column(Integer, default=0)
     last_gen_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
+    
+    # [NEW] Folder-based Brand UI Integration
+    parent_brand_id = Column(String, ForeignKey("profiles.id"), nullable=True)
+    parent_brand = relationship("Profile", backref="social_profiles")
     
     # Relationships
     tiktok_channels = relationship("TikTokChannel", back_populates="browser_profile", cascade="all, delete-orphan")
@@ -1288,3 +1296,68 @@ class SourceAsset(Base):
     created_at = Column(DateTime, default=datetime.now)
 
 YouTubeChannel = BrandChannel
+
+class DdalkkakDownloadJob(Base):
+    __tablename__ = "ddalkkak_downloads"
+
+    id = Column(Integer, primary_key=True, index=True)
+    url = Column(String, index=True)
+    status = Column(String, default='pending')  # pending, downloading, completed, failed
+    filename = Column(String, nullable=True)
+    file_path = Column(String, nullable=True)
+    size_bytes = Column(Integer, default=0)
+    error = Column(Text, nullable=True)
+    user_id = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+    completed_at = Column(DateTime, nullable=True)
+
+class DdalkkakSubtitleJob(Base):
+    __tablename__ = "ddalkkak_subtitle_jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    video_filename = Column(String, nullable=True)
+    video_path = Column(String, nullable=True)
+    style = Column(String, default='shorts')  # shorts, info, japanese
+    duration_sec = Column(Float, default=0.0)
+    original_urls = Column(Text, nullable=True)  # JSON list
+    status = Column(String, default='pending')
+    progress = Column(Integer, default=0)
+    progress_message = Column(String, nullable=True)
+    subtitle_paths = Column(Text, nullable=True)  # JSON
+    title_candidates = Column(Text, nullable=True)  # JSON list
+    gemini_results = Column(Text, nullable=True)  # JSON
+    user_id = Column(Integer, nullable=True)
+    error = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+    completed_at = Column(DateTime, nullable=True)
+
+class DdalkkakDubbingJob(Base):
+    __tablename__ = "ddalkkak_dubbing_jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=True)
+    script_text = Column(Text, nullable=True)
+    voice_type = Column(String, default='default')
+    status = Column(String, default='pending')
+    progress = Column(Integer, default=0)
+    progress_message = Column(String, nullable=True)
+    result_audio_path = Column(String, nullable=True)
+    result_video_path = Column(String, nullable=True)
+    user_id = Column(Integer, nullable=True)
+    error = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+    completed_at = Column(DateTime, nullable=True)
+
+class DdalkkakClipEditJob(Base):
+    __tablename__ = "ddalkkak_clipedit_jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    source_video_path = Column(String, nullable=True)
+    status = Column(String, default='pending')
+    progress = Column(Integer, default=0)
+    progress_message = Column(String, nullable=True)
+    result_clips = Column(Text, nullable=True) # JSON list of paths
+    user_id = Column(Integer, nullable=True)
+    error = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+    completed_at = Column(DateTime, nullable=True)

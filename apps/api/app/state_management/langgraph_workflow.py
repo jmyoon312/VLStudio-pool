@@ -217,7 +217,7 @@ class MissionStateManager:
         
         # TODO: Save to database for persistence
         
-        logger.info(f"📝 Mission state created: {mission_id}")
+        logger.info(f"[SCRIPT] Mission state created: {mission_id}")
         return state
     
     def get_state(self, mission_id: str) -> Optional[MissionStateData]:

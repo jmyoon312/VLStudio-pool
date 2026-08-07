@@ -64,7 +64,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "뉴스",
-            "title": "📈 실시간 증시/코인 리포트",
+            "title": "[TREND] 실시간 증시/코인 리포트",
             "description": "실시간 주가 지수와 주요 종목 등락률을 시각화한 금융 리포트.",
             "icon": "TrendingUp",
             "graph_json": {
@@ -102,7 +102,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "뉴스",
-            "title": "🚀 테크 트렌드 위클리",
+            "title": "[FALLBACK] 테크 트렌드 위클리",
             "description": "한 주간의 IT/Tech 주요 소식을 요약하여 전달.",
             "icon": "Cpu",
             "graph_json": {
@@ -214,7 +214,7 @@ def seed_templates(db: Session):
         # ==================================================================================
         {
             "category": "리뷰",
-            "title": "📦 언박싱 & 제품 리뷰 (IT/가전)",
+            "title": "[BOX] 언박싱 & 제품 리뷰 (IT/가전)",
             "description": "웹에서 제품 스펙을 긁어와 AI가 장단점을 분석하고 비교하는 영상.",
             "icon": "PackageOpen",
             "graph_json": {
@@ -271,7 +271,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "리뷰",
-            "title": "🔥 핫딜 정보 알리미",
+            "title": "[FIRE] 핫딜 정보 알리미",
             "description": "뽐뿌/클리앙 등 커뮤니티 핫딜 정보를 빠르게 영상화.",
             "icon": "Tag",
             "graph_json": {
@@ -435,7 +435,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "유틸",
-            "title": "💡 생활 꿀팁 모음 (Life Hacks)",
+            "title": "[INFO] 생활 꿀팁 모음 (Life Hacks)",
             "description": "청소, 정리, 수납 등 유용한 생활 팁을 빠르게 보여주는 정보성 영상.",
             "icon": "Lightbulb",
             "graph_json": {
@@ -517,7 +517,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "힐링",
-            "title": "🎧 ASMR / 백색소음",
+            "title": "[AUDIO] ASMR / 백색소음",
             "description": "빗소리, 모닥불 소리 등을 고음질로 믹싱한 1시간 수면 유도 영상.",
             "icon": "Headphones",
             "graph_json": {
@@ -614,7 +614,7 @@ def seed_templates(db: Session):
         },
         {
             "category": "음악",
-            "title": "🎧 Lo-Fi 공부용 플레이리스트",
+            "title": "[AUDIO] Lo-Fi 공부용 플레이리스트",
             "description": "움직이는 일러스트 배경에 저작권 없는 Lo-Fi 음악을 연속 재생.",
             "icon": "Coffee",
             "graph_json": {

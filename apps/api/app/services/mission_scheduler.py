@@ -172,12 +172,12 @@ class MissionScheduler:
             
             # In a real implementation, this would add to APScheduler
             # For now, just store the config
-            logger.info(f"✅ Scheduled channel {channel_id}: {cron}")
+            logger.info(f"[OK] Scheduled channel {channel_id}: {cron}")
             
             return True
             
         except Exception as e:
-            logger.error(f"❌ Failed to schedule channel {channel_id}: {e}")
+            logger.error(f"[FAIL] Failed to schedule channel {channel_id}: {e}")
             return False
     
     def get_schedule(self, channel_id: int) -> Optional[ScheduleConfig]:

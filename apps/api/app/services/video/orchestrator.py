@@ -25,7 +25,7 @@ class VideoOrchestrator:
         Coordinates the generation of image, audio, and subtitles for a scene.
         [UPDATED] Supports manual asset overrides and freeze effects.
         """
-        logger.info(f"🚀 Producing assets for Scene #{scene_id} (Manual: {bool(manual_asset_path)})")
+        logger.info(f"[FALLBACK] Producing assets for Scene #{scene_id} (Manual: {bool(manual_asset_path)})")
         
         # 1. Image/Video Acquisition
         image_path = None
@@ -33,9 +33,9 @@ class VideoOrchestrator:
             # Use provided path if it exists locally
             if os.path.exists(manual_asset_path):
                 image_path = manual_asset_path
-                logger.info(f"✅ Using manual asset for Scene #{scene_id}: {image_path}")
+                logger.info(f"[OK] Using manual asset for Scene #{scene_id}: {image_path}")
             else:
-                 logger.warning(f"⚠️ Manual asset path not found: {manual_asset_path}. Falling back to AI Gen.")
+                 logger.warning(f"[WARN] Manual asset path not found: {manual_asset_path}. Falling back to AI Gen.")
         
         if not image_path:
             # AI Generation (Default)

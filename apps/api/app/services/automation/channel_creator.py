@@ -20,7 +20,7 @@ class ChannelCreator:
         Handles missing main channel (My Profile popup) automatically.
         """
         try:
-            logger.info(f"🎬 Starting channel creation: {brand_name}")
+            logger.info(f"[VIDEO] Starting channel creation: {brand_name}")
             
             # 1. Direct navigation to Channel Switcher
             switcher_url = 'https://www.youtube.com/channel_switcher'
@@ -33,7 +33,7 @@ class ChannelCreator:
             
             for ch in existing_channels:
                 if ch.inner_text().replace(" ", "").lower() == normalized_target:
-                    logger.info(f"✅ Channel '{brand_name}' already exists. Skipping creation.")
+                    logger.info(f"[OK] Channel '{brand_name}' already exists. Skipping creation.")
                     return {
                         "success": True, 
                         "channel_url": page.url,
@@ -45,7 +45,7 @@ class ChannelCreator:
             max_attempts = 2
             for attempt in range(max_attempts):
                 phase_name = "Personal Channel Check" if attempt == 0 else "Brand Channel Creation"
-                logger.info(f"🔄 Phase {attempt+1}: {phase_name}")
+                logger.info(f"[REFRESH] Phase {attempt+1}: {phase_name}")
                 
                 # A. Look for "Create a channel" button
                 create_btn = page.locator('text=채널 만들기').first
@@ -69,7 +69,7 @@ class ChannelCreator:
                     personal_dialog_candidate = page.locator('div:has-text("내 프로필")').last
 
                 if personal_dialog_candidate.is_visible():
-                    logger.info("⚠️ Detected 'My Profile' Dialog (Personal Channel missing). Creating it first...")
+                    logger.info("[WARN] Detected 'My Profile' Dialog (Personal Channel missing). Creating it first...")
                     
                     all_inputs = personal_dialog_candidate.locator('input').all()
                     valid_inputs = [inp for inp in all_inputs if inp.is_visible() and inp.get_attribute('type') not in ['checkbox', 'hidden', 'file']]
@@ -97,7 +97,7 @@ class ChannelCreator:
                             self.stealth.human_type(p_handle_input, safe_handle)
                             self.stealth.human_delay(1, 2)
                     else:
-                         logger.warning("⚠️ No text inputs found in 'My Profile' dialog! Trying fallback...")
+                         logger.warning("[WARN] No text inputs found in 'My Profile' dialog! Trying fallback...")
                          fallback_name = page.locator('input[placeholder="이름"]').first
                          if fallback_name.is_visible():
                              fallback_name.fill("")
@@ -113,7 +113,7 @@ class ChannelCreator:
                     if create_personal_btn.is_visible():
                         logger.info("Clicking confirm on Personal Channel dialog...")
                         self.stealth.safe_click(create_personal_btn)
-                        logger.info("⏳ Waiting for Personal Channel creation...")
+                        logger.info("[WAIT] Waiting for Personal Channel creation...")
                         self.stealth.human_delay(6, 8)
                         
                         logger.info("Returning to Switcher to proceed to Brand Channel...")
@@ -129,7 +129,7 @@ class ChannelCreator:
                     name_input = page.locator('ytd-channel-name-input-renderer input').first
 
                 if name_input.is_visible():
-                    logger.info("✅ Found Brand Channel Name Input")
+                    logger.info("[OK] Found Brand Channel Name Input")
                     name_input.fill("")
                     self.stealth.human_type(name_input, brand_name)
                     self.stealth.human_delay(0.5, 1)
@@ -158,7 +158,7 @@ class ChannelCreator:
                         # Verify Logic
                         current_url = page.url
                         if "youtube.com/channel/" in current_url or "youtube.com/@" in current_url:
-                            logger.info(f"✅ Channel created successfully: {current_url}")
+                            logger.info(f"[OK] Channel created successfully: {current_url}")
                             return {
                                 "success": True, 
                                 "channel_url": current_url,
@@ -181,7 +181,7 @@ class ChannelCreator:
             return {"success": False, "error": "Max attempts exceeded"}
                 
         except Exception as e:
-            logger.error(f"❌ Channel creation failed: {e}")
+            logger.error(f"[FAIL] Channel creation failed: {e}")
             import traceback
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
@@ -234,7 +234,7 @@ class ChannelCreator:
                                 txt = elem.inner_text().strip()
                                 if txt and txt != "내 채널" and "Studio" not in txt:
                                     detected_name = txt
-                                    logger.info(f"🎯 [Studio Selector Hit] Selector '{sel}' -> '{detected_name}'")
+                                    logger.info(f"[TARGET] [Studio Selector Hit] Selector '{sel}' -> '{detected_name}'")
                                     break
                         except:
                             continue
@@ -250,7 +250,7 @@ class ChannelCreator:
                                     candidate = lines[idx + 1]
                                     if candidate and not candidate.startswith("대시보드"):
                                         detected_name = candidate
-                                        logger.info(f"🎯 [Studio Drawer Lines Hit] -> '{detected_name}'")
+                                        logger.info(f"[TARGET] [Studio Drawer Lines Hit] -> '{detected_name}'")
                         except Exception as e:
                             logger.warning(f"Drawer text parse warning: {e}")
 
@@ -319,5 +319,5 @@ class ChannelCreator:
             return {"success": False, "error": "Could not detect active channel ID or name."}
 
         except Exception as e:
-            logger.error(f"❌ Detection failed: {e}")
+            logger.error(f"[FAIL] Detection failed: {e}")
             return {"success": False, "error": str(e)}

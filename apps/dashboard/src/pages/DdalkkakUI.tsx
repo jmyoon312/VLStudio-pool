@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ExportModal } from '../features/flow2capcut/components/ExportModal';
+import TTSSettingsDialog from '../components/TTSSettingsDialog';
 import { toast } from 'sonner';
 
 declare global {
@@ -20,12 +21,17 @@ const DdalkkakUI: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportPhase, setExportPhase] = useState<'saving' | 'launching' | null>(null);
   const [currentJob, setCurrentJob] = useState<{ type: string; id: number } | null>(null);
+  const [isTtsModalOpen, setIsTtsModalOpen] = useState(false);
+  const [initialTtsConfig, setInitialTtsConfig] = useState<any>(null);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'DDALKKAK_EXPORT_CAPCUT') {
         setCurrentJob({ type: event.data.jobType, id: event.data.jobId });
         setIsExportModalOpen(true);
+      } else if (event.data?.type === 'DDALKKAK_OPEN_TTS_SETTINGS') {
+        setInitialTtsConfig(event.data.initialConfig || null);
+        setIsTtsModalOpen(true);
       }
     };
     window.addEventListener('message', handleMessage);
@@ -224,6 +230,19 @@ const DdalkkakUI: React.FC = () => {
         allowEmptyPath={true}
         loading={isExporting}
         exportPhase={exportPhase}
+      />
+
+      <TTSSettingsDialog
+        open={isTtsModalOpen}
+        onOpenChange={setIsTtsModalOpen}
+        initialConfig={initialTtsConfig}
+        onSave={(config) => {
+          setIsTtsModalOpen(false);
+          const iframe = document.querySelector('iframe[title="Ddalkkak Studio"]') as HTMLIFrameElement;
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({ type: 'DDALKKAK_TTS_SETTINGS_SAVED', config }, '*');
+          }
+        }}
       />
     </div>
   );

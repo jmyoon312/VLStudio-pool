@@ -62,7 +62,7 @@ class NetworkStealthManager:
                     }
                 logger.info(f"LTE Gateway not yet assigned (Attempt {attempt+1}/2), waiting...")
             except Exception as e:
-                logger.error(f"❌ LTE 정보 획득 실패: {e}")
+                logger.error(f"[FAIL] LTE 정보 획득 실패: {e}")
             
             time.sleep(1)
         return {}
@@ -76,7 +76,7 @@ class NetworkStealthManager:
         # 1. IP Rotation (선행 필수)
         success = adb_service.rotate_ip(serial)
         if not success:
-            logger.error("❌ [SAIF-P1] IP Rotation failed. Safety breach risk. Aborting.")
+            logger.error("[FAIL] [SAIF-P1] IP Rotation failed. Safety breach risk. Aborting.")
             return False
             
         self.last_captain_id = captain_id
@@ -92,7 +92,7 @@ class NetworkStealthManager:
         name = info.get("name")
 
         if not gw or not idx:
-            logger.error("❌ LTE 인터페이스가 활성화되지 않아 보안 강화를 수행할 수 없습니다.")
+            logger.error("[FAIL] LTE 인터페이스가 활성화되지 않아 보안 강화를 수행할 수 없습니다.")
             return False
             
         self.lte_gateway = gw
@@ -104,12 +104,12 @@ class NetworkStealthManager:
             res = subprocess.run(["powershell.exe", "-NoProfile", "-Command", check_cmd], capture_output=True, text=True, timeout=5)
             current_metric = int(res.stdout.strip())
             if current_metric == 1:
-                logger.info(f"✅ [SAIF-P1] LTE (idx:{idx}) is already isolated (Metric=1). Skipping UAC elevation.")
+                logger.info(f"[OK] [SAIF-P1] LTE (idx:{idx}) is already isolated (Metric=1). Skipping UAC elevation.")
                 return True
         except Exception as e:
             logger.debug(f"Metric check failed: {e}")
 
-        logger.info(f"🚀 [SAIF-P1] Activating Full-Tunnel on {name} (GW: {gw})")
+        logger.info(f"[FALLBACK] [SAIF-P1] Activating Full-Tunnel on {name} (GW: {gw})")
         
         try:
             import base64
@@ -135,10 +135,10 @@ class NetworkStealthManager:
             logger.info("Executing network configuration...")
             subprocess.run(["powershell.exe", "-NoProfile", "-Command", elevate_cmd], capture_output=True)
                 
-            logger.info("✅ [SAIF-P1] Full-Tunnel Isolation Command Issued. (Internal Comm Preserved)")
+            logger.info("[OK] [SAIF-P1] Full-Tunnel Isolation Command Issued. (Internal Comm Preserved)")
             return True
         except Exception as e:
-            logger.error(f"❌ [SAIF-P1] 보안 강화 중 오류 발생: {e}")
+            logger.error(f"[FAIL] [SAIF-P1] 보안 강화 중 오류 발생: {e}")
             return False
 
     def reset_routing(self):
@@ -179,10 +179,10 @@ class NetworkStealthManager:
             logger.info("Executing network reset...")
             subprocess.run(["powershell.exe", "-NoProfile", "-Command", elevate_cmd], capture_output=True)
                 
-            logger.info("✅ [SAIF-P1] Network Reset Command Issued.")
+            logger.info("[OK] [SAIF-P1] Network Reset Command Issued.")
             
         except Exception as e:
-            logger.error(f"❌ [SAIF-P1] 네트워크 복구 중 오류 발생: {e}")
+            logger.error(f"[FAIL] [SAIF-P1] 네트워크 복구 중 오류 발생: {e}")
         
         self.lte_gateway = None
         self.active_lte_iface = None

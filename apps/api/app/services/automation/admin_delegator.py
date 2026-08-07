@@ -42,7 +42,7 @@ class AdminDelegator:
                     has_warning = True
                 
                 if has_warning:
-                    logger.warning("⚠️ 'Unsupported Browser' page detected. Attempting to skip...")
+                    logger.warning("[WARN] 'Unsupported Browser' page detected. Attempting to skip...")
                     
                     # Try finding the skip button
                     skip_btn = page.locator('text="스튜디오로 건너뛰기"').first
@@ -120,7 +120,7 @@ class AdminDelegator:
             
             # [IDEMPOTENCY CHECK] Check if admin already exists
             if admin_email in page.content():
-                logger.info(f"✅ Users '{admin_email}' already has permissions. Skipping.")
+                logger.info(f"[OK] Users '{admin_email}' already has permissions. Skipping.")
                 return {
                     "success": True, 
                     "admin_email": admin_email,
@@ -199,12 +199,12 @@ class AdminDelegator:
                 self.stealth.human_delay(3, 5)
             
             # 9. Verify
-            logger.info(f"✅ Admin invitation process for {admin_email} completed")
+            logger.info(f"[OK] Admin invitation process for {admin_email} completed")
             return {
                 "success": True,
                 "admin_email": admin_email
             }
 
         except Exception as e:
-            logger.error(f"❌ Admin delegation failed: {e}")
+            logger.error(f"[FAIL] Admin delegation failed: {e}")
             return {"success": False, "error": str(e)}

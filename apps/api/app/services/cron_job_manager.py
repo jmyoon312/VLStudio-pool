@@ -142,7 +142,7 @@ class CronJobManager:
         if not self._running:
             self.scheduler.start()
             self._running = True
-            logger.info("✅ CronJobManager started")
+            logger.info("[OK] CronJobManager started")
     
     def stop(self):
         """Stop the scheduler"""
@@ -203,11 +203,11 @@ class CronJobManager:
             
             self._jobs[job_id] = job
             
-            logger.info(f"✅ Added job: {job_id} ({cron_expression})")
+            logger.info(f"[OK] Added job: {job_id} ({cron_expression})")
             return True
             
         except Exception as e:
-            logger.error(f"❌ Failed to add job {job_id}: {e}")
+            logger.error(f"[FAIL] Failed to add job {job_id}: {e}")
             return False
     
     def add_job_from_template(
@@ -353,11 +353,11 @@ class CronJobManager:
                 
                 try:
                     result = job.callback(*args, **kwargs)
-                    logger.info(f"✅ Job {job_id} completed")
+                    logger.info(f"[OK] Job {job_id} completed")
                     return result
                 except Exception as e:
                     job.failure_count += 1
-                    logger.error(f"❌ Job {job_id} failed: {e}")
+                    logger.error(f"[FAIL] Job {job_id} failed: {e}")
                     raise
         
         return wrapper

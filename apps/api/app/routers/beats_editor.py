@@ -121,15 +121,15 @@ async def get_beats(video_id: int, db: Session = Depends(get_db)):
                 
                 # 자막 파일 우선순위: .ko.vtt > .ko.srt > .vtt > .srt > .txt
                 found_path = None
-                logger.info(f"🔍 Checking subtitles for base: {base_path}")
+                logger.info(f"[SEARCH] Checking subtitles for base: {base_path}")
                 for ext in ['.ko.vtt', '.ko.srt', '.en.srt', '.vtt', '.srt', '.txt']:
                     potential = base_path + ext
                     if os.path.exists(potential):
-                        logger.info(f"✅ Found subtitle: {potential}")
+                        logger.info(f"[OK] Found subtitle: {potential}")
                         found_path = potential
                         break
                     else:
-                        # logger.debug(f"❌ Not found: {potential}")
+                        # logger.debug(f"[FAIL] Not found: {potential}")
                         pass
                 
                 if found_path:
@@ -137,7 +137,7 @@ async def get_beats(video_id: int, db: Session = Depends(get_db)):
                         raw_transcript = f.read() # Read FULL content for analysis/editor
                         transcript = clean_transcript(raw_transcript)
                 else:
-                    logger.warning(f"⚠️ No subtitles found for {video.title}")
+                    logger.warning(f"[WARN] No subtitles found for {video.title}")
             except Exception as e:
                 logger.error(f"Failed to read transcript file: {e}")
 

@@ -56,7 +56,7 @@ def update_video_stats():
         for vid_data in target_batch:
             # [JITTER] Randomized delay between requests (3-7 seconds)
             delay = random.uniform(3, 7)
-            logger.info(f"⏳ Jitter delay: {delay:.1f}s before fetching {vid_data.title}")
+            logger.info(f"[WAIT] Jitter delay: {delay:.1f}s before fetching {vid_data.title}")
             try:
                 time.sleep(delay)
             except Exception:
@@ -99,7 +99,7 @@ def update_video_stats():
                     
                 video.last_updated = datetime.now()
                 db.commit() 
-                print(f"✅ Updated {video.title}: Views={current_views}, Viral={video.viral_score:.1f}%")
+                print(f"[OK] Updated {video.title}: Views={current_views}, Viral={video.viral_score:.1f}%")
                 
                 # Auto HD Upgrade Trigger
                 try:
@@ -113,7 +113,7 @@ def update_video_stats():
                 err_str = str(e)
                 # [FIX] Gracefully handle interpreter shutdown during background tasks
                 if "interpreter shutdown" in err_str or "cannot schedule" in err_str:
-                    logger.warning("⚠️ Stats update interrupted: interpreter shutting down. Exiting cleanly.")
+                    logger.warning("[WARN] Stats update interrupted: interpreter shutting down. Exiting cleanly.")
                     return
                 logger.error(f"Failed to update stats for {video.id}: {e}")
                 db.rollback()
@@ -128,7 +128,7 @@ def update_video_stats():
     except RuntimeError as e:
         err_str = str(e)
         if "interpreter shutdown" in err_str or "cannot schedule" in err_str:
-            logger.warning("⚠️ Stats update aborted: interpreter shutting down.")
+            logger.warning("[WARN] Stats update aborted: interpreter shutting down.")
             return
         logger.error(f"Error in update_video_stats: {e}")
         db.rollback()
@@ -191,7 +191,7 @@ def daily_cleanup_task():
         ).all()
         
         if not old_videos:
-            logger.info("✅ No old videos to clean up")
+            logger.info("[OK] No old videos to clean up")
             return
         
         deleted_count = 0
@@ -237,11 +237,11 @@ def daily_cleanup_task():
                 logger.error(f"Failed to delete video {video.id}: {e}")
         
         db.commit()
-        logger.info(f"✅ Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
+        logger.info(f"[OK] Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
         
     except Exception as e:
         db.rollback()
-        logger.error(f"❌ Failed to run daily cleanup: {e}")
+        logger.error(f"[FAIL] Failed to run daily cleanup: {e}")
     finally:
         db.close()
 
@@ -300,7 +300,7 @@ def daily_cleanup_task():
         ).all()
         
         if not old_videos:
-            logger.info("✅ No old videos to clean up")
+            logger.info("[OK] No old videos to clean up")
             return
         
         deleted_count = 0
@@ -346,11 +346,11 @@ def daily_cleanup_task():
                 logger.error(f"Failed to delete video {video.id}: {e}")
         
         db.commit()
-        logger.info(f"✅ Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
+        logger.info(f"[OK] Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
         
     except Exception as e:
         db.rollback()
-        logger.error(f"❌ Failed to run daily cleanup: {e}")
+        logger.error(f"[FAIL] Failed to run daily cleanup: {e}")
     finally:
         db.close()
 
@@ -389,7 +389,7 @@ def channel_cleanup_task():
             except Exception as e:
                 logger.error(f"Failed to resolve channel {ch.url}: {e}")
                 
-        logger.info(f"✅ Resolved {resolved_count} missing channel infos.")
+        logger.info(f"[OK] Resolved {resolved_count} missing channel infos.")
 
         from sqlalchemy import func
         # 2. Purge channels outside 1k ~ 100k
@@ -414,9 +414,9 @@ def channel_cleanup_task():
             db.commit()
             logger.info(f"🗑️ Purged {purge_count} channels outside target range (kept high performers).")
         else:
-            logger.info("✅ No channels to purge in this run.")
+            logger.info("[OK] No channels to purge in this run.")
 
     except Exception as e:
-        logger.error(f"❌ Failed to run channel cleanup: {e}")
+        logger.error(f"[FAIL] Failed to run channel cleanup: {e}")
     finally:
         db.close()

@@ -55,7 +55,7 @@ def _critic_node(state: RenderState, renderer) -> RenderState:
         )
         return {**state, "success": True, "final_path": final_path}
     except RuntimeError as e:
-        logger.warning(f"⚠️ [Critic] Render failed (attempt {state['iteration_count'] + 1}): {str(e)[:200]}")
+        logger.warning(f"[WARN] [Critic] Render failed (attempt {state['iteration_count'] + 1}): {str(e)[:200]}")
         return {
             **state,
             "success": False,
@@ -107,7 +107,7 @@ def _drafter_node(state: RenderState, llm_callable) -> RenderState:
         cleaned = re.sub(r"\s*```$", "", cleaned)
 
         patched = json.loads(cleaned)
-        logger.info("🛠️ [Drafter] Successfully generated scene prop patch.")
+        logger.info("[TOOL] [Drafter] Successfully generated scene prop patch.")
         return {**state, "scene_data": patched}
 
     except (json.JSONDecodeError, Exception) as e:
@@ -178,7 +178,7 @@ class RenderHarness:
             route = _should_retry(state)
 
             if route == "end":
-                logger.info(f"✅ [RenderHarness] Render succeeded on attempt {state['iteration_count']}.")
+                logger.info(f"[OK] [RenderHarness] Render succeeded on attempt {state['iteration_count']}.")
                 return state["final_path"]
 
             elif route == "fail":

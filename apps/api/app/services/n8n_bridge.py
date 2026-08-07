@@ -59,7 +59,7 @@ class N8nBridgeService:
             resp = requests.post(url, headers=cls.get_headers(), json=workflow_json)
             resp.raise_for_status()
             data = resp.json()
-            logger.info(f"✅ Created n8n Workflow: {data.get('id')} ({data.get('name')})")
+            logger.info(f"[OK] Created n8n Workflow: {data.get('id')} ({data.get('name')})")
             return data
         except requests.exceptions.HTTPError as e:
             logger.error(f"Failed to create workflow: {e.response.text}")
@@ -84,7 +84,7 @@ class N8nBridgeService:
         Directly triggers an n8n workflow via its Webhook URL.
         """
         try:
-            logger.info(f"🚀 Triggering n8n Webhook: {webhook_url}")
+            logger.info(f"[FALLBACK] Triggering n8n Webhook: {webhook_url}")
             resp = requests.post(webhook_url, json=payload, timeout=30)
             resp.raise_for_status()
             return {"status": "success", "data": resp.json()}

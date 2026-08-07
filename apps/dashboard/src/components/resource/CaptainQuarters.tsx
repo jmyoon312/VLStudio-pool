@@ -816,7 +816,7 @@ const CaptainChannelList = ({ profileId, parentScan, onOpenLogs }: { profileId: 
 };
 
 // --- Sub Component: Warmup Button with Dropdown ---
-export const WarmupButton = ({ channel, profileId, onOpenLogs, onNeedSync }: { channel?: any, profileId: string, onOpenLogs?: (channelId: string) => void, onNeedSync?: () => void }) => {
+export const WarmupButton = ({ channel, profileId, onOpenLogs, onNeedSync, compact = false }: { channel?: any, profileId: string, onOpenLogs?: (channelId: string) => void, onNeedSync?: () => void, compact?: boolean }) => {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [isVisibleMode, setIsVisibleMode] = useState(false);

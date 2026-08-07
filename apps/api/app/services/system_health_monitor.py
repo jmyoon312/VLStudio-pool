@@ -304,7 +304,7 @@ class SystemHealthMonitor:
         
         self._alerts[alert_id] = alert
         
-        logger.warning(f"🚨 Alert: {message}")
+        logger.warning(f"[ALERT] Alert: {message}")
     
     async def resolve_alert(self, alert_id: str) -> bool:
         alert = self._alerts.get(alert_id)
@@ -340,7 +340,7 @@ class SystemHealthMonitor:
     
     def set_threshold(self, metric: str, value: float):
         self._alert_thresholds[metric] = value
-        logger.info(f"📊 Threshold set: {metric} = {value}")
+        logger.info(f"[CHART] Threshold set: {metric} = {value}")
     
     def get_health_summary(self) -> Dict:
         services = list(self._services.values())

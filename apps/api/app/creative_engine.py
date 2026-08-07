@@ -292,14 +292,14 @@ class CreativeEngine:
             
             # Auto-Failover to NVIDIA if Google failed and not already using NVIDIA
             if provider == "google" and "nvidia" not in full_model_name:
-                logger.info("🔄 Auto-switching to NVIDIA DeepSeek V4 Flash due to failure...")
+                logger.info("[REFRESH] Auto-switching to NVIDIA DeepSeek V4 Flash due to failure...")
                 try:
                     return self.segment_script(text, mode, provider="nvidia", model="deepseek-ai/deepseek-v4-flash", style_prompt=style_prompt)
                 except Exception as e2:
-                    logger.error(f"❌ NVIDIA Failover also failed: {e2}")
+                    logger.error(f"[FAIL] NVIDIA Failover also failed: {e2}")
                     
                     # FINAL FALLBACK: Mock Data for Testing (if enabled or all else fails)
-                    logger.warning("⚠️ All LLMs failed. Returning MOCK data for testing purposes.")
+                    logger.warning("[WARN] All LLMs failed. Returning MOCK data for testing purposes.")
                     return [
                         {
                             "scene_id": 1,

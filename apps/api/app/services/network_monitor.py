@@ -59,7 +59,7 @@ class NetworkMonitor:
         self._stop_event.clear()
         self._thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self._thread.start()
-        logger.info("✅ NetworkMonitor Started")
+        logger.info("[OK] NetworkMonitor Started")
 
     def stop(self):
         self._stop_event.set()
@@ -88,7 +88,7 @@ class NetworkMonitor:
                 
                 if needs_heavy_check or (now - last_heavy_check) >= 60:
                     if needs_heavy_check:
-                        logger.info("🔄 Network adapter change detected! Instantly triggering routing enforcement.")
+                        logger.info("[REFRESH] Network adapter change detected! Instantly triggering routing enforcement.")
                     self._check_and_enforce()
                     last_heavy_check = now
             except Exception as e:
@@ -212,7 +212,7 @@ class NetworkMonitor:
                     if is_physical_wired:
                         wired_idx = idx
                         wired_name = adp.get('Name')
-                        logger.debug(f"✅ Identified Wired LAN (PCI): {wired_name} ({desc})")
+                        logger.debug(f"[OK] Identified Wired LAN (PCI): {wired_name} ({desc})")
                         continue
 
                     # 3. Identify LTE/Tethering (Priority: USB or Known Driver)
@@ -235,7 +235,7 @@ class NetworkMonitor:
                         lte_idx = idx
                         # [Bug 4] lte_name에 실제 OS Alias만 저장 (접미사 오염 금지)
                         lte_name = adp.get('Name')
-                        logger.debug(f"✅ Identified LTE via Driver/Bus: {lte_name} ({desc})")
+                        logger.debug(f"[OK] Identified LTE via Driver/Bus: {lte_name} ({desc})")
                         continue
 
                     # 4. Generic active adapters (Potential LTE if unidentified)
@@ -261,14 +261,14 @@ class NetworkMonitor:
                             lte_idx = c_idx
                             # [Bug 4] 실제 Alias만 저장, 디버그 정보는 로그로
                             lte_name = c_name
-                            logger.debug(f"🎯 IP-Match Identified LTE: {lte_name} (ip={ip_res})")
+                            logger.debug(f"[TARGET] IP-Match Identified LTE: {lte_name} (ip={ip_res})")
                             break
 
                 # Final fallback: If still nothing, pick the first active non-wifi/non-wired
                 if lte_idx is None and generic_candidates:
                     lte_idx, lte_name = generic_candidates[0]
                     # [Bug 4] Fallback에서도 실제 Alias만 저장 (접미사 붙이지 않음)
-                    logger.debug(f"[⚠️ Fallback] 실리주의: Active-Fallback LTE: {lte_name}")
+                    logger.debug(f"[[WARN] Fallback] 실리주의: Active-Fallback LTE: {lte_name}")
 
             
             except Exception as e:
@@ -426,7 +426,7 @@ class NetworkMonitor:
              
              # Enforce if wrong OR if we just want to be sure (since "0" or "256" persists)
              if cur != -1: # Always enforce if active
-                 logger.debug(f"🔧 Enforcing Wired Metric: 10 (via PS + netsh)")
+                 logger.debug(f"[WRENCH] Enforcing Wired Metric: 10 (via PS + netsh)")
                  # PowerShell Method
                  _, success, err = self._run_ps(f"Set-NetIPInterface -InterfaceIndex {wired_idx} -InterfaceMetric {target} -AutomaticMetric Disabled")
                  if not success and ("AccessDenied" in err or "액세스가 거부" in err):
@@ -446,7 +446,7 @@ class NetworkMonitor:
              name = self.current_status['wifi']['name']
              
              if cur != -1: 
-                  logger.debug(f"🔧 Enforcing Wi-Fi Metric: {target} (via PS + netsh) on {name}")
+                  logger.debug(f"[WRENCH] Enforcing Wi-Fi Metric: {target} (via PS + netsh) on {name}")
                   # PowerShell Method
                   _, success, err = self._run_ps(f"Set-NetIPInterface -InterfaceIndex {wifi_idx} -InterfaceMetric {target} -AutomaticMetric Disabled")
                   if not success and ("AccessDenied" in err or "액세스가 거부" in err):
@@ -467,7 +467,7 @@ class NetworkMonitor:
         
         # [Safety] If LTE is 0 or -1 (Unknown), don't touch it to avoid disconnect.
         if lte_idx and not is_isolated and cur_l != self.LTE_METRIC_TARGET and str(cur_l) != "0":
-             logger.debug(f"🔧 Fixing LTE Metric: {cur_l} -> {self.LTE_METRIC_TARGET}")
+             logger.debug(f"[WRENCH] Fixing LTE Metric: {cur_l} -> {self.LTE_METRIC_TARGET}")
              
              # Force Metric 50. DO NOT DELETE ROUTES.
              cmds = [

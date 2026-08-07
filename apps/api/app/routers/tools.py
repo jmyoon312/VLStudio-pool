@@ -576,12 +576,12 @@ async def get_voices(engine: str, language: str = None, db: Session = Depends(da
                             response = await asyncio.to_thread(run_req)
                             
                             if response.status_code == 200:
-                                logger.info(f"✅ [Typecast] Success with key {clean_key[:8]}...")
+                                logger.info(f"[OK] [Typecast] Success with key {clean_key[:8]}...")
                                 return response.json(), 200
                             
                             last_status = response.status_code
                         except Exception as e:
-                            logger.debug(f"⚠️ [Typecast] Attempt failed: {e}")
+                            logger.debug(f"[WARN] [Typecast] Attempt failed: {e}")
             
             return None, last_status or 500
 
@@ -631,16 +631,16 @@ async def get_voices(engine: str, language: str = None, db: Session = Depends(da
             else:
                 # If we got here, all attempts failed. 
                 # Provide descriptive error placeholder based on status
-                error_msg = "❌ API Connection Failed"
+                error_msg = "[FAIL] API Connection Failed"
                 if status in [401, 403]:
-                    error_msg = "❌ Invalid API Key (Auth Failed)"
+                    error_msg = "[FAIL] Invalid API Key (Auth Failed)"
                 
                 return [{"id": "error", "name": error_msg, "lang": "ko"}]
 
         except Exception as e:
             logger.error(f"Typecast Final Error: {e}")
 
-        return [{"id": "error", "name": "❌ Unexpected Typecast Error", "lang": "ko"}]
+        return [{"id": "error", "name": "[FAIL] Unexpected Typecast Error", "lang": "ko"}]
         
     elif engine == "gemini":
         gemini_voices = [

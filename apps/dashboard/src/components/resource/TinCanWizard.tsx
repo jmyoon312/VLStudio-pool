@@ -43,6 +43,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
 
     // Data State
     const [draftId, setDraftId] = useState<string>("");
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState(""); // Optional, for record keeping
     const [recoveryEmail, setRecoveryEmail] = useState("");
@@ -55,6 +56,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
     const [showManualInput, setShowManualInput] = useState(false);
     // Network Setup State
     const [proxyMode, setProxyMode] = useState<string>("DIRECT_LTE"); // DIRECT_LTE, NETSHARE, ISP_PROXY
+    const [proxyProtocol, setProxyProtocol] = useState("http"); // http, socks5
     const [proxyHost, setProxyHost] = useState("");
     const [proxyPort, setProxyPort] = useState("");
     const [proxyUsername, setProxyUsername] = useState("");
@@ -74,20 +76,38 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
     useEffect(() => {
         if (isOpen && initialData) {
             setDraftId(initialData.id || "");
+            setName(initialData.name || "");
             setEmail(initialData.email || "");
             setPassword(initialData.password || "");
             setRecoveryEmail(initialData.recovery_email || "");
             setEngineType(initialData.engine_type || "cloakbrowser");
+            
+            // Proxy hydration
+            setProxyMode(initialData.proxy_mode || "DIRECT_LTE");
+            setProxyProtocol(initialData.proxy_protocol || "http");
+            setProxyHost(initialData.proxy_host || "");
+            setProxyPort(initialData.proxy_port || "");
+            setProxyUsername(initialData.proxy_username || "");
+            setProxyPassword(initialData.proxy_password || "");
 
             // Auto-advance if we have an ID
             if (initialData.id) {
-                setStep(2);
+                if (initialData.status === 'ACTIVE') {
+                    setStep(6); // Resume at API Auth if already completed main setup
+                } else if (initialData.proxy_host || (initialData.proxy_mode && initialData.proxy_mode !== 'DIRECT_LTE')) {
+                    setStep(4); // Resume at Login Check if network is configured
+                } else if (initialData.engine_type) {
+                    setStep(3); // Resume at Network Setup if engine is configured
+                } else {
+                    setStep(2);
+                }
                 checkNetwork(); // Pre-check network if resuming
             }
         } else if (isOpen && !initialData) {
             // Reset if fresh open
             setStep(1);
             setDraftId("");
+            setName("");
             setEmail("");
             setPassword("");
             setRecoveryEmail("");
@@ -104,6 +124,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
         try {
             if (draftId) {
                 await axios.put(`${API_BASE}/resources/profiles/${draftId}`, {
+                    name,
                     email,
                     password,
                     recovery_email: recoveryEmail,
@@ -111,6 +132,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                 });
             } else {
                 const res = await axios.post(`${API_BASE}/resources/profiles/draft`, {
+                    name,
                     email,
                     password,
                     recovery_email: recoveryEmail,
@@ -148,6 +170,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
         try {
             await axios.put(`${API_BASE}/resources/profiles/${draftId}`, {
                 proxy_mode: proxyMode,
+                proxy_protocol: proxyProtocol,
                 proxy_host: proxyHost,
                 proxy_port: proxyPort,
                 proxy_username: proxyUsername,
@@ -338,8 +361,10 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                 setIsAuthorized(true);
                 toast({ title: "✅ 인증 성공", description: "YouTube API 권한 승인이 완료되었습니다." });
             }
-        } catch (e) {
-            console.error("Auth status check failed", e);
+        } catch (e: any) {
+            if (e.response?.status !== 404) {
+                console.error("Auth status check failed", e);
+            }
         } finally {
             setAuthChecking(false);
         }
@@ -348,11 +373,11 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
     // Auto check if step 6
     useEffect(() => {
         let timer: any;
-        if (step === 6 && !isAuthorized) {
+        if (isOpen && step === 6 && !isAuthorized) {
             timer = setInterval(checkAuthStatus, 5000);
         }
         return () => clearInterval(timer);
-    }, [step, isAuthorized]);
+    }, [isOpen, step, isAuthorized]);
 
     // --- Step 3: Key Upload ---
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -514,8 +539,12 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                                 </div>
                                 <div className="grid gap-4">
                                     <div className="space-y-2">
+                                        <Label>브랜드 폴더 이름 (선택)</Label>
+                                        <Input placeholder="예: 틱톡 영화, 게임 채널 등" value={name} onChange={e => setName(e.target.value)} autoFocus />
+                                    </div>
+                                    <div className="space-y-2">
                                         <Label>구글 이메일 (ID)</Label>
-                                        <Input placeholder="existing.account@gmail.com" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
+                                        <Input placeholder="existing.account@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>패스워드</Label>
@@ -571,22 +600,35 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                                 </div>
                                 
                                 {proxyMode === 'ISP_PROXY' && (
-                                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                                         <div className="space-y-2">
-                                            <Label>프록시 IP (Host)</Label>
-                                            <Input placeholder="예: 123.45.67.89" value={proxyHost} onChange={e => setProxyHost(e.target.value)} />
+                                            <Label>프로토콜 (Protocol)</Label>
+                                            <select 
+                                                className="w-full p-2 border border-slate-300 rounded-lg text-sm"
+                                                value={proxyProtocol} 
+                                                onChange={(e) => setProxyProtocol(e.target.value)}
+                                            >
+                                                <option value="http">HTTP / HTTPS</option>
+                                                <option value="socks5">SOCKS5</option>
+                                            </select>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label>포트 (Port)</Label>
-                                            <Input placeholder="예: 8080" value={proxyPort} onChange={e => setProxyPort(e.target.value)} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>사용자명 (선택)</Label>
-                                            <Input placeholder="Username" value={proxyUsername} onChange={e => setProxyUsername(e.target.value)} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>비밀번호 (선택)</Label>
-                                            <Input type="password" placeholder="Password" value={proxyPassword} onChange={e => setProxyPassword(e.target.value)} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>프록시 IP (Host)</Label>
+                                                <Input placeholder="예: 123.45.67.89" value={proxyHost} onChange={e => setProxyHost(e.target.value)} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>포트 (Port)</Label>
+                                                <Input placeholder="예: 8080" value={proxyPort} onChange={e => setProxyPort(e.target.value)} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>사용자명 (선택)</Label>
+                                                <Input placeholder="Username" value={proxyUsername} onChange={e => setProxyUsername(e.target.value)} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>비밀번호 (선택)</Label>
+                                                <Input type="password" placeholder="Password" value={proxyPassword} onChange={e => setProxyPassword(e.target.value)} />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -643,7 +685,7 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                                             <p className="font-bold text-slate-900">
                                                 {proxyMode === 'DIRECT_LTE' 
                                                     ? '📱 LTE 모바일 (EveryProxy)' 
-                                                    : proxyMode === 'ISP_PROXY' ? `🌐 ISP 고정 IP` 
+                                                    : proxyMode === 'ISP_PROXY' ? `🌐 ISP 고정 IP (${proxyProtocol.toUpperCase()})` 
                                                     : '직접 연결'}
                                             </p>
                                             <p className="text-[10px] text-slate-500 truncate">
@@ -923,7 +965,15 @@ const TinCanWizard: React.FC<TinCanWizardProps> = ({ isOpen, onClose, onComplete
                         {step === 3 && <Button onClick={handleSaveNetwork} className="w-full bg-indigo-600" disabled={isLoading}>네트워크 저장 및 다음 <ChevronRight className="w-4 h-4 ml-1" /></Button>}
                         {step === 4 && <Button onClick={() => setStep(5)} className="w-full bg-indigo-600" disabled={isLoading || isVerifying}>다음 (키 등록) <ChevronRight className="w-4 h-4 ml-1" /></Button>}
                         {step === 5 && <Button onClick={() => setStep(6)} className="w-full bg-indigo-600" disabled={isLoading}>다음 (API 인증) <ChevronRight className="w-4 h-4 ml-1" /></Button>}
-                        {step === 6 && <Button onClick={handleFinishAndClose} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11 shadow-md" disabled={isLoading || isVerifying || !isAuthorized}>완료 및 닫기</Button>}
+                        {step === 6 && (
+                            <Button 
+                                onClick={handleFinishAndClose} 
+                                className={`w-full text-white font-bold h-11 shadow-md ${isAuthorized ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-500 hover:bg-slate-600'}`}
+                                disabled={isLoading || isVerifying}
+                            >
+                                {isAuthorized ? "완료 및 닫기" : "나중에 인증하기 (완료)"}
+                            </Button>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

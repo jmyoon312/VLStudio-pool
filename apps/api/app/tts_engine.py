@@ -361,7 +361,7 @@ class TTSEngine:
                     res = requests.post(url, json=data, headers=headers, timeout=30)
                     
                     if res.status_code == 200:
-                        logger.info(f"✅ [ElevenLabs] Success with key {clean_key[:8]}...")
+                        logger.info(f"[OK] [ElevenLabs] Success with key {clean_key[:8]}...")
                         success_res = res
                         break
                     
@@ -374,7 +374,7 @@ class TTSEngine:
                     except: pass
                     
                     best_error = f"{res.status_code}: {err_msg}"
-                    logger.warning(f"⚠️ [ElevenLabs] {best_error}")
+                    logger.warning(f"[WARN] [ElevenLabs] {best_error}")
                     
                 except Exception as e:
                     best_error = str(e)
@@ -395,7 +395,7 @@ class TTSEngine:
         random.shuffle(keys)
         
         if not keys: 
-            logger.error("❌ [Typecast] API Keys are missing in settings.")
+            logger.error("[FAIL] [Typecast] API Keys are missing in settings.")
             raise ValueError("Typecast API Keys missing in Settings!")
 
         tempo = 1.0 + (rate / 100.0)
@@ -464,7 +464,7 @@ class TTSEngine:
                                     res = requests.post(url, json=data, headers=headers, timeout=20, proxies=conn['proxies'])
                                     
                                     if res.status_code == 200:
-                                        logger.info(f"✅ [Typecast] Success! (Url: {url}, Auth: {strategy_label})")
+                                        logger.info(f"[OK] [Typecast] Success! (Url: {url}, Auth: {strategy_label})")
                                         endpoint_success = res
                                         break
                                     
@@ -475,11 +475,11 @@ class TTSEngine:
                                         err_detail = ejson.get("message") or ejson.get("error_code") or err_detail
                                     except: pass
                                     
-                                    logger.warning(f"⚠️ [Typecast] Attempt failed: {url} | {strategy_label} | Status: {res.status_code} | Error: {err_detail}")
+                                    logger.warning(f"[WARN] [Typecast] Attempt failed: {url} | {strategy_label} | Status: {res.status_code} | Error: {err_detail}")
                                     best_error = f"{res.status_code}: {err_detail}"
                                         
                                 except Exception as e:
-                                    logger.error(f"❌ [Typecast] Request Error: {e}")
+                                    logger.error(f"[FAIL] [Typecast] Request Error: {e}")
                                     if not best_error: best_error = str(e)
                             
                             if endpoint_success: break
@@ -510,7 +510,7 @@ class TTSEngine:
                     speak_url = result.get("speak_url")
                     
                     if speak_url:
-                        logger.info(f"⏳ [Typecast] Polling for completion...")
+                        logger.info(f"[WAIT] [Typecast] Polling for completion...")
                         for i in range(20): # Max 40s
                             time.sleep(2)
                             poll_res = requests.get(speak_url, headers={"x-api-key": clean_key}, timeout=15)
@@ -539,11 +539,11 @@ class TTSEngine:
                         
                 except Exception:
                     # 2. Binary Fallback (RIFF WAVE / MP3)
-                    logger.info("📦 [Typecast] Saving raw binary response...")
+                    logger.info("[BOX] [Typecast] Saving raw binary response...")
                     with open(path, "wb") as f: f.write(success_res.content)
                     
             except Exception as e:
-                 logger.error(f"❌ [Typecast] Response processing error: {e}")
+                 logger.error(f"[FAIL] [Typecast] Response processing error: {e}")
                  with open(path, "wb") as f: f.write(success_res.content)
                  
         await asyncio.to_thread(run_req)
@@ -635,7 +635,7 @@ class TTSEngine:
                 with open(path, "wb") as f:
                     f.write(res.content)
             except Exception as e:
-                logger.error(f"❌ [Gemini TTS] Request Error: {e}")
+                logger.error(f"[FAIL] [Gemini TTS] Request Error: {e}")
                 raise e
                 
         await asyncio.to_thread(run_remote)

@@ -288,7 +288,7 @@ class SecurityService:
         """Unblock IP"""
         if ip_address in self._blocked_ips:
             del self._blocked_ips[ip_address]
-            logger.info(f"✅ IP unblocked: {ip_address}")
+            logger.info(f"[OK] IP unblocked: {ip_address}")
             return True
         return False
     

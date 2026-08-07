@@ -126,7 +126,7 @@ class EnhancedSelector:
                 self.attempts.append(attempt)
                 
                 if element:
-                    logger.info(f"✅ Found {name} using {strategy_name}: {selector_value}")
+                    logger.info(f"[OK] Found {name} using {strategy_name}: {selector_value}")
                     return element
                     
             except Exception as e:
@@ -142,7 +142,7 @@ class EnhancedSelector:
                 )
                 self.attempts.append(attempt)
                 
-                logger.warning(f"❌ {name} not found with {strategy_name}: {selector_value} - {e}")
+                logger.warning(f"[FAIL] {name} not found with {strategy_name}: {selector_value} - {e}")
         
         # All strategies failed - take screenshot
         screenshot_path = self._take_screenshot(name.replace(" ", "_"))
@@ -156,7 +156,7 @@ class EnhancedSelector:
             page_url=self.page.url if hasattr(self.page, 'url') else None
         )
         
-        logger.error(f"❌ Automation error: {error_info}")
+        logger.error(f"[FAIL] Automation error: {error_info}")
         
         return None
     
@@ -185,12 +185,12 @@ class EnhancedSelector:
         """Click element with enhanced logging"""
         try:
             element.click()
-            logger.info(f"✅ Clicked: {context}")
+            logger.info(f"[OK] Clicked: {context}")
             return True
         except Exception as e:
             screenshot = self._take_screenshot(f"click_failed_{context}")
             
-            logger.error(f"❌ Click failed: {context} - {e}")
+            logger.error(f"[FAIL] Click failed: {context} - {e}")
             logger.error(f"📸 Screenshot: {screenshot}")
             
             raise
@@ -199,12 +199,12 @@ class EnhancedSelector:
         """Type text with enhanced logging"""
         try:
             element.input(text)
-            logger.info(f"✅ Typed: {context} - '{text[:20]}...'")
+            logger.info(f"[OK] Typed: {context} - '{text[:20]}...'")
             return True
         except Exception as e:
             screenshot = self._take_screenshot(f"type_failed_{context}")
             
-            logger.error(f"❌ Type failed: {context} - {e}")
+            logger.error(f"[FAIL] Type failed: {context} - {e}")
             logger.error(f"📸 Screenshot: {screenshot}")
             
             raise
@@ -262,12 +262,12 @@ class RetryHandler:
         # Check if circuit should close
         elapsed = time.time() - self._circuit_open_time
         if elapsed > self._circuit_timeout:
-            logger.info(f"🔄 Circuit breaker reset for {operation_name}")
+            logger.info(f"[REFRESH] Circuit breaker reset for {operation_name}")
             self._circuit_open_time = None
             self._failure_count = 0
             return True
         
-        logger.warning(f"⚠️ Circuit breaker OPEN for {operation_name}. Retry after {self._circuit_timeout - elapsed:.0f}s")
+        logger.warning(f"[WARN] Circuit breaker OPEN for {operation_name}. Retry after {self._circuit_timeout - elapsed:.0f}s")
         return False
     
     def _record_failure(self):
@@ -310,7 +310,7 @@ class RetryHandler:
         
         # Check retry budget
         if self._budget_remaining < self._budget_per_operation:
-            logger.warning(f"⚠️ Retry budget exhausted for {operation_name}")
+            logger.warning(f"[WARN] Retry budget exhausted for {operation_name}")
             raise Exception(f"Retry budget exhausted for {operation_name}")
         
         for attempt in range(self.max_retries):
@@ -318,7 +318,7 @@ class RetryHandler:
                 result = await func(*args, **kwargs)
                 
                 if attempt > 0:
-                    logger.info(f"✅ {operation_name} succeeded on attempt {attempt + 1}")
+                    logger.info(f"[OK] {operation_name} succeeded on attempt {attempt + 1}")
                 
                 # Record success
                 self.attempt_history.append({
@@ -355,11 +355,11 @@ class RetryHandler:
                 if attempt < self.max_retries - 1:
                     # Calculate delay with exponential backoff + jitter
                     delay = self._calculate_delay(attempt)
-                    logger.warning(f"⚠️ {operation_name} failed (attempt {attempt + 1}/{self.max_retries}): {e}")
-                    logger.info(f"⏳ Retrying in {delay:.1f}s...")
+                    logger.warning(f"[WARN] {operation_name} failed (attempt {attempt + 1}/{self.max_retries}): {e}")
+                    logger.info(f"[WAIT] Retrying in {delay:.1f}s...")
                     await asyncio.sleep(delay)
                 else:
-                    logger.error(f"❌ {operation_name} failed after {self.max_retries} attempts: {e}")
+                    logger.error(f"[FAIL] {operation_name} failed after {self.max_retries} attempts: {e}")
         
         # All retries failed
         raise last_exception
@@ -386,7 +386,7 @@ class RetryHandler:
     def reset_budget(self, amount: int = 100):
         """Reset retry budget"""
         self._budget_remaining = amount
-        logger.info(f"🔄 Retry budget reset to {amount}")
+        logger.info(f"[REFRESH] Retry budget reset to {amount}")
 
 
 def create_enhanced_selector(page) -> EnhancedSelector:

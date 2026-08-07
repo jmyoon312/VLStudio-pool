@@ -141,11 +141,11 @@ class MLPipeline:
                 "f1_score": model.f1_score
             }
             
-            logger.info(f"✅ Model {name} trained: accuracy={model.accuracy:.2%}")
+            logger.info(f"[OK] Model {name} trained: accuracy={model.accuracy:.2%}")
             
         except Exception as e:
             model.status = ModelStatus.FAILED
-            logger.error(f"❌ Training failed: {e}")
+            logger.error(f"[FAIL] Training failed: {e}")
         
         return model_id
     
@@ -190,7 +190,7 @@ class MLPipeline:
         model.status = ModelStatus.DEPLOYED
         model.deployed_at = datetime.now()
         
-        logger.info(f"🚀 Model deployed: {model.name} (v{model.version})")
+        logger.info(f"[FALLBACK] Model deployed: {model.name} (v{model.version})")
         
         return True
     

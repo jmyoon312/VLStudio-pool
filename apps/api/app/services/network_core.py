@@ -43,7 +43,7 @@ def _refresh_proxy_settings():
                         current_port = PROXY_CONFIG_CACHE["netshare_port"]
                         if not _adb_forwarded or _last_forward_port != current_port:
                             try:
-                                logger.info(f"🚀 [NetworkCore] Auto-forwarding ADB port tcp:{current_port}...")
+                                logger.info(f"[FALLBACK] [NetworkCore] Auto-forwarding ADB port tcp:{current_port}...")
                                 # CREATE_NO_WINDOW = 0x08000000
                                 subprocess.run(
                                     [adb_service.adb_path, "forward", f"tcp:{current_port}", f"tcp:{current_port}"], 
@@ -52,9 +52,9 @@ def _refresh_proxy_settings():
                                 )
                                 _adb_forwarded = True
                                 _last_forward_port = current_port
-                                logger.info(f"✅ [NetworkCore] ADB forward successful for port {current_port}")
+                                logger.info(f"[OK] [NetworkCore] ADB forward successful for port {current_port}")
                             except Exception as e:
-                                logger.error(f"❌ [NetworkCore] ADB forward failed: {e}")
+                                logger.error(f"[FAIL] [NetworkCore] ADB forward failed: {e}")
                     else:
                         if _adb_forwarded and _last_forward_port:
                             try:
@@ -67,7 +67,7 @@ def _refresh_proxy_settings():
                             _adb_forwarded = False
                             _last_forward_port = None
         except Exception as e:
-            logger.error(f"❌ [NetworkCore] Failed to refresh proxy settings: {e}")
+            logger.error(f"[FAIL] [NetworkCore] Failed to refresh proxy settings: {e}")
         time.sleep(5)
 
 threading.Thread(target=_refresh_proxy_settings, daemon=True).start()
@@ -168,11 +168,11 @@ def resolve_dns_via_interface(domain: str, bind_ip: str) -> str:
             
     # [Fallback] LTE 망에서 UDP 53포트가 차단되었거나 지연이 심할 경우 시스템 기본 DNS(OS)를 사용함.
     # 유튜브는 실제 데이터 통신 IP를 기준으로 연좌제를 체크하므로 DNS 쿼리만 로컬망으로 빠져도 패널티 위험은 매우 적음.
-    logger.warning(f"⚠️ [DNS] All interface-bound DNS queries failed for {domain}. Falling back to OS resolver.")
+    logger.warning(f"[WARN] [DNS] All interface-bound DNS queries failed for {domain}. Falling back to OS resolver.")
     try:
         return socket.gethostbyname(domain)
     except Exception as e:
-        logger.error(f"❌ [DNS] OS resolver also failed for {domain}: {e}")
+        logger.error(f"[FAIL] [DNS] OS resolver also failed for {domain}: {e}")
         raise socket.gaierror(f"DNS resolution completely failed for domain {domain}")
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -223,13 +223,13 @@ class Socks5Handler(StreamRequestHandler):
                     remote.sendall(connect_req.encode())
                     resp = remote.recv(4096)
                     if b"200 Connection established" not in resp and b"200 OK" not in resp:
-                        logger.error(f"❌ [NetworkCore] NetShare tunnel failed for {addr}:{port} - Resp: {resp}")
+                        logger.error(f"[FAIL] [NetworkCore] NetShare tunnel failed for {addr}:{port} - Resp: {resp}")
                         return
                     remote.settimeout(None)
                     self.connection.send(b"\x05\x00\x00\x01\x00\x00\x00\x00\x00\x00")
                     pipe_sockets(self.connection, remote)
                 except Exception as e:
-                    logger.error(f"❌ [NetworkCore] NetShare connection failed: {e}")
+                    logger.error(f"[FAIL] [NetworkCore] NetShare connection failed: {e}")
                 return
 
             elif mode == "ISP_PROXY" and PROXY_CONFIG_CACHE.get("isp_url"):
@@ -250,7 +250,7 @@ class Socks5Handler(StreamRequestHandler):
                             remote.sendall(auth_req)
                             auth_resp = recvall(remote, 2)
                             if not auth_resp or auth_resp[1] != 0:
-                                logger.error(f"❌ [NetworkCore] ISP Proxy Auth failed")
+                                logger.error(f"[FAIL] [NetworkCore] ISP Proxy Auth failed")
                                 return
                         
                         addr_bytes_to_send = b""
@@ -273,7 +273,7 @@ class Socks5Handler(StreamRequestHandler):
                         self.connection.send(b"\x05\x00\x00\x01\x00\x00\x00\x00\x00\x00")
                         pipe_sockets(self.connection, remote)
                     except Exception as e:
-                        logger.error(f"❌ [NetworkCore] ISP proxy SOCKS5 failed: {e}")
+                        logger.error(f"[FAIL] [NetworkCore] ISP proxy SOCKS5 failed: {e}")
                 elif parsed.scheme in ["http", "https"]:
                     remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     remote.settimeout(10.0)
@@ -287,13 +287,13 @@ class Socks5Handler(StreamRequestHandler):
                         remote.sendall(connect_req.encode())
                         resp = remote.recv(4096)
                         if b"200 Connection established" not in resp and b"200 OK" not in resp:
-                            logger.error(f"❌ [NetworkCore] ISP Proxy HTTP tunnel failed")
+                            logger.error(f"[FAIL] [NetworkCore] ISP Proxy HTTP tunnel failed")
                             return
                         remote.settimeout(None)
                         self.connection.send(b"\x05\x00\x00\x01\x00\x00\x00\x00\x00\x00")
                         pipe_sockets(self.connection, remote)
                     except Exception as e:
-                        logger.error(f"❌ [NetworkCore] ISP proxy HTTP failed: {e}")
+                        logger.error(f"[FAIL] [NetworkCore] ISP proxy HTTP failed: {e}")
                 return
 
             # Default DIRECT_LTE

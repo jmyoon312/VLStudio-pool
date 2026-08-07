@@ -222,8 +222,8 @@ async def analyze_video(video_path: str, script_style: str = "base") -> AIAnalys
                         text_lines.append(f"[{start_sec} - {end_sec}] {text}")
             subtitle_text = '\n'.join(text_lines)
             
-        logger.info(f"✅ [AI Editor] Subtitle extracted: {len(subtitle_text)} chars")
-        logger.info(f"✅ [AI Editor] {len(images)} keyframes extracted.")
+        logger.info(f"[OK] [AI Editor] Subtitle extracted: {len(subtitle_text)} chars")
+        logger.info(f"[OK] [AI Editor] {len(images)} keyframes extracted.")
             
         style_modifier = ""
         if script_style == "old_people":

@@ -28,6 +28,12 @@ def read_channels(skip: int = 0, limit: int = 100, db: Session = Depends(databas
 
 @router.post("/", response_model=schemas.Channel)
 def create_channel(channel: schemas.ChannelCreate, db: Session = Depends(database.get_db)):
+    # Sanitize YouTube URLs to remove specific tabs (e.g., /shorts, /videos) and get the base channel URL
+    if 'youtube.com' in channel.url or 'youtu.be' in channel.url:
+        import re
+        channel.url = re.sub(r'/(shorts|videos|streams|live|playlists|community|featured).*?$', '', channel.url)
+        channel.url = channel.url.rstrip('/')
+
     db_channel = crud.get_channel_by_url(db, url=channel.url)
     if db_channel:
         raise HTTPException(status_code=400, detail="Channel already registered")
@@ -39,7 +45,8 @@ def create_channel(channel: schemas.ChannelCreate, db: Session = Depends(databas
         scraper = DouyinChannelScraper(settings=settings)
         info = scraper.get_channel_info(channel.url, headless=False)
     else:
-        info = downloader.downloader.get_channel_info(channel.url)
+        cookies_path = settings.cookies_path if settings and hasattr(settings, 'cookies_path') and settings.cookies_path and os.path.exists(settings.cookies_path) else None
+        info = downloader.downloader.get_channel_info(channel.url, cookies_path=cookies_path)
     if not info:
          raise HTTPException(status_code=400, detail="Invalid channel URL or unable to fetch info")
     

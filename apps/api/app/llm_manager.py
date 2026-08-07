@@ -167,24 +167,24 @@ class LLMClient:
             # If it's a rate limit or exhaustion error, trigger fallback
             if "429" in error_msg or "rate limit" in error_msg or "freeusagelimiterror" in error_msg or "exhausted" in error_msg or "quota" in error_msg or "402" in error_msg:
                 if model_name and (model_name.startswith("opencode/") or model_name.startswith("openrouter/")):
-                    logger.warning(f"⚠️ [Fallback] {model_name.split('/')[0].title()} limit reached. Falling back to Groq...")
+                    logger.warning(f"[WARN] [Fallback] {model_name.split('/')[0].title()} limit reached. Falling back to Groq...")
                     try:
                         return self._generate_content_internal(prompt, "groq/llama-3.3-70b-versatile", system_instruction, full_response, images)
                     except Exception as e2:
-                        logger.warning("⚠️ [Fallback] Groq limit reached. Falling back to Gemini...")
+                        logger.warning("[WARN] [Fallback] Groq limit reached. Falling back to Gemini...")
                         try:
                             return self._generate_content_internal(prompt, "gemini/gemini-1.5-flash", system_instruction, full_response, images)
                         except Exception as e3:
-                            logger.error(f"❌ [Fallback] All fallback models exhausted. Final error: {e3}")
+                            logger.error(f"[FAIL] [Fallback] All fallback models exhausted. Final error: {e3}")
                             if full_response: return {"content": f"ERROR: {str(e3)}", "error": str(e3)}
                             return f"ERROR: {str(e3)}"
                             
                 elif model_name and model_name.startswith("groq/"):
-                    logger.warning("⚠️ [Fallback] Groq limit reached. Falling back to Gemini...")
+                    logger.warning("[WARN] [Fallback] Groq limit reached. Falling back to Gemini...")
                     try:
                         return self._generate_content_internal(prompt, "gemini/gemini-1.5-flash", system_instruction, full_response, images)
                     except Exception as e3:
-                        logger.error(f"❌ [Fallback] Gemini exhausted as well. Final error: {e3}")
+                        logger.error(f"[FAIL] [Fallback] Gemini exhausted as well. Final error: {e3}")
                         if full_response: return {"content": f"ERROR: {str(e3)}", "error": str(e3)}
                         return f"ERROR: {str(e3)}"
             
@@ -228,7 +228,7 @@ class LLMClient:
                     except Exception as e:
                         last_error = e
                         if self.opencode_keys:
-                            logger.warning(f"⏳ [OpenCode] Error on Key #{self.opencode_key_index}: {e}. Rotating...")
+                            logger.warning(f"[WAIT] [OpenCode] Error on Key #{self.opencode_key_index}: {e}. Rotating...")
                             self.opencode_key_index = (self.opencode_key_index + 1) % len(self.opencode_keys)
                             import time
                             error_msg = str(e).lower()
@@ -284,7 +284,7 @@ class LLMClient:
                         last_error = e
                         # Key Rotation for paid/specific models
                         if self.openrouter_keys:
-                            logger.warning(f"⏳ [OpenRouter] Error on Key #{self.openrouter_key_index}: {e}. Rotating...")
+                            logger.warning(f"[WAIT] [OpenRouter] Error on Key #{self.openrouter_key_index}: {e}. Rotating...")
                             self.openrouter_key_index = (self.openrouter_key_index + 1) % len(self.openrouter_keys)
                             import time
                             time.sleep(1)
@@ -313,7 +313,7 @@ class LLMClient:
                         )
                     except Exception as e:
                         last_error = e
-                        logger.warning(f"⏳ [SambaNova] Error on Key #{self.sambanova_key_index}: {e}. Rotating...")
+                        logger.warning(f"[WAIT] [SambaNova] Error on Key #{self.sambanova_key_index}: {e}. Rotating...")
                         self.sambanova_key_index = (self.sambanova_key_index + 1) % len(self.sambanova_keys)
                         import time
                         time.sleep(1)
@@ -340,7 +340,7 @@ class LLMClient:
                         )
                     except Exception as e:
                         last_error = e
-                        logger.warning(f"⏳ [Cerebras] Error on Key #{self.cerebras_key_index}: {e}. Rotating...")
+                        logger.warning(f"[WAIT] [Cerebras] Error on Key #{self.cerebras_key_index}: {e}. Rotating...")
                         self.cerebras_key_index = (self.cerebras_key_index + 1) % len(self.cerebras_keys)
                         import time
                         time.sleep(1)
@@ -382,7 +382,7 @@ class LLMClient:
                         )
                     except Exception as e:
                         last_error = e
-                        logger.warning(f"⏳ [Groq] Error on Key #{self.groq_key_index}: {e}. Rotating...")
+                        logger.warning(f"[WAIT] [Groq] Error on Key #{self.groq_key_index}: {e}. Rotating...")
                         self.groq_key_index = (self.groq_key_index + 1) % len(self.groq_keys)
                         import time
                         time.sleep(1)
@@ -409,7 +409,7 @@ class LLMClient:
                         )
                     except Exception as e:
                         last_error = e
-                        logger.warning(f"⏳ [NVIDIA] Error on Key #{self.nvidia_key_index}: {e}. Rotating...")
+                        logger.warning(f"[WAIT] [NVIDIA] Error on Key #{self.nvidia_key_index}: {e}. Rotating...")
                         self.nvidia_key_index = (self.nvidia_key_index + 1) % len(self.nvidia_keys)
                         import time
                         time.sleep(1)
@@ -437,7 +437,7 @@ class LLMClient:
                         )
                     except Exception as e:
                         last_error = e
-                        logger.warning(f"⏳ [YouTube1] Error on Key #{self.youtube1_key_index}: {e}. Rotating...")
+                        logger.warning(f"[WAIT] [YouTube1] Error on Key #{self.youtube1_key_index}: {e}. Rotating...")
                         self.youtube1_key_index = (self.youtube1_key_index + 1) % len(self.youtube1_keys)
                         import time
                         time.sleep(1)
@@ -480,7 +480,7 @@ class LLMClient:
                 real_model = model_name.replace("anthropic/", "")
                 
                 messages = [{"role": "user", "content": prompt}]
-                logger.info(f"🚀 [Anthropic] Sending to [{real_model}]...")
+                logger.info(f"[FALLBACK] [Anthropic] Sending to [{real_model}]...")
                 response = client.messages.create(
                     model=real_model,
                     max_tokens=4096,
@@ -500,7 +500,7 @@ class LLMClient:
             fallback_model = getattr(self.settings, "default_model", "opencode/deepseek-v4-flash-free")
             real_model = model_name
             
-            logger.warning(f"⚠️ [LLM] No provider prefix for '{model_name}'. Falling back to settings default: {fallback_model}")
+            logger.warning(f"[WARN] [LLM] No provider prefix for '{model_name}'. Falling back to settings default: {fallback_model}")
             return self._generate_content_internal(prompt, fallback_model, system_instruction, full_response, images)
         except Exception as e:
             # Let the outer wrapper handle the exception and fallbacks
@@ -519,7 +519,7 @@ class LLMClient:
                 try:
                     start_ts = time.time()
                     client = self._get_gemini_client()
-                    if attempt == 0: logger.info(f"🚀 [Gemini] Sending to [{current_model}] (Images: {len(images) if images else 0})...")
+                    if attempt == 0: logger.info(f"[FALLBACK] [Gemini] Sending to [{current_model}] (Images: {len(images) if images else 0})...")
 
                     config = types.GenerateContentConfig(
                         temperature=0.7,
@@ -554,7 +554,7 @@ class LLMClient:
                         else:
                             return response.text
                     else:
-                        logger.warning(f"⚠️ [Gemini] Empty response from {current_model}. Attempting rotation...")
+                        logger.warning(f"[WARN] [Gemini] Empty response from {current_model}. Attempting rotation...")
                         continue
                     
                 except Exception as e:
@@ -562,21 +562,21 @@ class LLMClient:
                     last_error = e
                     
                     if "404" in error_msg or "not found" in error_msg.lower() or "400" in error_msg:
-                        logger.warning(f"⚠️ [Gemini] Model {current_model} unavailable. Switching...")
+                        logger.warning(f"[WARN] [Gemini] Model {current_model} unavailable. Switching...")
                         break 
                     
                     if "403" in error_msg or "permission" in error_msg.lower():
                         collector.record_event("llm", "auth_error", "error", {"provider": "gemini", "model": current_model, "error": error_msg})
-                        logger.error(f"❌ [Gemini] ACCESS FORBIDDEN (403). Please enable 'Generative Language API' in your Google Cloud Console for project 1024666224541.")
+                        logger.error(f"[FAIL] [Gemini] ACCESS FORBIDDEN (403). Please enable 'Generative Language API' in your Google Cloud Console for project 1024666224541.")
                         break
 
                     if "429" in error_msg or "quota" in error_msg.lower():
                         collector.record_event("llm", "rate_limit", "warning", {"provider": "gemini", "model": current_model, "error": error_msg})
-                        logger.warning(f"⏳ [Gemini] Quota limit. Rotating key... (Sleeping 5s)")
+                        logger.warning(f"[WAIT] [Gemini] Quota limit. Rotating key... (Sleeping 5s)")
                         time.sleep(5)
                         continue
                     
-                    logger.error(f"❌ [Gemini] Error with {current_model}: {error_msg}")
+                    logger.error(f"[FAIL] [Gemini] Error with {current_model}: {error_msg}")
                     break
         
         msg = f"Gemini failed after {len(self.gemini_keys)} attempts. Last error: {last_error}"
@@ -594,7 +594,7 @@ class LLMClient:
             )
             return response.embeddings[0].values
         except Exception as e:
-            logger.error(f"❌ Embedding failed: {e}")
+            logger.error(f"[FAIL] Embedding failed: {e}")
             return [0.0] * 768 
 
     def _generate_openai_compatible(self, prompt: str, model: str, system_instruction: str, full_response: bool, base_url: str, api_key: str, provider_name: str, images: list = None, extra_headers: dict = None, request_timeout: float = 30.0):
@@ -653,7 +653,7 @@ class LLMClient:
             # Standard Text payload (Simple String)
             messages.append({"role": "user", "content": final_prompt})
 
-        logger.info(f"🚀 [{provider_name}] Sending to [{model}] (Images: {len(images) if images else 0})...")
+        logger.info(f"[FALLBACK] [{provider_name}] Sending to [{model}] (Images: {len(images) if images else 0})...")
         start_ts = time.time()
 
         try:
@@ -678,7 +678,7 @@ class LLMClient:
             
         except Exception as e:
             error_msg = str(e).lower()
-            logger.error(f"❌ [{provider_name}] Error: {e}")
+            logger.error(f"[FAIL] [{provider_name}] Error: {e}")
             raise e
 
     # --- Image Generation ---
@@ -714,7 +714,7 @@ class LLMClient:
              else:
                 # [Failover to Gemini if OpenAI is missing]
                 if self.gemini_keys:
-                    logger.info("⚠️ OpenAI Key missing. Auto-failover to Gemini Imagen 3.")
+                    logger.info("[WARN] OpenAI Key missing. Auto-failover to Gemini Imagen 3.")
                     return self._generate_image_gemini(prompt, "imagen-3.0-generate-001")
                 raise ValueError("OpenAI API Key is missing for Image Generation.")
 
@@ -735,7 +735,7 @@ class LLMClient:
             return image_url
             
         except Exception as e:
-            logger.error(f"❌ Image Generation Failed: {e}")
+            logger.error(f"[FAIL] Image Generation Failed: {e}")
             raise e
 
     def _generate_image_gemini(self, prompt: str, model: str) -> str:
@@ -796,7 +796,7 @@ class LLMClient:
                      with open(filepath, "wb") as f:
                          f.write(image_bytes)
                          
-                     logger.info(f"✅ [Gemini] Image Saved: {filepath}")
+                     logger.info(f"[OK] [Gemini] Image Saved: {filepath}")
                      return filepath
                  else:
                      raise ValueError("No images returned from Gemini.")
@@ -804,14 +804,14 @@ class LLMClient:
              except Exception as e:
                  error_msg = str(e).lower()
                  last_error = e
-                 logger.warning(f"⚠️ [Gemini] Image Gen Error (Key #{self.gemini_key_index}): {e}")
+                 logger.warning(f"[WARN] [Gemini] Image Gen Error (Key #{self.gemini_key_index}): {e}")
                  
                  if "429" in error_msg or "quota" in error_msg or "403" in error_msg:
-                     logger.warning(f"⏳ [Gemini] Key Quota Exceeded. Rotating to next key...")
+                     logger.warning(f"[WAIT] [Gemini] Key Quota Exceeded. Rotating to next key...")
                      continue
                  else:
                      if "safety" in error_msg or "blocked" in error_msg:
-                         logger.error(f"❌ [Gemini] Image Blocked by Safety Filters.")
+                         logger.error(f"[FAIL] [Gemini] Image Blocked by Safety Filters.")
                          raise e
                      continue
 
@@ -838,7 +838,7 @@ class LLMClient:
                 if settings.model_cache and settings.model_cache_updated_at:
                     age = datetime.now() - settings.model_cache_updated_at
                     if age < timedelta(hours=24):
-                        logger.info(f"⚡ Returning DB Cached Models (Age: {age})")
+                        logger.info(f"[TURBO] Returning DB Cached Models (Age: {age})")
                         return settings.model_cache
             except Exception as e:
                 logger.error(f"Failed to read model cache from DB: {e}")
@@ -848,7 +848,7 @@ class LLMClient:
             if age < 3600:
                 return _MODEL_CACHE["data"]
                 
-        logger.info("🔄 Fetching Fresh Models from Providers (Parallel)...")
+        logger.info("[REFRESH] Fetching Fresh Models from Providers (Parallel)...")
         data = await self._get_available_models_fresh_async()
         
         if db:
@@ -858,7 +858,7 @@ class LLMClient:
                     model_cache=data,
                     model_cache_updated_at=datetime.now()
                 ))
-                logger.info("✅ Model cache updated in DB.")
+                logger.info("[OK] Model cache updated in DB.")
             except Exception as e:
                 logger.error(f"Failed to save model cache to DB: {e}")
 
@@ -904,9 +904,9 @@ class LLMClient:
         # Log empty providers for debugging
         for p, m in models.items():
             if not m:
-                logger.warning(f"⚠️ Provider [{p}] returned 0 models. Check API Keys.")
+                logger.warning(f"[WARN] Provider [{p}] returned 0 models. Check API Keys.")
             else:
-                logger.info(f"✅ Provider [{p}] loaded {len(m)} models.")
+                logger.info(f"[OK] Provider [{p}] loaded {len(m)} models.")
         
         for p in models:
             if models[p]:
@@ -956,7 +956,7 @@ class LLMClient:
                         if provider_name == "sambanova" and not any(x in lower_mid for x in ["llama", "qwen"]):
                              continue
                         
-                        clean_label = str(mid).replace("🚀", "").replace("⚡", "").replace("💎", "").replace("💲", "").strip()
+                        clean_label = str(mid).replace("[FALLBACK]", "").replace("[TURBO]", "").replace("💎", "").replace("💲", "").strip()
                         
                         # Remove provider prefixes (e.g., 'meta/')
                         if "/" in clean_label:
@@ -988,7 +988,7 @@ class LLMClient:
             {"value": "google/gemini-1.5-pro", "label": "Gemini 1.5 Pro"},
         ]
         if not self.gemini_keys: 
-            logger.warning("❌ No Gemini keys found in LLMClient. Returning fallback models.")
+            logger.warning("[FAIL] No Gemini keys found in LLMClient. Returning fallback models.")
             return fallback
         try:
             logger.info(f"📡 Fetching Google models using {len(self.gemini_keys)} keys...")
@@ -1000,7 +1000,7 @@ class LLMClient:
                 if "gemini" not in mid: continue
                 if "vision" in mid: continue 
                 fetched.append({"value": mid, "label": mid})
-            logger.info(f"✅ Successfully fetched {len(fetched)} Google models.")
+            logger.info(f"[OK] Successfully fetched {len(fetched)} Google models.")
             if not fetched:
                 return fallback
             return fetched

@@ -118,7 +118,7 @@ class DataPipeline:
         
         self._pipelines[pipeline_id] = pipeline
         
-        logger.info(f"📊 Starting ETL pipeline: {name}")
+        logger.info(f"[CHART] Starting ETL pipeline: {name}")
         
         try:
             # Extract
@@ -134,12 +134,12 @@ class DataPipeline:
             pipeline.status = PipelineStatus.COMPLETED
             pipeline.records_processed = len(data) if isinstance(data, list) else 1
             
-            logger.info(f"✅ Pipeline {name} completed: {pipeline.records_processed} records")
+            logger.info(f"[OK] Pipeline {name} completed: {pipeline.records_processed} records")
             
         except Exception as e:
             pipeline.status = PipelineStatus.FAILED
             pipeline.error = str(e)
-            logger.error(f"❌ Pipeline {name} failed: {e}")
+            logger.error(f"[FAIL] Pipeline {name} failed: {e}")
         
         finally:
             pipeline.completed_at = datetime.now()
@@ -158,7 +158,7 @@ class DataPipeline:
         """Transform data"""
         transform_type = transform.get("type", "aggregate")
         
-        logger.info(f"🔄 Transforming: {transform_type}")
+        logger.info(f"[REFRESH] Transforming: {transform_type}")
         
         if transform_type == "aggregate":
             # Group and aggregate

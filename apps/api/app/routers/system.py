@@ -122,8 +122,8 @@ def open_folder(request: PathRequest, db: Session = Depends(database.get_db)):
                 rel_path = target_path[len(db_root):].lstrip('/')
                 win_path = os.path.join(host_media_root, rel_path).replace("/", "\\")
             else:
-                # If path is not under root, just add downloads as suggested by user
-                win_path = os.path.join(host_media_root, "downloads", os.path.basename(path)).replace("/", "\\")
+                # If path is not under root, just add 07_Downloads as suggested by user
+                win_path = os.path.join(host_media_root, "07_Downloads", os.path.basename(path)).replace("/", "\\")
             
             win_path = win_path.replace("\\\\", "\\")
                 
@@ -147,10 +147,10 @@ def open_folder(request: PathRequest, db: Session = Depends(database.get_db)):
                 if resp.status_code == 200:
                     return {"ok": True, "message": "Folder open request sent to Windows Agent"}
                 else:
-                    logger.error(f"❌ Agent returned error: {resp.status_code} - {resp.text}")
+                    logger.error(f"[FAIL] Agent returned error: {resp.status_code} - {resp.text}")
                     raise HTTPException(status_code=500, detail=f"Agent error: {resp.text}")
             except Exception as e:
-                logger.error(f"⚠️ Agent communication failed: {e}")
+                logger.error(f"[WARN] Agent communication failed: {e}")
                 raise HTTPException(status_code=500, detail=f"Windows Agent (8001) is unreachable or failed: {e}")
 
         # --- Local execution fallback (ONLY for non-docker native environments) ---

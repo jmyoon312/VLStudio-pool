@@ -33,16 +33,16 @@ class Socks5Handler(StreamRequestHandler):
             
             header = recvall(self.connection, 2)
             if not header:
-                proxy_print("❌ Handshake Fail: Empty Initial Header (Client disconnected or sent 0 bytes)")
+                proxy_print("[FAIL] Handshake Fail: Empty Initial Header (Client disconnected or sent 0 bytes)")
                 return
             if header[0] != 5:
-                proxy_print(f"❌ Handshake Fail: Invalid SOCKS Version {header[0]}")
+                proxy_print(f"[FAIL] Handshake Fail: Invalid SOCKS Version {header[0]}")
                 return
             self.connection.send(b"\x05\x00")
             
             header = recvall(self.connection, 4)
             if not header or header[1] != 1:
-                proxy_print("❌ Handshake Fail: Invalid Request Header")
+                proxy_print("[FAIL] Handshake Fail: Invalid Request Header")
                 return 
             
             addr_type = header[3]
@@ -74,15 +74,15 @@ class Socks5Handler(StreamRequestHandler):
             is_bound = False
             if lte_ip and "169.254" not in lte_ip and lte_ip not in ["Not Detected", "Error"]:
                 try:
-                    proxy_print(f"⚡ LTE 바인딩 시도: {lte_ip} -> {addr}:{port}")
+                    proxy_print(f"[TURBO] LTE 바인딩 시도: {lte_ip} -> {addr}:{port}")
                     remote.bind((lte_ip, 0))
                     is_bound = True
                     proxy_print("  -> 바인딩 성공! (Tunnel Established)")
                 except Exception as e:
                     # [Soft Fail] network_core.py 처럼 실패해도 진행
-                    proxy_print(f"⚠️ 바인딩 실패 (Wifi로 우회됨): {e}")
+                    proxy_print(f"[WARN] 바인딩 실패 (Wifi로 우회됨): {e}")
             else:
-                proxy_print(f"⚠️ LTE IP 없음 ({lte_ip}) - Wifi로 진행")
+                proxy_print(f"[WARN] LTE IP 없음 ({lte_ip}) - Wifi로 진행")
 
             remote.connect((addr, port))
             bind_addr, bind_port = remote.getsockname()
@@ -128,8 +128,8 @@ class ProxyService:
             self.thread = threading.Thread(target=self.server.serve_forever)
             self.thread.daemon = True
             self.thread.start()
-            proxy_print(f"✅ SOCKS5 서버 가동 중 (Port: {self.port})")
+            proxy_print(f"[OK] SOCKS5 서버 가동 중 (Port: {self.port})")
         except Exception as e:
-            proxy_print(f"❌ 서버 시작 실패: {e}")
+            proxy_print(f"[FAIL] 서버 시작 실패: {e}")
 
 proxy_service = ProxyService()

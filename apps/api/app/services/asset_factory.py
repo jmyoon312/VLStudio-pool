@@ -130,7 +130,7 @@ class AssetFactory:
             payload = {"prompt": enhanced_prompt}
         elif asset_type == 'video' or asset_type == 'ai-video':
             # [UPGRADE] Bypassing flaky Colab, use Production VideoGenClient (Kling-v1, etc.)
-            logger.info(f"🚀 [AssetFactory] Redirecting {asset_type} to VideoGenClient Production API...")
+            logger.info(f"[FALLBACK] [AssetFactory] Redirecting {asset_type} to VideoGenClient Production API...")
             
             try:
                 # 1. Initialize Engine
@@ -145,13 +145,13 @@ class AssetFactory:
                 # We need to run it in a thread if it wasn't async, but VideoGenClient is async
                 local_video_path = await engine.generate_video(prompt, model=model, aspect_ratio=aspect_ratio)
                 
-                logger.info(f"✅ [AssetFactory] Production Video Generated: {local_video_path}")
+                logger.info(f"[OK] [AssetFactory] Production Video Generated: {local_video_path}")
                 
                 # Return standardized result
                 return {"status": "success", "file_path": local_video_path}
                 
             except Exception as e:
-                logger.error(f"❌ [AssetFactory] Production Video Gen Failed: {e}")
+                logger.error(f"[FAIL] [AssetFactory] Production Video Gen Failed: {e}")
                 # Fallback to Colab logic only if absolutely necessary, but here we've decided to abandon Colab for videos
                 raise e
         else:

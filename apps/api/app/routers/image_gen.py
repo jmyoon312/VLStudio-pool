@@ -76,5 +76,5 @@ async def generate_image(
         )
 
     except Exception as e:
-        logger.error(f"❌ API Gen Error: {e}")
+        logger.error(f"[FAIL] API Gen Error: {e}")
         raise HTTPException(500, f"Generation Failed: {str(e)}")

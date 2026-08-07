@@ -46,10 +46,10 @@ try:
         )
 
         celery_app.autodiscover_tasks(['app.tasks'])
-        logger.info(f"✅ [Celery] Initialized with broker: {CELERY_BROKER_URL[:30]}...")
+        logger.info(f"[OK] [Celery] Initialized with broker: {CELERY_BROKER_URL[:30]}...")
 
 except ImportError:
     logger.info("ℹ️ [Celery] celery package not installed — using in-memory queue (standalone mode)")
 
 except Exception as e:
-    logger.warning(f"⚠️ [Celery] Init failed (non-critical): {e}")
+    logger.warning(f"[WARN] [Celery] Init failed (non-critical): {e}")

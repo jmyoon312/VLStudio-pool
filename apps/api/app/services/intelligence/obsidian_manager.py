@@ -17,7 +17,7 @@ class ObsidianManager:
     def __init__(self, vault_path: str = None):
         if vault_path is None:
             from app.config import settings
-            vault_path = os.getenv("BRAIN_VAULT_PATH", os.path.join(settings.MEDIA_ROOT, "brain_vault"))
+            vault_path = os.getenv("BRAIN_VAULT_PATH", os.path.join(settings.MEDIA_ROOT, "08_Intelligence"))
             
             # Legacy fallback check (only if container default doesn't exist)
             if not os.path.exists(vault_path):
@@ -56,7 +56,7 @@ class ObsidianManager:
             logger.info(f"📓 Note created: {filename} in {os.path.basename(directory)}")
             return True
         except Exception as e:
-            logger.error(f"❌ Failed to create note {filename}: {e}")
+            logger.error(f"[FAIL] Failed to create note {filename}: {e}")
             return False
 
     def store_raw_research(self, title: str, content: str, source_url: str = "", tags: List[str] = []):
@@ -161,7 +161,7 @@ class ObsidianManager:
         
         success = self._create_note(self.blackboard_path, filename, f"```json\n{content}\n```", metadata)
         if success:
-            logger.info(f"💾 Blackboard Pointer created: mcp_data://{pointer_id}")
+            logger.info(f"[SAVE] Blackboard Pointer created: mcp_data://{pointer_id}")
             return f"mcp_data://{pointer_id}"
         return ""
 
@@ -177,7 +177,7 @@ class ObsidianManager:
         full_path = os.path.join(self.blackboard_path, filename)
         
         if not os.path.exists(full_path):
-            logger.error(f"❌ Blackboard lookup failed for pointer: {pointer}")
+            logger.error(f"[FAIL] Blackboard lookup failed for pointer: {pointer}")
             return None
             
         try:
@@ -191,7 +191,7 @@ class ObsidianManager:
                     return json.loads(content_json)
                 return content
         except Exception as e:
-            logger.error(f"❌ Error parsing blackboard pointer {pointer}: {e}")
+            logger.error(f"[FAIL] Error parsing blackboard pointer {pointer}: {e}")
             return None
 
     # --- Phase 4: Pipeline Event Logging ---
@@ -202,9 +202,9 @@ class ObsidianManager:
         event_time = datetime.now()
         filename = f"LOG_{event_time.strftime('%Y%m%d_%H%M%S')}_{stage}"
         
-        content = f"## 🚀 Pipeline Stage: {stage}\n* **Status**: {status}\n* **Agent**: {agent}\n"
+        content = f"## [FALLBACK] Pipeline Stage: {stage}\n* **Status**: {status}\n* **Agent**: {agent}\n"
         if artifacts:
-            content += f"\n### 📦 Artifacts\n```json\n{json.dumps(artifacts, ensure_ascii=False, indent=2)}\n```"
+            content += f"\n### [BOX] Artifacts\n```json\n{json.dumps(artifacts, ensure_ascii=False, indent=2)}\n```"
             
         metadata = {
             "type": "pipeline_event",

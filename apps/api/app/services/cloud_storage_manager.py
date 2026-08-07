@@ -93,7 +93,7 @@ class CloudStorageManager:
         if base_path is None:
             base_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "downloads", "cloud"
+                "07_Downloads", "cloud"
             )
         
         self.base_path = Path(base_path)
@@ -157,7 +157,7 @@ class CloudStorageManager:
             # Generate URL
             url = f"{self._cdn_base}/{destination}"
             
-            logger.info(f"✅ Uploaded: {source_path} -> {url}")
+            logger.info(f"[OK] Uploaded: {source_path} -> {url}")
             return url
             
         except Exception as e:
@@ -422,7 +422,7 @@ class CloudStorageManager:
                     else:
                         shutil.copy2(item, backup_path / item.name)
             
-            logger.info(f"✅ Backup created: {backup_name}")
+            logger.info(f"[OK] Backup created: {backup_name}")
             return str(backup_path)
             
         except Exception as e:

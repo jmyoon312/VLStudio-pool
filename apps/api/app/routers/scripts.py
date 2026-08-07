@@ -117,7 +117,7 @@ def analyze_script(
             with open(os.path.join(workspace_root, "strategy_brief.md"), "w", encoding="utf-8") as f:
                 f.write(brief)
                 
-            logger.info(f"✅ Operation Workspace synchronized at: {workspace_root}")
+            logger.info(f"[OK] Operation Workspace synchronized at: {workspace_root}")
             
             # Update video metadata
             if video.metadata_json is None: video.metadata_json = {}
@@ -182,7 +182,7 @@ def rewrite_script(
                     with open(os.path.join(workspace_root, "strategy_brief.md"), "a", encoding="utf-8") as f:
                         f.write(f"\n\n## Refined Narrative\n> {rewritten_script}\n\n*Updated via Elite Refinement Engine*")
                     
-                    logger.info(f"✅ Refined script saved to workspace: {workspace_root}")
+                    logger.info(f"[OK] Refined script saved to workspace: {workspace_root}")
         except Exception as e:
             logger.warning(f"Could not save refined script to workspace: {e}")
 
@@ -243,7 +243,7 @@ def save_script(
             video.metadata_json["workspace_path"] = workspace_root
             db.commit()
 
-        logger.info(f"✅ Script synced to workspace: {workspace_root}")
+        logger.info(f"[OK] Script synced to workspace: {workspace_root}")
     except Exception as e:
         logger.warning(f"Failed to sync script to workspace: {e}")
 
@@ -274,7 +274,7 @@ def persist_genesis(
         target_audio = os.path.join(workspace_root, "genesis_voice.mp3")
         shutil.copy2(request.audio_path, target_audio)
         results["audio"] = target_audio
-        logger.info(f"✅ Audio persisted: {target_audio}")
+        logger.info(f"[OK] Audio persisted: {target_audio}")
         
     # 2. Persist SRT
     if request.srt_content:
@@ -282,7 +282,7 @@ def persist_genesis(
         with open(target_srt, "w", encoding="utf-8") as f:
             f.write(request.srt_content)
         results["srt"] = target_srt
-        logger.info(f"✅ SRT persisted: {target_srt}")
+        logger.info(f"[OK] SRT persisted: {target_srt}")
 
     return {"status": "success", "assets": results}
 

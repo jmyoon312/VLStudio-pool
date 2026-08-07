@@ -24,7 +24,7 @@ class BatchReleaseOrchestrator:
         results = {"success": [], "failed": []}
         
         for cid in channel_ids:
-            logger.info(f"🚀 [ORCHESTRATOR] Triggering release for channel {cid}")
+            logger.info(f"[FALLBACK] [ORCHESTRATOR] Triggering release for channel {cid}")
             
             try:
                 # 1. Trigger the channel-specific n8n webhook
@@ -45,7 +45,7 @@ class BatchReleaseOrchestrator:
 
                 # 2. Random Delay (30s - 3min) to staggered release
                 delay = random.randint(30, 180)
-                logger.info(f"⏳ Waiting {delay}s before next release...")
+                logger.info(f"[WAIT] Waiting {delay}s before next release...")
                 await asyncio.sleep(delay)
 
             except Exception as e:

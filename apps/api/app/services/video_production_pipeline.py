@@ -107,7 +107,7 @@ class VideoProductionPipeline:
         if output_dir is None:
             output_dir = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "downloads", "video_production"
+                "07_Downloads", "video_production"
             )
         
         self.output_dir = output_dir
@@ -152,7 +152,7 @@ class VideoProductionPipeline:
         Returns:
             VideoProductionResult with final video and metadata
         """
-        logger.info(f"🎬 [Video Pipeline] Starting production: {topic}")
+        logger.info(f"[VIDEO] [Video Pipeline] Starting production: {topic}")
         
         if config is None:
             config = VideoProductionConfig()
@@ -250,7 +250,7 @@ class VideoProductionPipeline:
             logger.info("   Step 7: Verifying quality...")
             quality_ok = await self._verify_quality(video_path)
             
-            logger.info(f"   ✅ Video production complete (Security Hardened)!")
+            logger.info(f"   [OK] Video production complete (Security Hardened)!")
             logger.info(f"   Video: {video_path}")
             logger.info(f"   Duration: {audio_result.duration_seconds:.1f}s")
             
@@ -269,7 +269,7 @@ class VideoProductionPipeline:
             )
             
         except Exception as e:
-            logger.error(f"❌ [Video Pipeline] Failed: {e}")
+            logger.error(f"[FAIL] [Video Pipeline] Failed: {e}")
             return VideoProductionResult(
                 success=False,
                 error=str(e)
@@ -518,7 +518,7 @@ class VideoProductionPipeline:
                 return output_path
                 
         except Exception as e:
-            logger.error(f"❌ [SAIF-P4] Security wash failed: {e}")
+            logger.error(f"[FAIL] [SAIF-P4] Security wash failed: {e}")
         
         return video_path
 

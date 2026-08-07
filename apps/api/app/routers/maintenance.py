@@ -157,9 +157,9 @@ def cleanup_old_videos(
         
         if not dry_run:
             db.commit()
-            logger.info(f"✅ Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
+            logger.info(f"[OK] Cleanup completed: {deleted_count} videos deleted, {deleted_size / 1024 / 1024:.2f} MB freed")
         else:
-            logger.info(f"🔍 Dry run: {deleted_count} videos would be deleted, {deleted_size / 1024 / 1024:.2f} MB would be freed")
+            logger.info(f"[SEARCH] Dry run: {deleted_count} videos would be deleted, {deleted_size / 1024 / 1024:.2f} MB would be freed")
         
         return {
             "status": "success",

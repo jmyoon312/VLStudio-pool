@@ -188,7 +188,7 @@ class AssetQuery(BaseModel):
 
 # Settings schemas
 class SettingsBase(BaseModel):
-    root_download_path: str = "downloads"
+    root_download_path: str = "07_Downloads"
     cookies_path: Optional[str] = None
     global_auto_download: Optional[bool] = None
     enable_trend_scheduling: Optional[bool] = None # [NEW]
@@ -464,6 +464,20 @@ class ScriptRefinementRequest(BaseModel):
     model: Optional[str] = None
     tempo_percentage: Optional[int] = 100
 
+class SafetyReviewRequest(BaseModel):
+    current_text: str
+    provider: Optional[str] = None
+    model: Optional[str] = None
+
+class SafetyChange(BaseModel):
+    original: str
+    replacement: str
+    reason: str
+
+class SafetyReviewResponse(BaseModel):
+    revised_script: str
+    changes: List[SafetyChange]
+
 class ScriptRewriteRequest(BaseModel):
     video_id: Optional[int] = None
     original_script: str
@@ -693,6 +707,17 @@ class ProfileBase(BaseModel):
     created_at: Optional[datetime] = None
     last_used_at: Optional[datetime] = None
     tags: Optional[List[str]] = []
+    
+    # [NEW] Network Config
+    proxy_mode: Optional[str] = "DIRECT"
+    proxy_protocol: Optional[str] = "http"
+    proxy_host: Optional[str] = None
+    proxy_port: Optional[str] = None
+    proxy_username: Optional[str] = None
+    proxy_password: Optional[str] = None
+    
+    # [NEW] Engine config
+    engine_type: Optional[str] = "cloakbrowser"
     
     class Config:
         from_attributes = True

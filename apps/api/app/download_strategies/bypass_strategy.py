@@ -1,10 +1,37 @@
 import os
 import time
 from datetime import datetime
-try:
-    from patchright.sync_api import sync_playwright
-except ImportError:
-    pass
+from contextlib import contextmanager
+
+@contextmanager
+def get_cloak_page(headless=True, user_data_dir=None, **kwargs):
+    import cloakbrowser
+    if user_data_dir:
+        with cloakbrowser.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            headless=headless,
+            **kwargs
+        ) as context:
+            # Persistent context might already have a page
+            pages = context.pages
+            if pages:
+                yield pages[0]
+            else:
+                yield context.new_page()
+    else:
+        with cloakbrowser.launch_context(
+            headless=headless,
+            **kwargs
+        ) as context:
+            yield context.new_page()
+
+@contextmanager
+def get_or_create_page(existing_page=None, headless=True, user_data_dir=None, **kwargs):
+    if existing_page:
+        yield existing_page
+    else:
+        with get_cloak_page(headless=headless, user_data_dir=user_data_dir, **kwargs) as page:
+            yield page
 
 # 1. Douyin Downloader (TikVideo)
 class TikVideoDownloader:
@@ -14,7 +41,7 @@ class TikVideoDownloader:
         # NOTE: Assumes the necessary auto-install/check logic is run during service boot or in dependency_manager.
         pass
 
-    def download(self, video_url, output_dir, headless=True):
+    def download(self, video_url, output_dir, headless=True, user_data_dir=None, page=None):
         self._ensure_playwright_installed()
         
         # Aggressive Popup Killer utility function
@@ -32,144 +59,117 @@ class TikVideoDownloader:
             except: pass
 
         try:
-            with sync_playwright() as p:
-                print(f"Bypass: Launching browser (Headless={headless})...")
-                browser = p.chromium.launch(headless=headless)
-                # context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-                page = browser.new_page()
+            import cloakbrowser
+        except ImportError:
+            return {'status': 'failed', 'error': 'cloakbrowser missing'}
+
+        try:
+            with get_or_create_page(
+                existing_page=page,
+                headless=headless,
+                stealth_args=True,
+                viewport={'width': 1920, 'height': 1080},
+                user_data_dir=user_data_dir
+            ) as current_page:
+                print(f"Bypass: Launching browser via CloakBrowser (Headless={headless})...")
                 
                 try:
                     # 1. Navigate
                     print(f"Bypass: Navigating to TikVideo for {video_url}...")
-                    page.goto("https://tikvideo.app/ko/download-douyin-video", timeout=60000)
+                    current_page.goto("https://tikvideo.app/ko/download-douyin-video", timeout=60000)
                     
                     # [Human Delay 1] Wait for initial load/ads
                     time.sleep(1.0)
-                    kill_popups(page)
+                    kill_popups(current_page)
                     
                     # 2. Input URL
                     print("Bypass: Inputting URL...")
-                    page.locator('input#s_input').click(force=True) # Ensure focus
-                    page.fill('input#s_input', video_url)
+                    current_page.locator('input#s_input').click(force=True) # Ensure focus
+                    current_page.fill('input#s_input', video_url)
                     
                     # [Human Delay 2] Wait before click
                     time.sleep(0.5)
+                    kill_popups(current_page)
                     
-                    # 3. Click Start (Force)
-                    print("Bypass: Clicking Start...")
-                    try:
-                        # Primary: .btn-red (from user HTML)
-                        # Fallback: Text "다운로드"
-                        start_btn = page.locator('button.btn-red').first
-                        if not start_btn.is_visible():
-                            start_btn = page.locator('button').filter(has_text="다운로드").first
-                        
-                        # Scroll to make sure it's in view
-                        start_btn.scroll_into_view_if_needed()
-                        
-                        # Force click to ignore overlays
-                        start_btn.click(force=True)
-                        
-                    except Exception as e:
-                        print(f"Start click failed, trying Enter key: {e}")
-                        page.press('input#s_input', 'Enter')
+                    # 3. Click Download
+                    print("Bypass: Clicking Download...")
+                    current_page.locator('button#btn-submit').click(force=True)
                     
-                    # 4. Wait for Result
-                    print("Bypass: Waiting for results...")
-                    try:
-                        # Wait for result container
-                        page.wait_for_selector('.tik-video, .download-box', timeout=25000)
-                    except:
-                        # Retry logic if ad blocked the first click
-                        print("Result not found. Retrying start click...")
-                        kill_popups(page)
-                        page.locator('button.btn-red').click(force=True)
-                        page.wait_for_selector('.tik-video, .download-box', timeout=20000)
-
-                    # 5. Find Download Link
-                    # Look for .tik-button-dl (from user HTML)
-                    download_links = page.locator('a.tik-button-dl')
-                    if download_links.count() == 0:
-                         # Fallback check
-                         download_links = page.locator('a.btn-download, a:has-text("Download")')
-                         if download_links.count() == 0:
-                             # Check error
-                             err = page.locator('.alert-danger, .error-msg')
-                             if err.count() > 0:
-                                 raise Exception(f"Site Error: {err.first.inner_text()}")
-                             raise Exception("No download buttons (.tik-button-dl) found.")
-
-                    # Prioritize "HD" or "MP4"
-                    target_link = download_links.first
-                    for i in range(download_links.count()):
-                        txt = download_links.nth(i).inner_text()
-                        if "HD" in txt or "MP4" in txt:
-                            target_link = download_links.nth(i)
+                    # 4. Wait for Results container (it creates a table or div with download links)
+                    print("Bypass: Waiting for results container...")
+                    # TikVideo uses a container usually #tiktok-parse-result or something similar
+                    # We'll wait for any 'a' tag that contains 'douyin' or 'download' text in href
+                    # A robust way: wait for network idle or a specific button
+                    
+                    # wait until the page shows download buttons
+                    current_page.wait_for_selector('a.btn-download', timeout=60000) 
+                    
+                    # [Human Delay 3] Let UI settle
+                    time.sleep(1.0)
+                    kill_popups(current_page)
+                    
+                    # 5. Extract video download URL
+                    # Usually the first download link is the no-watermark video
+                    print("Bypass: Extracting video URL...")
+                    dl_links = current_page.locator('a.btn-download').all()
+                    dl_url = None
+                    for link in dl_links:
+                        href = link.get_attribute('href')
+                        # look for mp4 or download link
+                        if href and ('http' in href or 'download' in href):
+                            dl_url = href
                             break
                     
-                    print(f"Bypass: Selected link: {target_link.inner_text()}")
-
-                    # 6. Trigger Download (Ad Handling)
-                    
-                    download = None
-                    
-                    # --- Attempt 1: Standard click with long timeout ---
-                    try:
-                        # Increased timeout to 90s as per request
-                        with page.expect_download(timeout=90000) as download_info: 
-                            target_link.click(force=True) # Always force click
-                        download = download_info.value
-                    except Exception as e:
-                        print(f"Bypass: Download event missed on first attempt (Timeout): {e}")
+                    if not dl_url:
+                        raise Exception("Download link not found in results.")
                         
-                        # --- Attempt 2: Retry with forced click and popup closure ---
-                        try:
-                            kill_popups(page)
-                            print("Bypass: Retrying click after timeout...")
-                            with page.expect_download(timeout=90000) as download_info_retry:
-                                target_link.click(force=True)
-                            download = download_info_retry.value
-                        except Exception as e:
-                            print(f"Bypass: Download event missed on second attempt as well. Error: {e}")
-                            download = None
-
-                    # 7. Save File (Only executed if expect_download succeeded OR fallback logic applies)
+                    print(f"Bypass: Found CDN URL: {dl_url[:100]}...")
+                    
+                    # 6. Stream Download manually
+                    # Using requests so we don't rely on Playwright's download interceptor which can be finicky
+                    print(f"Bypass: Streaming download to disk...")
+                    import requests
+                    
                     timestamp = int(time.time())
-                    # [FIX] Distinguish between Douyin and TikTok for filename
-                    prefix = "tiktok" if "tiktok.com" in video_url else "douyin"
+                    prefix = "douyin" if "douyin" in video_url else "tiktok"
                     filename = f"{prefix}_{timestamp}.mp4"
                     save_path = os.path.join(output_dir, filename)
                     
-                    if download:
-                        download.save_as(save_path)
-                        print(f"Bypass: Download success: {save_path}")
-                        
-                        # [FIX] Correct metadata for Gallery display
-                        platform_name = "TikTok" if "tiktok.com" in video_url else "Douyin"
-                        return {
-                            'status': 'success',
-                            'file_path': save_path,
-                            'thumbnail_path': None,
-                            'metadata': {
-                                'id': f'{prefix}_{timestamp}',
-                                'title': f'{platform_name} Video {timestamp}', 
-                                'uploader': platform_name,
-                                'upload_date': datetime.now().strftime('%Y%m%d')
-                            }
+                    headers = {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                        'Referer': 'https://tikvideo.app/'
+                    }
+                    
+                    response = requests.get(dl_url, stream=True, timeout=120, headers=headers)
+                    response.raise_for_status()
+                    
+                    with open(save_path, 'wb') as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                            
+                    print(f"Bypass: Download success: {save_path}")
+                    
+                    # [FIX] Correct metadata for Gallery display
+                    platform_name = "TikTok" if "tiktok.com" in video_url else "Douyin"
+                    return {
+                        'status': 'success',
+                        'file_path': save_path,
+                        'thumbnail_path': None,
+                        'metadata': {
+                            'id': f'{prefix}_{timestamp}',
+                            'title': f'{platform_name} Video {timestamp}', 
+                            'uploader': platform_name,
+                            'upload_date': datetime.now().strftime('%Y%m%d')
                         }
-                    else:
-                        print("Bypass: Download event missed. Returning failure/fallback.")
-                        raise Exception("Failed to capture download event. The file might not have started.")
+                    }
                 
                 except Exception as e:
                     print(f"Bypass Logic Failed: {e}")
                     try:
                         timestamp = int(time.time())
-                        page.screenshot(path=f"bypass_error_{timestamp}.png")
+                        current_page.screenshot(path=f"bypass_error_{timestamp}.png")
                     except: pass
                     return {'status': 'failed', 'error': str(e)}
-                finally:
-                    browser.close()
 
         except ImportError as e:
             return {'status': 'failed', 'error': f'Server dependency missing: Playwright ({e})'}
@@ -185,40 +185,45 @@ class V2OBDownloader:
         # Ensure we just append the key. v2ob structure is /en/<platform_key>
         self.url = f"https://www.v2ob.com/en/{platform_key}"
 
-    def download(self, video_url, output_dir, headless=True):
+    def download(self, video_url, output_dir, headless=True, user_data_dir=None, page=None):
         try:
-            from patchright.sync_api import sync_playwright, expect
+            from patchright.sync_api import expect
+            import cloakbrowser
         except ImportError:
-            return {'status': 'failed', 'error': 'Playwright missing'}
+            return {'status': 'failed', 'error': 'Playwright or cloakbrowser missing'}
 
         try:
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=headless)
-                page = browser.new_page()
+            with get_or_create_page(
+                existing_page=page,
+                headless=headless,
+                stealth_args=True,
+                viewport={'width': 1920, 'height': 1080},
+                user_data_dir=user_data_dir
+            ) as current_page:
                 
                 try:
                     print(f"Bypass(V2OB-{self.platform_key}): Navigating to {self.url}...")
-                    page.goto(self.url, timeout=60000)
+                    current_page.goto(self.url, timeout=60000)
                     
                     # 1. Input URL (Robust Selector)
                     print(f"Bypass(V2OB-{self.platform_key}): Inputting URL...")
                     # Match any placeholder ending in "video URL here" (covers Douyin, Haokan, etc.)
-                    input_box = page.locator("input[placeholder*='video URL here']")
+                    input_box = current_page.locator("input[placeholder*='video URL here']")
                     input_box.click()
                     input_box.fill(video_url)
                     
                     # CRITICAL: Trigger input event to enable the button
                     # Some sites need a real keypress or explicit event
                     input_box.dispatch_event('input') 
-                    page.wait_for_timeout(500) # Short delay for state update
+                    current_page.wait_for_timeout(500) # Short delay for state update
                     
                     # 2. Click Start Parsing
                     print(f"Bypass(V2OB-{self.platform_key}): Clicking Start...")
                     # Find button by text
-                    start_btn = page.locator('button').filter(has_text="Start Parsing")
+                    start_btn = current_page.locator('button').filter(has_text="Start Parsing")
                     # Also try generic "Start" if "Start Parsing" not found to be safe, but V2OB usually has Start Parsing
                     if start_btn.count() == 0:
-                         start_btn = page.locator('button').filter(has_text="Start")
+                         start_btn = current_page.locator('button').filter(has_text="Start")
                     
                     # Wait for button to be ENABLED (remove disabled attribute)
                     try:
@@ -232,11 +237,11 @@ class V2OBDownloader:
                     
                     # 3. Wait for Result Container
                     print(f"Bypass(V2OB-{self.platform_key}): Waiting for result container (#result)...")
-                    page.wait_for_selector("#result", timeout=60000) 
+                    current_page.wait_for_selector("#result", timeout=60000) 
                     
                     # 4. Locate Download Button
                     # Target "Download Video" or similar
-                    download_btn_locator = page.locator('#result button:has-text("Download Video")')
+                    download_btn_locator = current_page.locator('#result button:has-text("Download Video")')
                     
                     # Wait for the button to be clickable
                     download_btn_locator.wait_for(state="visible", timeout=10000) 
@@ -245,12 +250,12 @@ class V2OBDownloader:
                     print(f"Bypass(V2OB-{self.platform_key}): Clicking Download Video button...")
                     download = None
                     try:
-                        with page.expect_download(timeout=60000) as download_info:
+                        with current_page.expect_download(timeout=60000) as download_info:
                             download_btn_locator.click()
                         download = download_info.value
                     except Exception as e:
                         print(f"Download click retry (force=True): {e}")
-                        with page.expect_download(timeout=60000) as download_info:
+                        with current_page.expect_download(timeout=60000) as download_info:
                             download_btn_locator.click(force=True)
                         download = download_info.value
                     
@@ -276,39 +281,48 @@ class V2OBDownloader:
                 except Exception as e:
                     print(f"V2OB-{self.platform_key} Failed: {e}")
                     return {'status': 'failed', 'error': str(e)}
-                finally:
-                    browser.close()
         except Exception as e:
              return {'status': 'failed', 'error': f'Playwright error: {e}'}
 
 # 3. Smart Fallback Downloader (Douyin Only for now)
 class DouyinSmartDownloader:
     """Tries CloakDouyinDownloader first, then V2OB, then TikVideo."""
-    def download(self, video_url, output_dir, headless=True):
-        print("Strategy: Attempting Primary (CloakDouyin - direct aweme_detail API)...")
+    def download(self, video_url, output_dir, headless=True, user_data_dir=None):
         try:
-            cloak = CloakDouyinDownloader()
-            result = cloak.download(video_url, output_dir, headless)
-            if result.get('status') == 'success':
-                return result
-            print(f"CloakDouyin failed: {result.get('error', 'unknown')}. Trying V2OB...")
-        except Exception as e:
-            print(f"CloakDouyin exception: {e}. Trying V2OB...")
+            with get_cloak_page(
+                headless=headless,
+                stealth_args=True,
+                viewport={'width': 1920, 'height': 1080},
+                user_data_dir=user_data_dir
+            ) as page:
+                
+                print("Strategy: Attempting Primary (CloakDouyin - direct aweme_detail API)...")
+                try:
+                    cloak = CloakDouyinDownloader()
+                    result = cloak.download(video_url, output_dir, headless, user_data_dir=user_data_dir, page=page)
+                    if result.get('status') == 'success':
+                        return result
+                    print(f"CloakDouyin failed: {result.get('error', 'unknown')}. Trying V2OB...")
+                except Exception as e:
+                    print(f"CloakDouyin failed: {e}. Trying V2OB...")
+                    
+                try:
+                    print("Strategy: Attempting Secondary (V2OB)...")
+                    result = V2OBDownloader('douyin').download(video_url, output_dir, headless=headless, user_data_dir=user_data_dir, page=page)
+                    if result.get('status') == 'success':
+                        return result
+                    print(f"V2OB failed: {result.get('error')}. Trying TikVideo...")
+                except Exception as e:
+                    print(f"V2OB failed: {e}. Trying TikVideo...")
 
-        try:
-            v2ob = V2OBDownloader('douyin')
-            result = v2ob.download(video_url, output_dir, headless)
-            if result.get('status') == 'success':
-                return result
-            print(f"V2OB failed: {result.get('error', 'unknown')}. Trying TikVideo...")
+                print("Strategy: Attempting Tertiary (TikVideoDownloader)...")
+                try:
+                    tik = TikVideoDownloader()
+                    return tik.download(video_url, output_dir, headless=headless, user_data_dir=user_data_dir, page=page)
+                except Exception as fallback_error:
+                    return {'status': 'failed', 'error': f'All strategies failed. Last error: {fallback_error}'}
         except Exception as e:
-            print(f"V2OB exception: {e}. Trying TikVideo...")
-
-        try:
-            tik = TikVideoDownloader()
-            return tik.download(video_url, output_dir, headless)
-        except Exception as fallback_error:
-            return {'status': 'failed', 'error': f'All strategies failed. Last error: {fallback_error}'}
+            return {'status': 'failed', 'error': f'Failed to launch persistent context: {e}'}
 
 
 # 4. CloakDouyinDownloader — cloakbrowser + aweme_detail API (direct, no 3rd-party)
@@ -316,7 +330,7 @@ class CloakDouyinDownloader:
     """Uses cloakbrowser stealth browser to intercept Douyin's aweme_detail API,
        extract the CDN video URL, and download via requests."""
 
-    def download(self, video_url, output_dir, headless=True):
+    def download(self, video_url, output_dir, headless=True, user_data_dir=None, page=None):
         try:
             import cloakbrowser
         except ImportError:
@@ -333,18 +347,19 @@ class CloakDouyinDownloader:
         os.makedirs(output_dir, exist_ok=True)
 
         try:
-            with cloakbrowser.launch_context(
+            with get_or_create_page(
+                existing_page=page,
                 headless=headless,
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
                 locale='zh-CN',
                 viewport={'width': 1920, 'height': 1080},
                 stealth_args=True,
-            ) as context:
-                page = context.new_page()
+                user_data_dir=user_data_dir
+            ) as current_page:
 
                 # Visit Douyin to establish cookies
-                page.goto('https://www.douyin.com/', wait_until='domcontentloaded', timeout=30000)
-                page.wait_for_timeout(2000)
+                current_page.goto('https://www.douyin.com/', wait_until='domcontentloaded', timeout=30000)
+                current_page.wait_for_timeout(2000)
 
                 # Capture aweme_detail response
                 detail_data = {}
@@ -360,15 +375,15 @@ class CloakDouyinDownloader:
                         except:
                             pass
 
-                page.on('response', on_response)
+                current_page.on('response', on_response)
 
                 # Navigate to video
-                page.goto(video_url, wait_until='domcontentloaded', timeout=30000)
-                page.wait_for_timeout(3000)
+                current_page.goto(video_url, wait_until='domcontentloaded', timeout=30000)
+                current_page.wait_for_timeout(5000)
 
                 if not detail_data:
                     print('[CloakDouyin] API response not captured, trying direct extraction...')
-                    detail_data = self._try_extract_video_from_page(page)
+                    detail_data = self._try_extract_video_from_page(current_page)
 
                 if not detail_data:
                     return {'status': 'failed', 'error': 'Could not extract video data. Page blocked or video unavailable.'}
@@ -446,6 +461,16 @@ class CloakDouyinDownloader:
 
     def _extract_aweme_id(self, url):
         import re
+        
+        # Resolve short URLs (like v.douyin.com) first
+        if 'v.douyin.com' in url or 'iesdouyin.com' in url:
+            try:
+                import requests
+                r = requests.head(url, allow_redirects=True, timeout=10)
+                url = r.url
+            except Exception as e:
+                print(f"[CloakDouyin] Failed to resolve short URL: {e}")
+
         match = re.search(r'(?:video|aweme)(?:/|%2F)([0-9]{15,20})', url)
         if match:
             return match.group(1)

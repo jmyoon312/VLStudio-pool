@@ -53,11 +53,11 @@ class InstagramUploader:
                 
                 # 세션 유효성 확인
                 self.client.get_timeline_feed()
-                logger.info(f"✅ [Instagram] Logged in with existing session: {self.username}")
+                logger.info(f"[OK] [Instagram] Logged in with existing session: {self.username}")
                 return True
             
             except Exception as e:
-                logger.warning(f"⚠️ [Instagram] Existing session invalid: {e}")
+                logger.warning(f"[WARN] [Instagram] Existing session invalid: {e}")
         
         # 새로 로그인
         try:
@@ -67,19 +67,19 @@ class InstagramUploader:
             
             # 세션 저장
             self.client.dump_settings(self.session_file)
-            logger.info(f"✅ [Instagram] New session created: {self.username}")
+            logger.info(f"[OK] [Instagram] New session created: {self.username}")
             return True
         
         except ChallengeRequired as e:
-            logger.error(f"❌ [Instagram] 2FA required: {e}")
+            logger.error(f"[FAIL] [Instagram] 2FA required: {e}")
             return False
         
         except PleaseWaitFewMinutes as e:
-            logger.error(f"❌ [Instagram] Rate limited: {e}")
+            logger.error(f"[FAIL] [Instagram] Rate limited: {e}")
             return False
         
         except Exception as e:
-            logger.error(f"❌ [Instagram] Login failed: {e}")
+            logger.error(f"[FAIL] [Instagram] Login failed: {e}")
             return False
     
     def upload_reel(
@@ -109,7 +109,7 @@ class InstagramUploader:
                 thumbnail=Path(thumbnail_path) if thumbnail_path else None
             )
             
-            logger.info(f"✅ [Instagram] Upload successful: {media.code}")
+            logger.info(f"[OK] [Instagram] Upload successful: {media.code}")
             
             return {
                 "status": "success",
@@ -119,7 +119,7 @@ class InstagramUploader:
             }
         
         except Exception as e:
-            logger.error(f"❌ [Instagram] Upload failed: {e}")
+            logger.error(f"[FAIL] [Instagram] Upload failed: {e}")
             return {
                 "status": "error",
                 "error": str(e)
@@ -153,12 +153,12 @@ class SafeInstagramUploader(InstagramUploader):
         elapsed = time.time() - self.last_upload_time
         if elapsed < self.min_delay:
             wait_time = self.min_delay - elapsed
-            logger.info(f"⏳ [Instagram] Waiting {wait_time:.0f}s for rate limit...")
+            logger.info(f"[WAIT] [Instagram] Waiting {wait_time:.0f}s for rate limit...")
             time.sleep(wait_time)
         
         # 랜덤 지연 (30초~60초)
         random_delay = random.randint(30, 60)
-        logger.info(f"⏳ [Instagram] Random delay: {random_delay}s")
+        logger.info(f"[WAIT] [Instagram] Random delay: {random_delay}s")
         time.sleep(random_delay)
         
         # 업로드

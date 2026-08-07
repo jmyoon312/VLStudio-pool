@@ -27,9 +27,9 @@ class GeminiManager:
         self.current_key_index = 0
         
         if not self.api_keys:
-            logger.warning("⚠️ No Gemini API keys configured.")
+            logger.warning("[WARN] No Gemini API keys configured.")
         else:
-            logger.info(f"✅ Loaded {len(self.api_keys)} keys (Sanitized).")
+            logger.info(f"[OK] Loaded {len(self.api_keys)} keys (Sanitized).")
 
     def _get_client(self):
         if not self.api_keys:
@@ -63,7 +63,7 @@ class GeminiManager:
             for attempt in range(len(self.api_keys) + 1):
                 try:
                     client = self._get_client()
-                    if attempt == 0: logger.info(f"🚀 Sending to [{model}]...")
+                    if attempt == 0: logger.info(f"[FALLBACK] Sending to [{model}]...")
 
                     config = types.GenerateContentConfig(
                         temperature=0.7,
@@ -93,16 +93,16 @@ class GeminiManager:
                     
                     # 404/400 (Invalid Model) -> Switch Model
                     if "404" in error_msg or "not found" in error_msg.lower() or "400" in error_msg:
-                        logger.warning(f"⚠️ Model {model} unavailable. Switching...")
+                        logger.warning(f"[WARN] Model {model} unavailable. Switching...")
                         break 
                     
                     # 429 (Quota) -> Rotate Key & Retry
                     if "429" in error_msg or "quota" in error_msg.lower():
-                        logger.warning(f"⏳ Quota limit. Rotating key...")
+                        logger.warning(f"[WAIT] Quota limit. Rotating key...")
                         time.sleep(1)
                         continue
                     
-                    logger.error(f"❌ Error with {model}: {error_msg}")
+                    logger.error(f"[FAIL] Error with {model}: {error_msg}")
                     break
 
         error_msg = f"Error: Generation failed. Last error: {str(last_error)}"

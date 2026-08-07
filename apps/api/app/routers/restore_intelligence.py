@@ -61,14 +61,14 @@ def restore_file(filename):
         f.write(new_content)
     return True
 
-print("🚀 Starting Fleet-wide Intelligence Restoration...")
+print("[FALLBACK] Starting Fleet-wide Intelligence Restoration...")
 count = 0
 for filename in os.listdir(current_dir):
     if filename.endswith(".py"):
         if restore_file(filename):
-            print(f"✅ Restored Intelligence: {filename}")
+            print(f"[OK] Restored Intelligence: {filename}")
             count += 1
         else:
-            print(f"⚠️ Skipped/Failed: {filename}")
+            print(f"[WARN] Skipped/Failed: {filename}")
 
 print(f"\n🦾 Restoration Complete. {count} units have been re-aligned with legacy intelligence.")

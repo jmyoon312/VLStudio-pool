@@ -75,7 +75,7 @@ class OracleScout:
                     logger.warning(f"Strategic theme selection failed via {model_name}: {e}. Picking random.")
                     target_niche = random.choice(STRATEGIC_THEMES)
                 
-                logger.info(f"🚀 [Oracle Scout] Strategic Theme Selected: {target_niche}")
+                logger.info(f"[FALLBACK] [Oracle Scout] Strategic Theme Selected: {target_niche}")
 
             # 1. Discovery Phase (Standard + Strategic Keywords)
             keywords = await self._discover_viral_keywords(target_niche, "strategic")
@@ -100,7 +100,7 @@ class OracleScout:
             logger.info(f"🏆 [Scout] Ranking complete for {target_niche}. Got {len(ranked_candidates)} results.")
             
             # 4. Save to DB
-            logger.info("💾 [Scout] Step 4: Saving to Database...")
+            logger.info("[SAVE] [Scout] Step 4: Saving to Database...")
             for r in ranked_candidates:
                 # Use sub-transaction or check existence to avoid unique constraint issues
                 existing = db.query(ScoutCandidate).filter(ScoutCandidate.channel_url == r['url']).first()
@@ -126,11 +126,11 @@ class OracleScout:
                     db.add(candidate)
             
             db.commit()
-            logger.info(f"✅ [Oracle Scout] Mission complete. Saved {len(ranked_candidates)} candidates.")
+            logger.info(f"[OK] [Oracle Scout] Mission complete. Saved {len(ranked_candidates)} candidates.")
             return ranked_candidates
             
         except Exception as e:
-            logger.error(f"🚨 [Oracle Scout] CRITICAL MISSION FAILURE: {e}")
+            logger.error(f"[ALERT] [Oracle Scout] CRITICAL MISSION FAILURE: {e}")
             import traceback
             logger.error(traceback.format_exc())
             db.rollback()
@@ -198,7 +198,7 @@ class OracleScout:
 
     async def _search_youtube_competitors(self, keyword: str, db: Session) -> List[Dict[str, Any]]:
         """Search YouTube for channels using yt-dlp directly"""
-        logger.info(f"🔍 [Oracle Scout] Searching YouTube for channels related to: {keyword}")
+        logger.info(f"[SEARCH] [Oracle Scout] Searching YouTube for channels related to: {keyword}")
         candidates = await asyncio.to_thread(search_youtube_channels, keyword, 20)
         if not candidates:
             logger.warning(f"No channels found for '{keyword}', trying broader query")

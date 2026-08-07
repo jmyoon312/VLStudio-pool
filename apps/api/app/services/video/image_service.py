@@ -43,7 +43,7 @@ class ImageService:
                 
             return filepath
         except Exception as e:
-            logger.error(f"❌ Scene Image Gen Failed: {e}")
+            logger.error(f"[FAIL] Scene Image Gen Failed: {e}")
             return self._generate_dummy_image(scene_id, prompt)
 
     def _generate_dummy_image(self, scene_id: int, prompt: str) -> str:
@@ -59,5 +59,5 @@ class ImageService:
             img.save(filepath)
             return filepath
         except Exception as ex:
-            logger.error(f"❌ Dummy Image Gen Failed: {ex}")
+            logger.error(f"[FAIL] Dummy Image Gen Failed: {ex}")
             raise ex

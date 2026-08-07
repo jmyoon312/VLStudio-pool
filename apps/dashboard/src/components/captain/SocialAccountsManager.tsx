@@ -32,9 +32,11 @@ interface BrowserProfile {
 
 interface SocialAccountsManagerProps {
     profileId?: string; // Optional context if needed
+    compact?: boolean;
 }
 
-const SocialAccountsManager: React.FC<SocialAccountsManagerProps> = () => {
+const SocialAccountsManager: React.FC<SocialAccountsManagerProps> = ({ profileId, compact = false }) => {
+
     const [profiles, setProfiles] = useState<BrowserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAddOpen, setIsAddOpen] = useState(false);
@@ -53,7 +55,10 @@ const SocialAccountsManager: React.FC<SocialAccountsManagerProps> = () => {
     const fetchProfiles = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/browser-profiles');
+            const endpoint = profileId 
+                ? `/api/browser-profiles?parent_brand_id=${profileId}` 
+                : '/api/browser-profiles';
+            const res = await axios.get(endpoint);
             setProfiles(res.data);
         } catch (error) {
             console.error("Failed to fetch profiles:", error);
@@ -78,7 +83,10 @@ const SocialAccountsManager: React.FC<SocialAccountsManagerProps> = () => {
     const handleCreateProfile = async () => {
         if (!newProfileName.trim()) return;
         try {
-            await axios.post('/api/browser-profiles', { name: newProfileName });
+            await axios.post('/api/browser-profiles/', { 
+                name: newProfileName,
+                parent_brand_id: profileId || null
+            });
             toast.success("브라우저 프로필이 생성되었습니다.");
             setNewProfileName("");
             setIsAddOpen(false);
@@ -146,6 +154,54 @@ const SocialAccountsManager: React.FC<SocialAccountsManagerProps> = () => {
             }
         }
     };
+
+    if (compact) {
+        return (
+            <div className="flex items-center gap-2 text-xs">
+                {loading ? (
+                    <span className="text-slate-400 flex items-center gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> 로딩중...</span>
+                ) : profiles.length === 0 ? (
+                    <span className="text-slate-400">생성된 프로필 없음</span>
+                ) : (
+                    profiles.map(profile => (
+                        <Button 
+                            key={profile.id} 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 px-2 text-[11px] bg-white hover:bg-slate-50"
+                            onClick={() => handleLaunchProfile(profile.id, profile.name)}
+                            title={`${profile.name} 브라우저 열기`}
+                        >
+                            <ExternalLink className="w-3 h-3 mr-1 text-slate-400" />
+                            {profile.name}
+                        </Button>
+                    ))
+                )}
+                
+                <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px] text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                            <Plus className="w-3 h-3 mr-1" />
+                            추가
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>새 빈 브라우저 프로필 생성</DialogTitle>
+                            <DialogDescription>예: "게임 채널용", "일상 브랜드용" 등 용도에 맞는 이름을 입력하세요.</DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <Input placeholder="프로필 이름 입력..." value={newProfileName} onChange={(e) => setNewProfileName(e.target.value)} />
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsAddOpen(false)}>취소</Button>
+                            <Button onClick={handleCreateProfile}>생성</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

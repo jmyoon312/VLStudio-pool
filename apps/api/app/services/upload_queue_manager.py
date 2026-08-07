@@ -224,16 +224,16 @@ class UploadQueueManager:
             channel_key = f"{item.channel_id}_{today}"
             self._daily_upload_counts[channel_key]["count"] += 1
             
-            logger.info(f"✅ Upload completed: {item.title}")
+            logger.info(f"[OK] Upload completed: {item.title}")
         
         elif status == "failed":
             item.retry_count += 1
             if item.retry_count >= item.max_retries:
                 item.status = QueueStatus.CANCELLED
-                logger.error(f"❌ Max retries reached: {item.title}")
+                logger.error(f"[FAIL] Max retries reached: {item.title}")
             else:
                 item.scheduled_at = datetime.now() + timedelta(minutes=30)
-                logger.warning(f"🔄 Will retry: {item.title} (attempt {item.retry_count + 1})")
+                logger.warning(f"[REFRESH] Will retry: {item.title} (attempt {item.retry_count + 1})")
         
         return True
     
@@ -262,7 +262,7 @@ class UploadQueueManager:
         if reason:
             item.metadata["cancel_reason"] = reason
         
-        logger.info(f"❌ Cancelled: {item.title} - {reason}")
+        logger.info(f"[FAIL] Cancelled: {item.title} - {reason}")
         
         return True
     

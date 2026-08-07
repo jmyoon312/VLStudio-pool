@@ -35,17 +35,17 @@ class Writer:
             audit_packet: QualityAuditPacket = await self.review_script_with_audit(current_script, niche, dna_context, model=review_model)
             
             if audit_packet.status == "APPROVED":
-                logger.info(f"✅ Script passed QA on attempt {attempt+1}")
+                logger.info(f"[OK] Script passed QA on attempt {attempt+1}")
                 return {
                     "title": f"{niche} Viral Script",
                     "content": audit_packet.artifacts.get("script", current_script),
                     "stages": ["DRAFTED", "REFINED", f"QA_APPROVED_AT_{attempt+1}"]
                 }
             
-            logger.warning(f"⚠️ Script QA Failed (Attempt {attempt+1}). Feedback: {audit_packet.feedback}")
+            logger.warning(f"[WARN] Script QA Failed (Attempt {attempt+1}). Feedback: {audit_packet.feedback}")
             feedback_history.extend(audit_packet.feedback)
             
-        logger.error("❌ Script QA failed after max retries. Falling back to the last best effort.")
+        logger.error("[FAIL] Script QA failed after max retries. Falling back to the last best effort.")
         return {
             "title": f"{niche} Viral Script (UNSTABLE)",
             "content": current_script,

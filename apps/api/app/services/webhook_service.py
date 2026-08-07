@@ -159,7 +159,7 @@ class WebhookService:
                 self._event_subscriptions[event] = []
             self._event_subscriptions[event].append(webhook_id)
         
-        logger.info(f"✅ Webhook registered: {webhook_id} for events: {events}")
+        logger.info(f"[OK] Webhook registered: {webhook_id} for events: {events}")
         
         return webhook_id
     
@@ -289,26 +289,26 @@ class WebhookService:
                         webhook.success_count += 1
                         webhook.last_triggered = datetime.now()
                         
-                        logger.info(f"✅ Webhook delivered: {delivery.delivery_id}")
+                        logger.info(f"[OK] Webhook delivered: {delivery.delivery_id}")
                         break
                     else:
-                        logger.warning(f"⚠️ Webhook failed ({response.status_code}): {delivery.delivery_id}")
+                        logger.warning(f"[WARN] Webhook failed ({response.status_code}): {delivery.delivery_id}")
                         
             except Exception as e:
-                logger.warning(f"⚠️ Webhook delivery error: {e}")
+                logger.warning(f"[WARN] Webhook delivery error: {e}")
                 delivery.response_body = str(e)[:500]
             
             # Retry with exponential backoff
             if attempt < webhook.retry_count - 1:
                 delay = self._base_delay * (2 ** attempt)
-                logger.info(f"⏳ Retrying in {delay}s...")
+                logger.info(f"[WAIT] Retrying in {delay}s...")
                 await asyncio.sleep(delay)
         
         # All retries failed
         if delivery.status != "success":
             delivery.status = "failed"
             webhook.failure_count += 1
-            logger.error(f"❌ Webhook delivery failed after {webhook.retry_count} attempts: {delivery.delivery_id}")
+            logger.error(f"[FAIL] Webhook delivery failed after {webhook.retry_count} attempts: {delivery.delivery_id}")
     
     def get_webhook(self, webhook_id: str) -> Optional[Webhook]:
         """Get webhook by ID"""

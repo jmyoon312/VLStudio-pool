@@ -24,7 +24,7 @@ class MissionBroker:
             try:
                 self._connection = await aio_pika.connect_robust(settings.RABBITMQ_URL)
             except Exception as e:
-                logger.error(f"❌ [Broker] Failed to connect to RabbitMQ: {e}")
+                logger.error(f"[FAIL] [Broker] Failed to connect to RabbitMQ: {e}")
                 raise e
         return self._connection
 
@@ -78,10 +78,10 @@ class MissionBroker:
                 routing_key=settings.AGENT_QUEUE_NAME
             )
             
-            logger.info(f"🚀 [Broker] Mission published for session: {session_id}")
+            logger.info(f"[FALLBACK] [Broker] Mission published for session: {session_id}")
             return True
         except Exception as e:
-            logger.error(f"❌ [Broker] Failed to publish mission: {e}")
+            logger.error(f"[FAIL] [Broker] Failed to publish mission: {e}")
             return False
 
     async def close(self):

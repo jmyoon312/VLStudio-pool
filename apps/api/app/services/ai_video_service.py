@@ -77,7 +77,7 @@ class AIVideoService:
         if not self.replicate_key:
             return {"status": "error", "message": "REPLICATE_API_TOKEN not configured"}
 
-        logger.info(f"🎬 Starting I2V ({engine}) | Image: {image_url} | Prompt: {prompt}")
+        logger.info(f"[VIDEO] Starting I2V ({engine}) | Image: {image_url} | Prompt: {prompt}")
 
         # Replicate CogVideoX-5b-i2v model
         # Full model string: "thudm/cogvideox-5b-i2v:eb20621f37cc22669e46950e181be3ba35f4a6212e3e9d4a3e9d4a3e9d4a3e9d"

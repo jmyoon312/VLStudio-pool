@@ -123,7 +123,7 @@ def launch_notebooklm_browser(account_id: str, db: Session = Depends(get_db)):
             "status": "SUCCESS",
             "url": "", # [HYBRID] No URL needed, browser opens on Windows desktop
             "profile_id": account.browser_profile_id,
-            "message": "🚀 Browser launched on Windows Desktop! Please check your taskbar."
+            "message": "[FALLBACK] Browser launched on Windows Desktop! Please check your taskbar."
         }
     except HTTPException:
         raise

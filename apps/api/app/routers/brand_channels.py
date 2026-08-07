@@ -75,7 +75,7 @@ def trigger_channel_warmup(
     
     # [Fallback 1] specific owner search (matches list_captain_channels logic)
     if not channel and captain_id:
-        print(f"⚠️ Direct lookup failed. Trying owner-based lookup for captain_id='{captain_id}'...")
+        print(f"[WARN] Direct lookup failed. Trying owner-based lookup for captain_id='{captain_id}'...")
         owner_channels = db.query(models.BrandChannel).filter(models.BrandChannel.owner_profile_id == captain_id).all()
         for ch in owner_channels:
              # loose match
@@ -90,7 +90,7 @@ def trigger_channel_warmup(
     
     # [Fallback 2] Full Scan (Last Resort)
     if not channel:
-        print(f"⚠️ Owner lookup failed. checking ALL channels...")
+        print(f"[WARN] Owner lookup failed. checking ALL channels...")
         all_channels = db.query(models.BrandChannel).all()
         for ch in all_channels:
             if ch.channel_id == channel_id:
@@ -101,7 +101,7 @@ def trigger_channel_warmup(
                 break
                 
     if not channel:
-        print("❌ Still not found after ALL scans.")
+        print("[FAIL] Still not found after ALL scans.")
         raise HTTPException(status_code=404, detail=f"Brand Channel '{channel_id}' not found. Check server logs.")
         
     if not channel.captain_account:

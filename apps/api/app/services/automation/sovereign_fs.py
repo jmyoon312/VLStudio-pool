@@ -82,7 +82,7 @@ class SovereignFileSystem:
             
             return True
         except Exception as e:
-            logger.error(f"❌ Protected write failed: {e}")
+            logger.error(f"[FAIL] Protected write failed: {e}")
             return False
 
     def rollback(self, file_path: str, version_id: Optional[str] = None) -> bool:
@@ -115,7 +115,7 @@ class SovereignFileSystem:
                 return False
                 
         except Exception as e:
-            logger.error(f"❌ Rollback failed: {e}")
+            logger.error(f"[FAIL] Rollback failed: {e}")
             return False
 
     def list_history(self, file_path: Optional[str] = None) -> List[Dict]:

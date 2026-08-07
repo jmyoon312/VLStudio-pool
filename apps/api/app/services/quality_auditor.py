@@ -40,7 +40,7 @@ class QualityAuditor:
         Returns:
             dict with score, passed status, and detailed feedback
         """
-        logger.info(f"🔍 Starting quality verification for script (length: {len(script)})")
+        logger.info(f"[SEARCH] Starting quality verification for script (length: {len(script)})")
         
         # 1. Structure Analysis
         structure_score = self._analyze_structure(script)
@@ -68,7 +68,7 @@ class QualityAuditor:
         needs_human_review = 30 <= total_score < 35
         
         logger.info(
-            f"📊 Quality Scores: Total={total_score:.2f}, "
+            f"[CHART] Quality Scores: Total={total_score:.2f}, "
             f"Structure={structure_score:.2f}, DNA={dna_score:.2f}, "
             f"Keywords={keyword_score:.2f}, Engagement={engagement_score:.2f}"
         )
@@ -311,24 +311,24 @@ Output ONLY a number (0-100) representing the DNA alignment score.
         feedback = []
         
         if total_score >= 70:
-            feedback.append("✅ Script quality is good, ready for production")
+            feedback.append("[OK] Script quality is good, ready for production")
             return feedback
         
         # Structure feedback
         if structure < 60:
-            feedback.append("⚠️ Improve structure: Add clear sections and transitions")
+            feedback.append("[WARN] Improve structure: Add clear sections and transitions")
         
         # DNA feedback
         if dna < 60:
-            feedback.append("⚠️ DNA alignment issues: Review brand guidelines and adjust tone")
+            feedback.append("[WARN] DNA alignment issues: Review brand guidelines and adjust tone")
         
         # Keywords feedback
         if keywords < 50:
-            feedback.append("⚠️ Missing key brand keywords from DNA")
+            feedback.append("[WARN] Missing key brand keywords from DNA")
         
         # Engagement feedback
         if engagement < 60:
-            feedback.append("⚠️ Low engagement potential: Add emotional hooks, questions, or CTAs")
+            feedback.append("[WARN] Low engagement potential: Add emotional hooks, questions, or CTAs")
         
         if not feedback:
             feedback.append("ℹ️ Minor improvements needed but overall acceptable")
@@ -348,7 +348,7 @@ Output ONLY a number (0-100) representing the DNA alignment score.
         Note: Full video analysis would require additional computer vision
         This is a placeholder for future enhancement
         """
-        logger.info(f"🔍 Starting video quality verification: {video_path}")
+        logger.info(f"[SEARCH] Starting video quality verification: {video_path}")
         
         # For now, base video score on script quality
         script_verification = await self.verify_script(script, dna, niche)

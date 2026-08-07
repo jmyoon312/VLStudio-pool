@@ -17,16 +17,16 @@ class DependencyManager:
         """
         try:
             import curl_cffi
-            logger.info("✅ curl-cffi is installed.")
+            logger.info("[OK] curl-cffi is installed.")
             return True
         except ImportError:
-            logger.warning("⚠️ curl-cffi not found. Auto-installing for better evasion...")
+            logger.warning("[WARN] curl-cffi not found. Auto-installing for better evasion...")
             try:
                 subprocess.check_call([sys.executable, "-m", "pip", "install", "curl-cffi"])
-                logger.info("✅ curl-cffi installed successfully.")
+                logger.info("[OK] curl-cffi installed successfully.")
                 return True
             except Exception as e:
-                logger.error(f"❌ Failed to install curl-cffi: {e}")
+                logger.error(f"[FAIL] Failed to install curl-cffi: {e}")
                 return False
 
     @staticmethod
@@ -37,7 +37,7 @@ class DependencyManager:
         [FIX] Cross-platform support for Linux/WSL2
         """
         if shutil.which('node'):
-            logger.info("✅ Node.js found in system PATH.")
+            logger.info("[OK] Node.js found in system PATH.")
             return True
         
         # Cross-platform detection
@@ -63,7 +63,7 @@ class DependencyManager:
         for path in common_paths:
             node_exe = os.path.join(path, "node.exe" if system == "Windows" else "node")
             if os.path.exists(node_exe):
-                logger.info(f"✅ Found Node.js at {path}. Adding to PATH.")
+                logger.info(f"[OK] Found Node.js at {path}. Adding to PATH.")
                 os.environ["PATH"] += os.pathsep + path
                 return True
             
@@ -73,11 +73,11 @@ class DependencyManager:
                     node_path = os.path.join(path, item, "bin", "node")
                     if os.path.exists(node_path):
                         nvm_bin = os.path.join(path, item, "bin")
-                        logger.info(f"✅ Found Node.js (nvm) at {nvm_bin}. Adding to PATH.")
+                        logger.info(f"[OK] Found Node.js (nvm) at {nvm_bin}. Adding to PATH.")
                         os.environ["PATH"] += os.pathsep + nvm_bin
                         return True
         
-        logger.warning("⚠️ Node.js not found. yt-dlp performance may be degraded.")
+        logger.warning("[WARN] Node.js not found. yt-dlp performance may be degraded.")
         return False
     @staticmethod
     def get_ffmpeg_path() -> str:
@@ -215,10 +215,10 @@ class DependencyManager:
                 check=True,
                 creationflags=0x08000000 if platform.system() == "Windows" else 0
             )
-            logger.info(f"✅ FFmpeg check passed: {ffmpeg_path}")
+            logger.info(f"[OK] FFmpeg check passed: {ffmpeg_path}")
             return True
         except Exception as e:
-            logger.error(f"❌ FFmpeg check failed: {e}")
+            logger.error(f"[FAIL] FFmpeg check failed: {e}")
             return False
 
     @staticmethod
@@ -241,11 +241,11 @@ class DependencyManager:
                 # But pydub usually just calls ffmpeg for conversion.
                 # Just in case:
                 # AudioSegment.ffprobe = DependencyManager.get_ffprobe_path() 
-                logger.info(f"✅ Pydub configured to use: {ffmpeg_path}")
+                logger.info(f"[OK] Pydub configured to use: {ffmpeg_path}")
             else:
-                logger.warning(f"⚠️ Pydub configuration skipped: FFmpeg not found at {ffmpeg_path}")
+                logger.warning(f"[WARN] Pydub configuration skipped: FFmpeg not found at {ffmpeg_path}")
         except Exception as e:
-            logger.error(f"❌ Failed to configure pydub: {e}")
+            logger.error(f"[FAIL] Failed to configure pydub: {e}")
 
 # Call this on startup
 # Helper for manual run

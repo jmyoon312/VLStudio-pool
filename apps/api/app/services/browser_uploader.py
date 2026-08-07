@@ -33,7 +33,7 @@ class BrowserUploader:
             logger.error(f"WorkQueueItem {item_id} not found")
             return
 
-        logger.info(f"🚀 Starting Browser Automation for: {item.title}")
+        logger.info(f"[FALLBACK] Starting Browser Automation for: {item.title}")
         
         # Resolve Channel ID
         yt_config = item.platform_configs.get('youtube', {})
@@ -77,11 +77,11 @@ class BrowserUploader:
             # Browser is now open at Studio dashboard (or target URL)
             self._execute_upload_flow(target_page, item, db)
             
-            logger.info(f"✅ Upload Task Complete. Final status: {item.status}")
+            logger.info(f"[OK] Upload Task Complete. Final status: {item.status}")
             db.commit()
             
         except Exception as e:
-            logger.error(f"❌ Browser Automation Failed: {e}")
+            logger.error(f"[FAIL] Browser Automation Failed: {e}")
             item.status = "FAILED"
             item.failure_reason = f"Browser Error: {str(e)}"
             db.commit()
@@ -92,7 +92,7 @@ class BrowserUploader:
         """
         # [Adjusted Timing] Safe Zone (3-5s) to bypass Identity Verification
         wait_time = random.uniform(3.0, 5.0)
-        logger.info(f"⏳ Waiting for Studio Dashboard ({wait_time:.1f}s human pause)...")
+        logger.info(f"[WAIT] Waiting for Studio Dashboard ({wait_time:.1f}s human pause)...")
         time.sleep(wait_time) 
         
         # [Simplified Launch] Direct wait for Dashboard or Create Button
@@ -105,7 +105,7 @@ class BrowserUploader:
                 create_btn = page.locator('text="Create"').first
                 
             create_btn.wait_for(state='visible', timeout=60000)
-            logger.info("✅ Studio Dashboard Loaded (Secure Session)")
+            logger.info("[OK] Studio Dashboard Loaded (Secure Session)")
         except Exception as e:
             if "signin" in page.url or "accounts.google" in page.url:
                 raise Exception("Login Page Detected. Session isolation failed or cookie expired.")
@@ -202,7 +202,7 @@ class BrowserUploader:
                 page.keyboard.press('Escape')
                 time.sleep(0.5)
             else:
-                logger.warning("⚠️ Description input not found")
+                logger.warning("[WARN] Description input not found")
 
             # --- Audience (Not Made for Kids) ---
             logger.info("👶 Setting Audience...")
@@ -216,7 +216,7 @@ class BrowserUploader:
                 # Playwright의 click()이 <none>이나 드롭다운에 의해 계속 막히는 현상을 원천 차단하기 위해 JS DOM Click 사용
                 not_kids_btn.evaluate("node => node.click()") 
             else:
-                logger.warning("⚠️ 'Not Made for Kids' button not found. Maybe already set?")
+                logger.warning("[WARN] 'Not Made for Kids' button not found. Maybe already set?")
 
             # --- Tags (Show More) ---
             if item.tags:
@@ -241,12 +241,12 @@ class BrowserUploader:
                         tag_input.type(tags_str, delay=50)
                         tag_input.press("Enter")
                     else:
-                        logger.warning("⚠️ Tag input field not revealed.")
+                        logger.warning("[WARN] Tag input field not revealed.")
                 except Exception as e:
                     logger.warning(f"Feature: Tags failed (Non-critical): {e}")
 
         except Exception as e:
-            logger.error(f"❌ Metadata Entry Error: {e}")
+            logger.error(f"[FAIL] Metadata Entry Error: {e}")
             raise Exception(f"Metadata phase failed: {e}")
 
         # [2026 Update] Handle potential A/B Testing / Collaborator popups before next
@@ -255,7 +255,7 @@ class BrowserUploader:
             close_popup = page.locator('button[aria-label="Close"], button[aria-label="닫기"]').filter(has_text="Close").first
             if close_popup.is_visible(timeout=2000):
                 close_popup.click()
-                logger.info("✅ Closed a disruptive popup.")
+                logger.info("[OK] Closed a disruptive popup.")
         except Exception:
             pass
 
@@ -268,7 +268,7 @@ class BrowserUploader:
                     logger.info("Next button disabled, waiting for processing to complete...")
                     page.wait_for_selector('#next-button:not([disabled])', timeout=30000)
                 next_btn.click()
-                logger.info("✅ Details -> Video Elements")
+                logger.info("[OK] Details -> Video Elements")
             time.sleep(2)
             
             # Step 2: Video Elements -> Checks
@@ -278,7 +278,7 @@ class BrowserUploader:
                     time.sleep(2)
                     page.wait_for_selector('#next-button:not([disabled])', timeout=30000)
                 next_btn.click()
-                logger.info("✅ Video Elements -> Checks")
+                logger.info("[OK] Video Elements -> Checks")
             time.sleep(2)
             
             # Step 3: Checks -> Visibility
@@ -289,9 +289,9 @@ class BrowserUploader:
                     checks_done = True
                 
                 if checks_done:
-                    logger.info("✅ Checks Complete. No issues found.")
+                    logger.info("[OK] Checks Complete. No issues found.")
                 else:
-                    logger.warning("⚠️ Checks still processing or text not found. Proceeding anyway.")
+                    logger.warning("[WARN] Checks still processing or text not found. Proceeding anyway.")
             except:
                 pass
             
@@ -301,7 +301,7 @@ class BrowserUploader:
                     time.sleep(2)
                     page.wait_for_selector('#next-button:not([disabled])', timeout=30000)
                 next_btn.click()
-                logger.info("✅ Checks -> Visibility")
+                logger.info("[OK] Checks -> Visibility")
             time.sleep(2)
             
             # [VISIBILITY LOGIC]
@@ -327,7 +327,7 @@ class BrowserUploader:
             logger.info(f"🔒 Selected PRIVATE (Original was {original_privacy} - deferred to Verification Worker)")
             
             # Final Click
-            logger.info("🚀 Clicking Save/Publish...")
+            logger.info("[FALLBACK] Clicking Save/Publish...")
             page.locator('#done-button').first.click(timeout=5000)
             
             # Wait for confirmation dialog (Video Link available)
@@ -345,7 +345,7 @@ class BrowserUploader:
                 except:
                     logger.info("URL logic extraction skipped.")
             except Exception as e:
-                logger.warning(f"⚠️ Share dialog did not appear (Timeout). Assuming upload succeeded. Error: {e}")
+                logger.warning(f"[WARN] Share dialog did not appear (Timeout). Assuming upload succeeded. Error: {e}")
 
         except Exception as e:
             raise Exception(f"Publishing phase failed: {e}")
@@ -354,7 +354,7 @@ class BrowserUploader:
         # Always route to VERIFYING for the 10-minute aging and copyright check
         item.status = "VERIFYING"
         item.upload_completed_at = __import__('datetime').datetime.now() # [NEW] Record private upload time
-        logger.info("⏳ Upload Task Complete. Routing to VERIFYING queue for aging/copyright checks.")
+        logger.info("[WAIT] Upload Task Complete. Routing to VERIFYING queue for aging/copyright checks.")
 
     def verify_and_publish_video(self, db: Session, item_id: int):
         """
@@ -385,7 +385,7 @@ class BrowserUploader:
                 
             video_title = first_row.locator('#video-title').first.inner_text()
             if item.title[:10] not in video_title:
-                logger.warning(f"⚠️ Top video title '{video_title}' might not match. Checking Shorts tab...")
+                logger.warning(f"[WARN] Top video title '{video_title}' might not match. Checking Shorts tab...")
                 shorts_tab = page.locator('tp-yt-paper-tab').filter(has_text="Shorts").first
                 if shorts_tab.is_visible():
                     shorts_tab.click()
@@ -394,7 +394,7 @@ class BrowserUploader:
                     if first_row.is_visible():
                         video_title = first_row.locator('#video-title').first.inner_text()
                         if item.title[:10] not in video_title:
-                            logger.warning(f"⚠️ Still doesn't match. Found: '{video_title}'. Proceeding with caution.")
+                            logger.warning(f"[WARN] Still doesn't match. Found: '{video_title}'. Proceeding with caution.")
             
             # 4. Check Restrictions Column
             restrictions_cell = first_row.locator('.style-scope.ytcp-video-row-cell#restrictions').first
@@ -402,20 +402,20 @@ class BrowserUploader:
             logger.info(f"🛡️ Video Restrictions: {restrictions_text}")
 
             if "checking" in restrictions_text or "검사" in restrictions_text or "검토" in restrictions_text:
-                logger.info("⏳ Video is still being checked. Updating timestamp to wait another 10 mins.")
+                logger.info("[WAIT] Video is still being checked. Updating timestamp to wait another 10 mins.")
                 item.updated_at = __import__('datetime').datetime.now()
                 db.commit()
                 return
 
             if "copyright" in restrictions_text or "저작권" in restrictions_text or "claim" in restrictions_text or "신고" in restrictions_text:
-                logger.error(f"❌ Copyright or restriction claim found: {restrictions_text}")
+                logger.error(f"[FAIL] Copyright or restriction claim found: {restrictions_text}")
                 item.status = "FAILED_REVIEW"
                 item.failure_reason = f"유튜브 검토 실패: {restrictions_text}"
                 db.commit()
                 return
 
             # If "None" or safe, proceed to change visibility
-            logger.info(f"✅ Checks passed. Applying final privacy: {final_privacy}")
+            logger.info(f"[OK] Checks passed. Applying final privacy: {final_privacy}")
             visibility_cell = first_row.locator('.style-scope.ytcp-video-row-cell#visibility').first
             visibility_cell.click(timeout=5000)
             time.sleep(1)
@@ -450,7 +450,7 @@ class BrowserUploader:
                     page.keyboard.press("Enter")
                     time.sleep(1)
                 except Exception as e:
-                    logger.warning(f"⚠️ Could not set date: {e}")
+                    logger.warning(f"[WARN] Could not set date: {e}")
 
                 # Setup Time
                 try:
@@ -466,14 +466,14 @@ class BrowserUploader:
                     page.keyboard.press("Enter")
                     time.sleep(1)
                 except Exception as e:
-                    logger.warning(f"⚠️ Could not set time: {e}")
+                    logger.warning(f"[WARN] Could not set time: {e}")
                 
                 save_btn = page.locator('#save-button, #done-button').filter(has_text="예약").first
                 if not save_btn.is_visible():
                     save_btn = page.locator('#save-button').first
                 save_btn.click(timeout=5000)
                 time.sleep(3)
-                logger.info(f"✅ Video scheduled to {item.scheduled_upload_time}.")
+                logger.info(f"[OK] Video scheduled to {item.scheduled_upload_time}.")
 
             else:
                 page.locator(f'[name="{final_privacy}"]').first.click(timeout=5000)
@@ -483,12 +483,12 @@ class BrowserUploader:
                 save_btn = page.locator('#save-button').first
                 save_btn.click(timeout=5000)
                 time.sleep(3)
-                logger.info(f"✅ Video switched to {final_privacy}.")
+                logger.info(f"[OK] Video switched to {final_privacy}.")
             item.status = "COMPLETED"
             db.commit()
             
         except Exception as e:
-            logger.error(f"❌ Verification & Publish Failed: {e}")
+            logger.error(f"[FAIL] Verification & Publish Failed: {e}")
         finally:
             # Keep context open for next reuse
             pass

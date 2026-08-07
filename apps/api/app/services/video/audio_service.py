@@ -40,7 +40,7 @@ class AudioService:
 
             return audio_path
         except Exception as e:
-            logger.error(f"❌ Scene TTS Failed: {e}")
+            logger.error(f"[FAIL] Scene TTS Failed: {e}")
             raise e
 
     async def _remove_silence(self, audio_path: str, config: dict):

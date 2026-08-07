@@ -45,10 +45,10 @@ class RootMCPClient:
             read, write = stdio_transport
             self.session = await self._exit_stack.enter_async_context(ClientSession(read, write))
             await self.session.initialize()
-            logger.info("✅ Successfully connected to Root MCP Server!")
+            logger.info("[OK] Successfully connected to Root MCP Server!")
             return True
         except Exception as e:
-            logger.error(f"❌ Failed to connect to Root MCP Server: {e}")
+            logger.error(f"[FAIL] Failed to connect to Root MCP Server: {e}")
             if self._exit_stack:
                 await self._exit_stack.aclose()
             return False

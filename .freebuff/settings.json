@@ -1,0 +1,24 @@
+{
+  "preloadedSkills": [
+    "find-skills",
+    "frontend-design",
+    "web-design-guidelines",
+    "vercel-react-best-practices",
+    "vercel-react-native-skills",
+    "vercel-react-view-transitions",
+    "remotion-best-practices",
+    "performance",
+    "improve-codebase-architecture",
+    "systematic-debugging",
+    "test-driven-development",
+    "requesting-code-review",
+    "setup-pre-commit",
+    "using-git-worktrees",
+    "git-commit",
+    "github-actions-docs",
+    "nodejs-backend-patterns",
+    "api-design-principles",
+    "python-performance-optimization",
+    "rust-async-patterns"
+  ]
+}

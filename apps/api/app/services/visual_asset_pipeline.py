@@ -91,7 +91,7 @@ class VisualAssetPipeline:
         if output_dir is None:
             output_dir = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "downloads", "visual_assets"
+                "07_Downloads", "visual_assets"
             )
         
         self.output_dir = output_dir
@@ -192,7 +192,7 @@ class VisualAssetPipeline:
             )
             
         except Exception as e:
-            logger.error(f"❌ [Pipeline] Visual asset generation failed: {e}")
+            logger.error(f"[FAIL] [Pipeline] Visual asset generation failed: {e}")
             return PipelineResult(
                 success=False,
                 error=str(e)
@@ -288,11 +288,11 @@ class VisualAssetPipeline:
                     asset.image_path = image_path
                     asset.provider = provider.value
                     asset.status = "ready"
-                    logger.info(f"      ✅ {provider.value} succeeded: {image_path}")
+                    logger.info(f"      [OK] {provider.value} succeeded: {image_path}")
                     return asset
                     
             except Exception as e:
-                logger.warning(f"      ❌ {provider.value} failed: {e}")
+                logger.warning(f"      [FAIL] {provider.value} failed: {e}")
                 continue
         
         # All providers failed
@@ -461,7 +461,7 @@ class VisualAssetPipeline:
                 
                 upscaled.save(new_path)
                 
-                logger.info(f"   ✅ Upscaled: {original_size} → {target_size}")
+                logger.info(f"   [OK] Upscaled: {original_size} → {target_size}")
                 return new_path
             
             return image_path

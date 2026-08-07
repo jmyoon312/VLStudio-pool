@@ -277,7 +277,7 @@ def create_queue_item(
     else:
         # DISCOVERY: YouTube URL을 그대로 경로로 저장
         safe_file_path = item_data.video_file_path
-        logger.info(f"🔍 Discovery item, using URL as path: {safe_file_path}")
+        logger.info(f"[SEARCH] Discovery item, using URL as path: {safe_file_path}")
     
     # Determine initial status based on approval_required
     initial_status = "QUEUED"
@@ -338,7 +338,7 @@ def create_queue_item(
     # [Auto-Upload Trigger]
     # Only trigger if Auto-Approved AND NOT Scheduled
     if queue_item.approval_status == "AUTO_APPROVED" and queue_item.status == "QUEUED":
-        logger.info(f"🚀 Auto-Approved item {queue_item.id}. Queuing for upload...")
+        logger.info(f"[FALLBACK] Auto-Approved item {queue_item.id}. Queuing for upload...")
         native_worker.add_task(queue_item.id)
     
     return queue_item
@@ -962,7 +962,7 @@ class ConnectionManager:
         if item_id not in self.active_connections:
             self.active_connections[item_id] = []
         self.active_connections[item_id].append(websocket)
-        logger.info(f"✅ WebSocket Client connected to item {item_id}")
+        logger.info(f"[OK] WebSocket Client connected to item {item_id}")
 
     def disconnect(self, websocket: WebSocket, item_id: int):
         if item_id in self.active_connections:
@@ -1346,7 +1346,7 @@ def generate_metadata(
             platform=request.platform.lower()
         )
         
-        logger.info(f"✅ Generated metadata for {request.platform}: {metadata.get('title', 'N/A')}")
+        logger.info(f"[OK] Generated metadata for {request.platform}: {metadata.get('title', 'N/A')}")
         
         return {
             "success": True,

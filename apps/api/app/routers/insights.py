@@ -134,7 +134,7 @@ def perform_viral_analysis(db: Session, timeframe_hours: int = 24) -> int:
     Recalculates viral_score and velocity_score for videos from the last N hours.
     Used by Auto-Fixer to ensure metrics remain fresh.
     """
-    logger.info(f"🔄 Recalculating Viral Indices (Timeframe: {timeframe_hours}h)...")
+    logger.info(f"[REFRESH] Recalculating Viral Indices (Timeframe: {timeframe_hours}h)...")
     
     cutoff = datetime.now() - timedelta(hours=timeframe_hours)
     

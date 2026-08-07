@@ -150,7 +150,7 @@ class CICDPipeline:
         
         asyncio.create_task(self._execute_pipeline(run_id))
         
-        logger.info(f"🚀 Started pipeline: {pipeline_name} (run: {run_id})")
+        logger.info(f"[FALLBACK] Started pipeline: {pipeline_name} (run: {run_id})")
         
         return run_id
     
@@ -172,7 +172,7 @@ class CICDPipeline:
             stage.status = StageStatus.RUNNING
             stage.started_at = datetime.now()
             
-            logger.info(f"  📦 Stage: {stage.name}")
+            logger.info(f"  [BOX] Stage: {stage.name}")
             
             try:
                 await asyncio.sleep(1)
@@ -185,7 +185,7 @@ class CICDPipeline:
                 stage.status = StageStatus.FAILED
                 stage.error = str(e)
                 run.status = PipelineStatus.FAILED
-                logger.error(f"  ❌ Stage failed: {stage.name} - {e}")
+                logger.error(f"  [FAIL] Stage failed: {stage.name} - {e}")
                 break
         
         if run.status == PipelineStatus.RUNNING:
@@ -193,7 +193,7 @@ class CICDPipeline:
         
         run.completed_at = datetime.now()
         
-        logger.info(f"✅ Pipeline completed: {run.pipeline_name} - {run.status.value}")
+        logger.info(f"[OK] Pipeline completed: {run.pipeline_name} - {run.status.value}")
     
     async def get_pipeline_status(self, run_id: str) -> Optional[Dict]:
         run = self._runs.get(run_id)
@@ -231,7 +231,7 @@ class CICDPipeline:
         
         if run.status == PipelineStatus.RUNNING:
             run.status = PipelineStatus.CANCELLED
-            logger.info(f"⚠️ Cancelled pipeline: {run_id}")
+            logger.info(f"[WARN] Cancelled pipeline: {run_id}")
             return True
         
         return False
@@ -248,7 +248,7 @@ class CICDPipeline:
             params={"rolled_back": run_id}
         )
         
-        logger.info(f"🔄 Rollback initiated: {rollback_run_id}")
+        logger.info(f"[REFRESH] Rollback initiated: {rollback_run_id}")
         
         return rollback_run_id
     

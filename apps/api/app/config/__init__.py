@@ -29,7 +29,7 @@ def discover_ffmpeg() -> str:
     local_app_data = os.environ.get("LOCALAPPDATA")
     if not local_app_data:
         local_app_data = os.path.join(os.path.expanduser("~"), "AppData", "Local")
-    local_ffmpeg_path = os.path.join(local_app_data, "ViraLoop Studio", "media", "bin", "ffmpeg", "bin", "ffmpeg.exe")
+    local_ffmpeg_path = os.path.join(local_app_data, "ViraLoop Studio", "media", "09_System", "bin", "ffmpeg", "bin", "ffmpeg.exe")
     if os.path.exists(local_ffmpeg_path):
         return local_ffmpeg_path
         
@@ -58,14 +58,18 @@ class Settings(BaseSettings):
     # Media Storage Configuration (Unified)
     MEDIA_ROOT: str = os.getenv("VIRALOOP_MEDIA_ROOT", DEFAULT_MEDIA_ROOT)
     TEMP_DIR: str = os.path.join(MEDIA_ROOT, "02_Operations", "Temp")
-    DOWNLOADS_DIR: str = os.path.join(MEDIA_ROOT, "downloads")
     ASSETS_DIR: str = os.path.join(MEDIA_ROOT, "03_Assets")
     OPERATIONS_DIR: str = os.path.join(MEDIA_ROOT, "02_Operations")
     INBOX_DIR: str = os.path.join(MEDIA_ROOT, "01_Inbox")
     EXPORTS_DIR: str = os.path.join(MEDIA_ROOT, "05_Exports")
     
+    # New Structured Directories
+    DOWNLOADS_DIR: str = os.path.join(MEDIA_ROOT, "07_Downloads")
+    INTELLIGENCE_DIR: str = os.path.join(MEDIA_ROOT, "08_Intelligence")
+    SYSTEM_DIR: str = os.path.join(MEDIA_ROOT, "09_System")
+    
     # Legacy Path Support
-    root_download_path: str = os.path.join(MEDIA_ROOT, "downloads")
+    root_download_path: str = os.path.join(MEDIA_ROOT, "07_Downloads")
     
     # Path for Cookies
     COOKIES_PATH: Optional[str] = os.getenv("VIRALOOP_COOKIES_PATH", None)
@@ -162,7 +166,13 @@ settings = Settings()
 
 # Ensure critical directories exist
 def initialize_directories():
-    for path in [settings.MEDIA_ROOT, settings.TEMP_DIR, settings.DOWNLOADS_DIR, settings.ASSETS_DIR, settings.OPERATIONS_DIR, settings.INBOX_DIR, settings.EXPORTS_DIR]:
+    for path in [
+        settings.MEDIA_ROOT, settings.TEMP_DIR, settings.ASSETS_DIR, 
+        settings.OPERATIONS_DIR, settings.INBOX_DIR, settings.EXPORTS_DIR,
+        settings.DOWNLOADS_DIR, settings.INTELLIGENCE_DIR, settings.SYSTEM_DIR,
+        os.path.join(settings.MEDIA_ROOT, "04_Profiles"),
+        os.path.join(settings.MEDIA_ROOT, "06_Database")
+    ]:
         if not os.path.exists(path):
             try:
                 os.makedirs(path, exist_ok=True)

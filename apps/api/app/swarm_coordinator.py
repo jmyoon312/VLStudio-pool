@@ -60,11 +60,11 @@ class SwarmCoordinator:
                     "quality_mode": quality_mode
                 }
             )
-            logger.info(f"🚀 [Swarm] Autonomous Agent Spawned! Session: {session_id} | Topic: {topic}")
+            logger.info(f"[FALLBACK] [Swarm] Autonomous Agent Spawned! Session: {session_id} | Topic: {topic}")
             return True
             
         except Exception as e:
-            logger.error(f"❌ [Swarm] MISSION FAILED to start: {e}")
+            logger.error(f"[FAIL] [Swarm] MISSION FAILED to start: {e}")
             return False
 
     async def execute_parallel_production(self, topics: List[str]) -> Dict[str, Any]:
@@ -78,7 +78,7 @@ class SwarmCoordinator:
         Returns:
             Dictionary with session IDs and status
         """
-        logger.info(f"🚀 [Swarm] Starting PARALLEL production for {len(topics)} topics")
+        logger.info(f"[FALLBACK] [Swarm] Starting PARALLEL production for {len(topics)} topics")
         
         results = {
             "started": [],
@@ -117,7 +117,7 @@ class SwarmCoordinator:
             else:
                 results["failed"].append(result)
         
-        logger.info(f"✅ [Swarm] Parallel production complete: {len(results['started'])} started, {len(results['failed'])} failed")
+        logger.info(f"[OK] [Swarm] Parallel production complete: {len(results['started'])} started, {len(results['failed'])} failed")
         return results
 
     async def execute_batch_production(self, channel_ids: List[int], topics_per_channel: int = 3) -> Dict[str, Any]:
@@ -125,7 +125,7 @@ class SwarmCoordinator:
         [NEW] Batch production for multiple channels.
         Creates multiple topics per channel and runs in parallel.
         """
-        logger.info(f"📦 [Swarm] Starting BATCH production for {len(channel_ids)} channels")
+        logger.info(f"[BOX] [Swarm] Starting BATCH production for {len(channel_ids)} channels")
         
         topics = []
         for channel_id in channel_ids:
@@ -179,7 +179,7 @@ class SwarmCoordinator:
                             session.completed_at = datetime.now()
                             db.commit()
                     
-                    logger.info(f"✅ [Swarm] Session {session_id} terminated")
+                    logger.info(f"[OK] [Swarm] Session {session_id} terminated")
                     return True
             except Exception as e:
                 logger.error(f"Failed to terminate session {session_id}: {e}")

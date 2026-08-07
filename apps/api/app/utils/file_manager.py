@@ -39,7 +39,7 @@ def delete_video_files(file_path: str, thumbnail_path: str = None):
             try:
                 # Get backend root to prevent deleting system folders
                 backend_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                downloads_root = os.path.join(backend_root, "downloads")
+                downloads_root = os.path.join(backend_root, "07_Downloads")
                 
                 # Check if it's a subfolder of downloads and not downloads itself
                 if directory.startswith(downloads_root) and directory != downloads_root:

@@ -181,7 +181,7 @@ async def segment_script(
                         seg["media_url"] = get_web_url(req, local_path)
                         
                     except Exception as gen_err:
-                        print(f"⚠️ Auto-Gen Failed for Scene {seg.get('scene_id')}: {gen_err}")
+                        print(f"[WARN] Auto-Gen Failed for Scene {seg.get('scene_id')}: {gen_err}")
                 
                 
                 # updated_segments.append(seg) # Removed to avoid dup in in-place mod
@@ -209,7 +209,7 @@ async def segment_script(
                             seg["audio_path"] = audio_path
                             seg["audio_url"] = get_web_url(req, audio_path)
                         except Exception as tts_err:
-                            print(f"⚠️ Auto-TTS Failed for Scene {seg.get('scene_id')}: {tts_err}")
+                            print(f"[WARN] Auto-TTS Failed for Scene {seg.get('scene_id')}: {tts_err}")
 
             return updated_segments
 
@@ -595,7 +595,7 @@ async def generate_scene_tts(
                 os.remove(request.old_file_path)
                 print(f"🗑️ Deleted old audio: {request.old_file_path}")
             except Exception as e:
-                print(f"⚠️ Failed to delete old audio: {e}")
+                print(f"[WARN] Failed to delete old audio: {e}")
 
         audio_path = await video_client.generate_scene_audio(
             scene_id=request.scene_id,
@@ -665,10 +665,10 @@ async def render_scene(
                         os.remove(ass_f)
                         print(f"🗑️ Deleted old ass: {ass_f}")
                     except Exception as e:
-                        print(f"⚠️ Failed to delete old ass {ass_f}: {e}")
+                        print(f"[WARN] Failed to delete old ass {ass_f}: {e}")
                         
             except Exception as e:
-                print(f"⚠️ Failed to delete old video: {e}")
+                print(f"[WARN] Failed to delete old video: {e}")
 
         # 1. Strict Path Validation
         image_path = scene_request.image_path
@@ -700,9 +700,9 @@ async def render_scene(
                 ]
                 result = subprocess.run(cmd_dur, capture_output=True, text=True, check=True)
                 duration = float(result.stdout.strip())
-                print(f"✅ Audio Duration Detected: {duration}s")
+                print(f"[OK] Audio Duration Detected: {duration}s")
             except Exception as e:
-                print(f"⚠️ Duration probe failed (Using default 5s): {e}")
+                print(f"[WARN] Duration probe failed (Using default 5s): {e}")
                 duration = 5.0
 
         # 3. Render Video
@@ -840,7 +840,7 @@ def cleanup_files(request: CleanupRequest):
                 print(f"🗑️ Cleanup: Deleted {path}")
             except Exception as e:
                 errors.append(f"Failed to delete {path}: {str(e)}")
-                print(f"⚠️ Cleanup Error: {e}")
+                print(f"[WARN] Cleanup Error: {e}")
         else:
             # Consider it "deleted" if it doesn't exist
             pass
@@ -893,7 +893,7 @@ def merge_scenes(
         if scene.video_path and os.path.exists(scene.video_path):
             video_paths.append(scene.video_path)
         else:
-            print(f"⚠️ Skipping merge for scene {scene.scene_id}: Video path missing or invalid ({scene.video_path})")
+            print(f"[WARN] Skipping merge for scene {scene.scene_id}: Video path missing or invalid ({scene.video_path})")
             
     if not video_paths:
         raise HTTPException(status_code=400, detail="No valid video files found to merge. Please render scenes first.")

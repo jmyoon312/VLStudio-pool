@@ -191,11 +191,11 @@ def process_command(req: CommandRequest, db: Session = Depends(database.get_db))
                 break
             except Exception as e:
                 primary_err = e
-                logger.warning(f"⏳ [Loopie] Key #{i} failed with error: {e}. Rotating keys...")
+                logger.warning(f"[WAIT] [Loopie] Key #{i} failed with error: {e}. Rotating keys...")
                 continue
 
         if primary_err:
-            logger.warning(f"⚠️ Primary agent model ({target_provider}/{clean_model}) failed on all keys: {primary_err}. Falling back to Gemini...")
+            logger.warning(f"[WARN] Primary agent model ({target_provider}/{clean_model}) failed on all keys: {primary_err}. Falling back to Gemini...")
             try:
                 fallback_llm = brain_router._create_langchain_model("google", "gemini-2.0-flash", settings)
                 if not fallback_llm:
@@ -203,7 +203,7 @@ def process_command(req: CommandRequest, db: Session = Depends(database.get_db))
                 response = fallback_llm.invoke(messages)
                 response_text = response.content
             except Exception as fallback_err:
-                logger.error(f"❌ Fallback Gemini model also failed: {fallback_err}")
+                logger.error(f"[FAIL] Fallback Gemini model also failed: {fallback_err}")
                 raise Exception(f"Primary error: {primary_err}. Fallback error: {fallback_err}")
         
         # Try to parse as JSON first; otherwise treat as plain chat reply

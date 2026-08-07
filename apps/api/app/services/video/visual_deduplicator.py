@@ -21,7 +21,7 @@ class VisualDeduplicator:
         Generates a line chart SVG.
         Returns the local path to the .svg file.
         """
-        logger.info(f"📊 Generating growth chart: {title}")
+        logger.info(f"[CHART] Generating growth chart: {title}")
         
         width = 800
         height = 400

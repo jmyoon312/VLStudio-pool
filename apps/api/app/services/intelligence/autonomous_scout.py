@@ -224,7 +224,7 @@ class AutonomousScout:
             db.add(discovery_artifact)
             db.commit()
 
-            logger.info(f"✅ Saved {len(trends)} trends and {len(candidates)} candidates for {niche}. Lineage recorded.")
+            logger.info(f"[OK] Saved {len(trends)} trends and {len(candidates)} candidates for {niche}. Lineage recorded.")
             
         except Exception as e:
             logger.error(f"Database persistence failed: {e}")

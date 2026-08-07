@@ -46,10 +46,10 @@ class WarmupIntelligenceGenerator:
             end = response.rfind("]") + 1
             if start != -1 and end != -1:
                 queries = json.loads(response[start:end])
-                logger.info(f"✅ Generated {len(queries)} DNA-driven queries for {niche}")
+                logger.info(f"[OK] Generated {len(queries)} DNA-driven queries for {niche}")
                 return queries
         except Exception as e:
-            logger.error(f"❌ Failed to generate DNA queries: {e}")
+            logger.error(f"[FAIL] Failed to generate DNA queries: {e}")
         
         # Fallback to general terms if AI fails
         return ["shorts", "trending shorts", niche, macro]
@@ -84,10 +84,10 @@ class WarmupIntelligenceGenerator:
             comment = self.llm.generate_content(prompt, self.default_model)
             # 따옴표 등 제거
             clean_comment = comment.strip().strip('"').strip("'")
-            logger.info(f"✅ Generated DNA-driven comment for: {video_title[:20]}...")
+            logger.info(f"[OK] Generated DNA-driven comment for: {video_title[:20]}...")
             return clean_comment
         except Exception as e:
-            logger.error(f"❌ Failed to generate DNA comment: {e}")
+            logger.error(f"[FAIL] Failed to generate DNA comment: {e}")
             return "영상 잘 봤습니다! 👍" # Simple fallback
 
 # Singleton-like access could be managed here
@@ -161,10 +161,10 @@ def generate_channel_dna(target_niche: str) -> dict:
         end = response.rfind("}") + 1
         if start != -1 and end != -1:
             dna_data = json.loads(response[start:end])
-            logger.info(f"✅ DNA Auto-generated for niche: {target_niche}")
+            logger.info(f"[OK] DNA Auto-generated for niche: {target_niche}")
             return dna_data
     except Exception as e:
-        logger.error(f"❌ Failed to auto-generate DNA: {e}")
+        logger.error(f"[FAIL] Failed to auto-generate DNA: {e}")
         
     # Fallback to simple stub
     return {

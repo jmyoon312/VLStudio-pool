@@ -11,14 +11,36 @@ def get_standardized_download_path(settings=None) -> str:
 
     if not settings:
         # settings 미전달 시 config에서 가져옴
-        raw_root = app_config_settings.MEDIA_ROOT
+        return app_config_settings.DOWNLOADS_DIR
     elif settings and settings.root_download_path:
-        raw_root = settings.root_download_path
+        return os.path.abspath(settings.root_download_path)
     else:
         # DB Settings 객체에는 MEDIA_ROOT가 없으므로 app.config에서 가져옴
-        raw_root = app_config_settings.MEDIA_ROOT
+        return app_config_settings.DOWNLOADS_DIR
 
-    return os.path.join(os.path.abspath(raw_root), "downloads")
+def get_channel_download_path(settings, category_name: str = None, channel_name: str = None) -> str:
+    """
+    Constructs the strictly standardized path: {MEDIA_ROOT}/07_Downloads/{Category}/{Channel}
+    """
+    import logging
+    downloads_path = get_standardized_download_path(settings)
+    
+    safe_channel = sanitize_folder_name(channel_name) if channel_name else "Unknown_Channel"
+    
+    if category_name:
+        safe_category = sanitize_folder_name(category_name)
+        full_path = os.path.join(downloads_path, safe_category, safe_channel)
+    else:
+        full_path = os.path.join(downloads_path, "_temp_storage", safe_channel)
+        
+    resolved_path = full_path.replace("\\", "/").replace("//", "/")
+    
+    try:
+        os.makedirs(resolved_path, exist_ok=True)
+    except Exception as e:
+        logging.warning(f"[WARN] Failed to create channel download path {resolved_path}: {e}")
+        
+    return resolved_path
 
 
 def get_operations_path() -> str:
@@ -59,17 +81,11 @@ def get_temp_dir():
     between server startup (StaticFiles mount) and runtime (File Uploads).
     """
     try:
-        # Fallback: ShortsArchiver/temp_storage
-        base = get_base_dir() # backend/app
-        backend_root = os.path.dirname(base) # backend
-        project_root = os.path.dirname(backend_root) # ShortsArchiver
-        temp_dir = os.path.join(project_root, "temp_storage")
-            
+        from app.config import settings
+        temp_dir = settings.TEMP_DIR
         os.makedirs(temp_dir, exist_ok=True)
         return temp_dir
-        
     except Exception as e:
-        # Extreme fallback
         print(f"Error determining temp dir: {e}")
         return os.path.join(os.getcwd(), "temp")
 
@@ -92,9 +108,9 @@ def get_absolute_path(path: str) -> str:
     if os.path.exists(abs_path):
         return abs_path
         
-    # Candidate 2: Try with "downloads" prefix (common for DB paths)
-    if not path.startswith("downloads"):
-        dl_path = os.path.abspath(os.path.join(backend_root, "downloads", path))
+    # Candidate 2: Try with "07_Downloads" prefix (common for DB paths)
+    if not path.startswith("07_Downloads"):
+        dl_path = os.path.abspath(os.path.join(backend_root, "07_Downloads", path))
         if os.path.exists(dl_path):
             return dl_path
             

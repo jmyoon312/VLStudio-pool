@@ -37,7 +37,7 @@ class CircuitBreaker:
         self.last_failure_time = None
         self.lock = asyncio.Lock()
         
-        logger.info(f"✅ CircuitBreaker initialized (threshold: {failure_threshold}, timeout: {timeout}s)")
+        logger.info(f"[OK] CircuitBreaker initialized (threshold: {failure_threshold}, timeout: {timeout}s)")
         
     async def call(self, func, *args, **kwargs):
         """
@@ -48,7 +48,7 @@ class CircuitBreaker:
             if self.state == CircuitState.OPEN:
                 # 타임아웃 경과 확인
                 if time.time() - self.last_failure_time > self.timeout:
-                    logger.info("🔄 Circuit breaker: OPEN → HALF_OPEN")
+                    logger.info("[REFRESH] Circuit breaker: OPEN → HALF_OPEN")
                     self.state = CircuitState.HALF_OPEN
                     self.success_count = 0
                 else:
@@ -68,7 +68,7 @@ class CircuitBreaker:
                 if self.state == CircuitState.HALF_OPEN:
                     self.success_count += 1
                     if self.success_count >= self.success_threshold:
-                        logger.info("✅ Circuit breaker: HALF_OPEN → CLOSED")
+                        logger.info("[OK] Circuit breaker: HALF_OPEN → CLOSED")
                         self.state = CircuitState.CLOSED
                         
             return result
@@ -81,7 +81,7 @@ class CircuitBreaker:
                 
                 if self.failure_count >= self.failure_threshold:
                     logger.critical(
-                        f"🚨 Circuit breaker: {self.state.value} → OPEN "
+                        f"[ALERT] Circuit breaker: {self.state.value} → OPEN "
                         f"(failures: {self.failure_count})"
                     )
                     self.state = CircuitState.OPEN
@@ -93,7 +93,7 @@ class CircuitBreaker:
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
-        logger.info("🔄 Circuit breaker manually reset")
+        logger.info("[REFRESH] Circuit breaker manually reset")
         
     def get_state(self) -> CircuitState:
         """현재 상태 반환"""

@@ -105,7 +105,7 @@ async def generate_director_schema(script_content: str, mood: str = "dramatic") 
     """
     [WRITER 스킬] 대본의 내용과 무드를 분석하여 연출 지시서 JSON 스키마를 생성합니다.
     """
-    logger.info(f"🎬 [MCP:WRITER] generate_director_schema | mood={mood}")
+    logger.info(f"[VIDEO] [MCP:WRITER] generate_director_schema | mood={mood}")
     from app.llm_manager import LLMClient
     from app.config import settings
     
@@ -257,7 +257,7 @@ async def analyze_viral_trend(keyword: str, region: str = "US") -> Dict[str, Any
     """
     [RESEARCHER 스킬] 키워드 기반 바이럴 트렌드를 Pytrends로 실제 검색량 기반 분석합니다.
     """
-    logger.info(f"📈 [MCP:RESEARCHER] analyze_viral_trend | keyword={keyword} | region={region}")
+    logger.info(f"[TREND] [MCP:RESEARCHER] analyze_viral_trend | keyword={keyword} | region={region}")
     
     try:
         from pytrends.request import TrendReq
@@ -303,7 +303,7 @@ async def pixeling_discovery(niche: str, trend_score_threshold: float = 80.0) ->
     """
     [RESEARCHER 스킬] 픽셀링 디스커버리에서 특정 니치의 급상승 바이럴 템플릿과 트렌드를 검색합니다.
     """
-    logger.info(f"🔍 [MCP:RESEARCHER] pixeling_discovery | niche={niche}")
+    logger.info(f"[SEARCH] [MCP:RESEARCHER] pixeling_discovery | niche={niche}")
     # Mocking Pixeling Discovery data for MCP
     return {
         "status": "success",
@@ -479,7 +479,7 @@ async def render_pixeling(project: Dict[str, Any], content: Dict[str, Any], audi
     """
     [EDITOR 스킬] 픽셀링 엔진을 사용하여 영상을 깊이 있게 제어하고 렌더링합니다.
     """
-    logger.info(f"🎬 [MCP:EDITOR] render_pixeling | template={project.get('template_id')}")
+    logger.info(f"[VIDEO] [MCP:EDITOR] render_pixeling | template={project.get('template_id')}")
     import uuid
     # Mocking Pixeling rendering queue
     job_id = f"px_{uuid.uuid4().hex[:8]}"
@@ -599,7 +599,7 @@ async def generate_subtitles(audio_path: str, language: str = "ko") -> Dict[str,
     [EDITOR 스킬] Faster-Whisper 엔진을 활용해 오디오에서 단어 단위 타임스탬프 JSON 자막을 추출합니다.
     이 JSON_PATH 결과값은 반드시 render_hyper_video의 subtitle_json_path 인자로 넘겨주어야 합니다.
     """
-    logger.info(f"📝 [MCP:EDITOR] generate_subtitle_track | path={audio_path}")
+    logger.info(f"[SCRIPT] [MCP:EDITOR] generate_subtitle_track | path={audio_path}")
     from app.subtitle_core import SubtitleEngine
     from app.config import settings
     import os
@@ -630,7 +630,7 @@ async def render_remotion_video(composition_id: str, audio_path: str, subtitle_j
     [EDITOR 스킬] Remotion CLI를 백그라운드에서 실행하여 TTS 오디오, 자막 JSON, 생성된 이미지들을 모아 최종 MP4 영상을 렌더링합니다.
     반환된 video_path를 execute_global_syndication 스킬의 video_path 로 넘겨주어야 합니다.
     """
-    logger.info(f"🎬 [MCP:EDITOR] render_hyper_video | composition={composition_id}")
+    logger.info(f"[VIDEO] [MCP:EDITOR] render_hyper_video | composition={composition_id}")
     import subprocess
     import uuid
     import os
@@ -713,7 +713,7 @@ async def execute_global_syndication(
     if platforms is None:
         platforms = ["youtube"]
     
-    logger.info(f"🌐 [MCP:PUBLISHER] execute_global_syndication | platforms={platforms}")
+    logger.info(f"[WEB] [MCP:PUBLISHER] execute_global_syndication | platforms={platforms}")
     
     try:
         from app.services.upload_orchestrator import UploadOrchestrator
@@ -823,7 +823,7 @@ async def create_mcp_skill(
             with open(__file__, "r", encoding="utf-8") as rf:
                 content = rf.read()
                 if f"async def {skill_name}(" in content:
-                    logger.warning(f"⚠️ [MCP] Skill '{skill_name}' already exists in mcp_server.py. Skipping auto-append.")
+                    logger.warning(f"[WARN] [MCP] Skill '{skill_name}' already exists in mcp_server.py. Skipping auto-append.")
                     return {
                         "success": True, 
                         "code": code, 
@@ -1061,9 +1061,9 @@ async def start_niche_mission(
     """
     [COORDINATOR 스킬] 특정 Niche와 채널에 대한 자율 생산 미션을 원격 트리거합니다.
     """
-    logger.info(f"🚀 [MCP:COORDINATOR] start_niche_mission | niche={niche} | ch={channel_id}")
+    logger.info(f"[FALLBACK] [MCP:COORDINATOR] start_niche_mission | niche={niche} | ch={channel_id}")
     return (
-        f"Mission queued ✅ | Niche: {niche} | Channel: #{channel_id} | "
+        f"Mission queued [OK] | Niche: {niche} | Channel: #{channel_id} | "
         f"Format: {format} | Goal: {mission_goal or 'Standard Viral Growth'}"
     )
 
@@ -1073,7 +1073,7 @@ def panic_stop_all() -> str:
     """
     [COORDINATOR 스킬] 모든 자율 미션을 즉시 비상 정지합니다.
     """
-    logger.warning("🚨 [MCP:COORDINATOR] PANIC STOP TRIGGERED")
+    logger.warning("[ALERT] [MCP:COORDINATOR] PANIC STOP TRIGGERED")
     return "모든 자율 워크플로우가 일시 정지되었습니다. 시스템이 SAFE 모드로 진입합니다."
 
 
@@ -1123,7 +1123,7 @@ async def render_hyper_video(
     scene_list 형식:
         [{"file": "/path/to/clip.mp4", "duration": 5.0, "caption": "자막"}, ...]
     """
-    logger.info(f"🎬 [MCP:MEDIA] render_hyper_video | scenes={len(scene_list)} | engine={engine}")
+    logger.info(f"[VIDEO] [MCP:MEDIA] render_hyper_video | scenes={len(scene_list)} | engine={engine}")
     
     import uuid, os
     from app.services.capcut_generator import CapCutGenerator
@@ -1189,7 +1189,7 @@ async def extract_retention_hooks(
     
     반환: 조회수/좋아요/댓글 기반 훅 구조 패턴 분석 리포트
     """
-    logger.info(f"📊 [MCP:RESEARCHER] extract_retention_hooks | ch={channel_id}")
+    logger.info(f"[CHART] [MCP:RESEARCHER] extract_retention_hooks | ch={channel_id}")
 
     # DB 없이 video_ids 직접 지정 모드
     if video_ids:
@@ -1299,7 +1299,7 @@ async def generate_subtitle_track(
         }
     """
     import subprocess, uuid
-    logger.info(f"📝 [MCP:EDITOR] generate_subtitle_track | style={style} | lang={language}")
+    logger.info(f"[SCRIPT] [MCP:EDITOR] generate_subtitle_track | style={style} | lang={language}")
 
     _out = output_dir or os.path.join(settings.MEDIA_ROOT, "_subtitles")
     os.makedirs(_out, exist_ok=True)
@@ -1758,7 +1758,7 @@ async def analyze_video_retention(channel_id: str, video_id: str) -> Dict[str, A
     [ANALYST 스킬] 특정 영상의 시청자 유지율을 분석하여 성공한 훅과 실패한 구간을 식별합니다.
     - 데이터 기반 제작 전략 루프백(Loopback)의 핵심 도구입니다.
     """
-    logger.info(f"📊 [MCP:ANALYST] extract_retention_hooks | video={video_id}")
+    logger.info(f"[CHART] [MCP:ANALYST] extract_retention_hooks | video={video_id}")
     
     db = SessionLocal()
     try:
@@ -1803,7 +1803,7 @@ async def orchestrate_release(video_id: str, channel_ids: List[str]) -> Dict[str
     [PUBLISHER 스킬] 여러 채널에 대해 비디오 배포를 오케스트레이션합니다.
     - 지연 실행 및 스태거드(Staggered) 릴리즈를 통해 플랫폼 제재를 회피합니다.
     """
-    logger.info(f"🚀 [MCP:PUBLISHER] orchestrate_release | video={video_id} | channels={len(channel_ids)}")
+    logger.info(f"[FALLBACK] [MCP:PUBLISHER] orchestrate_release | video={video_id} | channels={len(channel_ids)}")
     
     try:
         results = await orchestrator.execute_batch_release(video_id, channel_ids)
@@ -1972,7 +1972,7 @@ async def generate_mcp_skill_template(
         implementation_hint : 구현 방법 힌트
         auto_append         : True이면 생성 즉시 mcp_server.py에 추가
     """
-    logger.info(f"🛠️ [MCP:COORDINATOR] create_mcp_skill | name={skill_name} | role={agent_role}")
+    logger.info(f"[TOOL] [MCP:COORDINATOR] create_mcp_skill | name={skill_name} | role={agent_role}")
 
     param_lines = []
     for inp in inputs:
@@ -2009,7 +2009,7 @@ async def {{skill_name}}(
     Implementation Hint:
         {{implementation_hint}}
     """
-    logger.info(f"🔧 [MCP:{{agent_role}}] {{skill_name}} | {{first_param}}={{{first_param}}}")
+    logger.info(f"[WRENCH] [MCP:{{agent_role}}] {{skill_name}} | {{first_param}}={{{first_param}}}")
 
     try:
         # TODO: 구현 추가 — Hint: {{implementation_hint}}
@@ -2034,7 +2034,7 @@ async def {{skill_name}}(
     try:
         ast.parse(code)
     except SyntaxError as se:
-        logger.error(f"❌ Generated skill has syntax errors: {se}")
+        logger.error(f"[FAIL] Generated skill has syntax errors: {se}")
         return {"success": False, "error": f"Syntax Error in generated code: {se}"}
 
     with open(code_file, "w", encoding="utf-8") as f:
@@ -2272,7 +2272,7 @@ async def analyze_video_frame_vision(
     from app.services.vision_agent import AIVisionAgent
     from app.llm_manager import LLMClient
     
-    logger.info(f"🎬 [MCP:VISION] analyze_video_frame | ts={timestamp}")
+    logger.info(f"[VIDEO] [MCP:VISION] analyze_video_frame | ts={timestamp}")
     
     try:
         image_data = base64.b64decode(frame_base64)
@@ -2309,7 +2309,7 @@ async def extract_text_from_image_vision(
     from app.services.vision_agent import AIVisionAgent
     from app.llm_manager import LLMClient
     
-    logger.info(f"📝 [MCP:VISION] extract_text | lang={language}")
+    logger.info(f"[SCRIPT] [MCP:VISION] extract_text | lang={language}")
     
     try:
         image_data = base64.b64decode(image_base64)
@@ -2371,7 +2371,7 @@ async def produce_complete_video(
     from app.services.video_production_pipeline import VideoProductionPipeline
     from app.services.video_production_pipeline import VideoProductionConfig, VideoFormat, VideoQuality
     
-    logger.info(f"🎬 [MCP:PRODUCTION] produce_complete_video | topic={topic}")
+    logger.info(f"[VIDEO] [MCP:PRODUCTION] produce_complete_video | topic={topic}")
     
     try:
         # Map format

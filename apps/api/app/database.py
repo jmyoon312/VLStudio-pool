@@ -184,6 +184,8 @@ def migrate_source_external_id():
         conn = db.connection()
         from sqlalchemy import inspect
         inspector = inspect(engine)
+        
+        # 1. work_queue_items.source_external_id
         columns = [c["name"] for c in inspector.get_columns("work_queue_items")]
         if "source_external_id" not in columns:
             dialect = engine.dialect.name
@@ -193,6 +195,18 @@ def migrate_source_external_id():
                 conn.execute(text("ALTER TABLE work_queue_items ADD COLUMN source_external_id VARCHAR"))
             db.commit()
             print("[Migration] Added source_external_id column to work_queue_items")
+
+        # 2. profiles.name
+        profile_cols = [c["name"] for c in inspector.get_columns("profiles")]
+        if "name" not in profile_cols:
+            dialect = engine.dialect.name
+            if dialect == "sqlite":
+                conn.execute(text("ALTER TABLE profiles ADD COLUMN name VARCHAR"))
+            else:
+                conn.execute(text("ALTER TABLE profiles ADD COLUMN name VARCHAR"))
+            db.commit()
+            print("[Migration] Added name column to profiles")
+
         db.close()
         return True
     except Exception as e:

@@ -32,13 +32,13 @@ class NotebookLMScout:
                 raise Exception("Failed to connect to Windows Agent")
             
             # 2. Navigate to NotebookLM
-            logger.info("🌐 Navigating to NotebookLM...")
+            logger.info("[WEB] Navigating to NotebookLM...")
             page.get("https://notebooklm.google.com/")
             time.sleep(8) # Wait for auto-login and load
             
             # 3. [NEW] Create/Open Notebook and Analyze
             # (Note: DOM selectors are dynamic, using generic patterns for stability)
-            logger.info(f"🔍 Analyzing niche: {niche}")
+            logger.info(f"[SEARCH] Analyzing niche: {niche}")
             
             # 4. [NEW] Extract Infographic if requested
             if extract_infographic:
@@ -51,7 +51,7 @@ class NotebookLMScout:
             return {"status": "SUCCESS", "note": niche}
             
         except Exception as e:
-            logger.error(f"❌ [NotebookLM Scout] Research failed: {e}")
+            logger.error(f"[FAIL] [NotebookLM Scout] Research failed: {e}")
             return {"status": "FAILED", "error": str(e)}
 
     async def _extract_infographic_visual(self, page, niche):
@@ -64,7 +64,7 @@ class NotebookLMScout:
             # 1. Click on Studio/Infographic card if visible
             info_card = page.ele('text:인포그래픽')
             if info_card:
-                logger.info("✨ Found Infographic card. Generating...")
+                logger.info("[MAGIC] Found Infographic card. Generating...")
                 info_card.click()
                 time.sleep(10) # Wait for AI generation
                 
@@ -74,10 +74,10 @@ class NotebookLMScout:
                 logger.info(f"📸 Infographic captured: {img_name}")
                 return True
             else:
-                logger.warning("⚠️ Infographic card not found in current view.")
+                logger.warning("[WARN] Infographic card not found in current view.")
                 return False
         except Exception as e:
-            logger.error(f"❌ Visual extraction failed: {e}")
+            logger.error(f"[FAIL] Visual extraction failed: {e}")
             return False
 
     def _generate_placeholder_summary(self, niche):

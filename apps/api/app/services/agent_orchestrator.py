@@ -169,7 +169,7 @@ class AgentOrchestrator:
             self._agents[agent_id] = agent
             self._agent_queues[agent_type].append(agent_id)
             
-            logger.info(f"✅ Agent registered: {agent_id} ({agent_type.value})")
+            logger.info(f"[OK] Agent registered: {agent_id} ({agent_type.value})")
             return True
             
         except Exception as e:
@@ -298,10 +298,10 @@ class AgentOrchestrator:
                 task.result = {"status": "no_handler"}
                 self._stats["completed_tasks"] += 1
             
-            logger.info(f"✅ Task {task_id} completed")
+            logger.info(f"[OK] Task {task_id} completed")
             
         except Exception as e:
-            logger.error(f"❌ Task {task_id} failed: {e}")
+            logger.error(f"[FAIL] Task {task_id} failed: {e}")
             task.error = str(e)
             task.status = TaskStatus.FAILED
             self._stats["failed_tasks"] += 1
@@ -346,7 +346,7 @@ class AgentOrchestrator:
     def register_handler(self, task_type: str, handler: Callable):
         """Register task handler"""
         self._task_handlers[task_type] = handler
-        logger.info(f"✅ Handler registered: {task_type}")
+        logger.info(f"[OK] Handler registered: {task_type}")
     
     async def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
         """Get task status"""

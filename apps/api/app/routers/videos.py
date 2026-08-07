@@ -23,6 +23,7 @@ class DownloadRequest(BaseModel):
     use_bypass: bool = False
     headless: bool = True # New Field, default True
     script_only: bool = False # [NEW]
+    profile_id: Optional[str] = None
 
 class BatchDownloadRequest(BaseModel):
     urls: List[str]
@@ -54,7 +55,7 @@ def upload_studio_file(
             db.close()
     except Exception as e:
         # Fallback to default path
-        download_root = "downloads"
+        download_root = "07_Downloads"
         
     # 1. Prepare Directory
     target_dir = os.path.join(download_root, subfolder)
@@ -162,7 +163,7 @@ def generate_subtitles_task(video_id: int):
         output = process.stdout
         
         if process.returncode != 0:
-            print(f"❌ [AI SUB] Subprocess Runtime Error. Check logs.")
+            print(f"[FAIL] [AI SUB] Subprocess Runtime Error. Check logs.")
             print(f"--- STDERR ---\n{process.stderr}\n--------------")
             
         try:
@@ -175,7 +176,7 @@ def generate_subtitles_task(video_id: int):
             print(f"[AI SUB] Raw Output: {output}")
 
         if result.get('status') == 'success':
-            print(f"✅ [AI SUB] Successfully generated subtitles for {video.title} in {result['language']}")
+            print(f"[OK] [AI SUB] Successfully generated subtitles for {video.title} in {result['language']}")
             
             # [NEW] Update video metadata with detected language
             if not video.metadata_json:
@@ -188,12 +189,12 @@ def generate_subtitles_task(video_id: int):
             db.commit()
             print(f"DEBUG: Updated video language to {result['language']} after transcription.")
         else:
-            print(f"❌ [AI SUB] Transcription failed: {result['message']}")
+            print(f"[FAIL] [AI SUB] Transcription failed: {result['message']}")
 
     except Exception as e:
         import traceback
         traceback.print_exc()
-        print(f"❌ [AI SUB] Error in transcription task: {e}")
+        print(f"[FAIL] [AI SUB] Error in transcription task: {e}")
     finally:
         db.close()
 
@@ -252,7 +253,7 @@ def upload_video(
         engine = VideoGenClient(settings)
         thumbnail_db_path = engine.generate_thumbnail(video_path=file_path, output_path=thumbnail_full_path, capture_ratio=0.3)
     except Exception as e:
-        print(f"⚠️ Thumbnail generation failed: {e}")
+        print(f"[WARN] Thumbnail generation failed: {e}")
 
     video = models.Video(
         channel_id=channel.id,
@@ -320,17 +321,14 @@ def download_video(download_req: DownloadRequest, background_tasks: BackgroundTa
             use_temp_storage = True
 
     # 2. Construct Path
-    safe_channel_name = downloader.sanitize_filename(channel_name).replace(" ", "_").strip()
-    
+    from ..utils.path_utils import get_channel_download_path
+    category_name = None
     if target_category_id:
         category = crud.get_category(db, target_category_id)
         if category:
-            cat_folder = category.folder_name or sanitize_folder_name(category.name)
-            # [FIX] Append Channel Name folder
-            download_root = os.path.join(download_root, cat_folder, safe_channel_name)
-    else:
-        # Temp Storage Path
-        download_root = os.path.join(download_root, "_temp_storage", safe_channel_name)
+            category_name = category.folder_name or category.name
+    
+    download_root = get_channel_download_path(settings, category_name=category_name, channel_name=channel_name)
 
     os.makedirs(download_root, exist_ok=True)
 
@@ -349,12 +347,23 @@ def download_video(download_req: DownloadRequest, background_tasks: BackgroundTa
             except Exception as e:
                 print(f"Failed to download profile image: {e}")
 
+    # [NEW] Resolve Browser Profile for bypass
+    user_data_dir = None
+    if getattr(download_req, 'profile_id', None):
+        profile = db.query(models.BrowserProfile).filter(models.BrowserProfile.id == download_req.profile_id).first()
+        if profile and profile.user_data_dir and os.path.exists(profile.user_data_dir):
+            user_data_dir = profile.user_data_dir
+            print(f"DEBUG: Using Browser Profile: {profile.name} for download.")
+
     # [FIX] Use high-level download_single_video instead of direct YTDLP call
     # This re-enables Smart Strategy selection (Bypass mode for TikTok, Douyin, etc.)
     result = downloader.download_single_video(
         video_url=download_req.url,
         root_download_path=download_root,
         cookies_path=settings.cookies_path if settings.cookies_path and os.path.exists(settings.cookies_path) else None,
+        user_data_dir=user_data_dir,
+        use_bypass=getattr(download_req, 'use_bypass', False),
+        headless=getattr(download_req, 'headless', True),
         script_only=getattr(download_req, 'script_only', False),
         force_hd=True
     )
@@ -431,7 +440,7 @@ def download_video(download_req: DownloadRequest, background_tasks: BackgroundTa
         video = save_video_to_db(db, result, metadata, channel_id, category.id if category else None, is_script_only, background_tasks, auto_create_channel=False)
 
     except Exception as e:
-        print(f"❌ Failed to save video to DB: {e}")
+        print(f"[FAIL] Failed to save video to DB: {e}")
 
     return {
         "status": "success",
@@ -728,19 +737,19 @@ async def batch_download(
     if not settings:
         settings = crud.create_settings(db, schemas.SettingsCreate())
     
-    from ..utils.path_utils import get_standardized_download_path
-    download_root = get_standardized_download_path(settings)
+    from ..utils.path_utils import get_channel_download_path
     
     # Determine category path
     target_category_id = request.category_id
+    category_name = None
     if target_category_id:
         category = crud.get_category(db, target_category_id)
         if category:
-            download_root = os.path.join(download_root, category.folder_name)
-    else:
-        # Default to temp if no category
-        download_root = os.path.join(download_root, "_temp_storage")
-        os.makedirs(download_root, exist_ok=True)
+            category_name = category.folder_name or category.name
+            
+    # For batch downloads, we might not have a single channel name, but it will be resolved per video in the loop
+    # or fallback to Unknown_Channel here as a default base if needed.
+    download_root = get_channel_download_path(settings, category_name=category_name, channel_name="Batch_Download_Unknown")
 
     for url in request.urls:
         if not url.strip():
@@ -1135,7 +1144,7 @@ def manual_hd_download(
     
     os.makedirs(download_folder, exist_ok=True)
     
-    print(f"🎬 Starting manual HD download for: {video.title}")
+    print(f"[VIDEO] Starting manual HD download for: {video.title}")
     print(f"📁 Download folder: {download_folder}")
     
     # Delete old file if exists
@@ -1220,7 +1229,7 @@ def manual_hd_download(
                 db.commit()
                 db.refresh(video)
                 
-                print(f"✅ HD flag set: {video.metadata_json}")
+                print(f"[OK] HD flag set: {video.metadata_json}")
                 
                 return {
                     "status": "success",

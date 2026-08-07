@@ -24,7 +24,7 @@ def classify_channel_niche(channel_name: str, video_title: str, video_desc: str,
     combined_nospace = combined_text.replace(" ", "")
     for sub in existing_subcategories:
         if sub.replace(" ", "").lower() in combined_nospace:
-            logger.info(f"✨ [Heuristic] Assigned {channel_name} to {sub}")
+            logger.info(f"[MAGIC] [Heuristic] Assigned {channel_name} to {sub}")
             return {"action": "assign", "category_name": sub}
 
     if not use_llm:
@@ -101,7 +101,7 @@ or
                     pass
 
             if result and isinstance(result, dict):
-                logger.info(f"💡 [LLM] Classified {channel_name} -> {result}")
+                logger.info(f"[INFO] [LLM] Classified {channel_name} -> {result}")
                 return result
     except Exception as e:
         logger.error(f"Failed to classify channel {channel_name}: {e}")

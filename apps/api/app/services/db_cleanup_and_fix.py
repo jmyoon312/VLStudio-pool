@@ -55,7 +55,7 @@ for ch in all_channels:
         # 연관된 DiscoveryVideo 먼저 삭제
         db.query(DiscoveryVideo).filter(DiscoveryVideo.channel_id == ch.id).delete(synchronize_session=False)
         db.delete(ch)
-        print(f"  ❌ 삭제: ID={ch.id} | {ch.name} | {ch.youtube_channel_id}")
+        print(f"  [FAIL] 삭제: ID={ch.id} | {ch.name} | {ch.youtube_channel_id}")
         deleted_count += 1
 
 db.commit()
@@ -114,7 +114,7 @@ for ch in channels_no_id:
     m = re.search(r'/channel/(UC[A-Za-z0-9_-]{22})', url)
     if m:
         ch.youtube_channel_id = m.group(1)
-        print(f"  ✅ 추출: {ch.name} → {ch.youtube_channel_id}")
+        print(f"  [OK] 추출: {ch.name} → {ch.youtube_channel_id}")
         extracted += 1
 
 db.commit()
@@ -156,7 +156,7 @@ print(f"  전체 채널: {total}")
 print(f"  ACTIVE: {active}")
 print(f"  ACTIVE + channel_id 있음: {active_with_id}")
 print(f"  ACTIVE + category 있음: {active_with_cat}")
-print(f"  ✅ RSS 수집 가능 (ACTIVE+channel_id+category): {rss_ready}")
+print(f"  [OK] RSS 수집 가능 (ACTIVE+channel_id+category): {rss_ready}")
 
 # 카테고리별 RSS 가능 채널
 cats = db.query(CategoryTree).all()
@@ -171,4 +171,4 @@ for cat in cats:
         print(f"    [{cat.level}] {cat.name}: {rss}개")
 
 db.close()
-print("\n✅ 정리 완료!")
+print("\n[OK] 정리 완료!")

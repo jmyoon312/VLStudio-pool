@@ -66,7 +66,7 @@ class IntelligentRateLimiter:
         # [NEW] Dynamic Config Override
         self.custom_config = None
         
-        logger.info(f"✅ RateLimiter initialized in {mode} mode")
+        logger.info(f"[OK] RateLimiter initialized in {mode} mode")
         
     def update_config(self, requests: int, window: int, threshold: int):
         """설정 동적 업데이트"""
@@ -78,7 +78,7 @@ class IntelligentRateLimiter:
             'max_delay': 2.0
         }
         self.config = new_config
-        logger.info(f"🔄 RateLimiter config updated: {requests} RPM, Threshold {threshold}")
+        logger.info(f"[REFRESH] RateLimiter config updated: {requests} RPM, Threshold {threshold}")
         
     async def acquire(self, task_type: str = 'default'):
         """
@@ -122,7 +122,7 @@ class IntelligentRateLimiter:
         if len(recent_requests) >= self.config['requests_per_minute']:
             # 1분 대기
             wait_time = 60 - (now - recent_requests[0])
-            logger.warning(f"⏱️ Rate limit reached (minute), waiting {wait_time:.1f}s")
+            logger.warning(f"[TIME] Rate limit reached (minute), waiting {wait_time:.1f}s")
             await asyncio.sleep(wait_time)
             
         # 시간당 제한 확인
@@ -132,7 +132,7 @@ class IntelligentRateLimiter:
         if len(recent_requests) >= self.config['requests_per_hour']:
             # 1시간 대기
             wait_time = 3600 - (now - recent_requests[0])
-            logger.warning(f"⏱️ Rate limit reached (hour), waiting {wait_time:.1f}s")
+            logger.warning(f"[TIME] Rate limit reached (hour), waiting {wait_time:.1f}s")
             await asyncio.sleep(wait_time)
             
     def report_429(self):
@@ -143,11 +143,11 @@ class IntelligentRateLimiter:
         # Backoff 증가
         self.backoff_multiplier = min(5.0, self.backoff_multiplier * 1.5)
         
-        logger.error(f"🚨 429 Error! Backoff: {self.backoff_multiplier:.2f}x (count: {self.consecutive_429_count})")
+        logger.error(f"[ALERT] 429 Error! Backoff: {self.backoff_multiplier:.2f}x (count: {self.consecutive_429_count})")
         
         # 3회 연속 429 → 긴급 중단
         if self.consecutive_429_count >= 3:
-            logger.critical("🚨 CRITICAL: 3 consecutive 429 errors! Emergency pause recommended")
+            logger.critical("[ALERT] CRITICAL: 3 consecutive 429 errors! Emergency pause recommended")
             
     def report_success(self):
         """성공 보고"""

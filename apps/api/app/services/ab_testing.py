@@ -82,7 +82,7 @@ class ABTestingService:
         
         self._experiments[experiment_id] = experiment
         
-        logger.info(f"✅ Experiment created: {name}")
+        logger.info(f"[OK] Experiment created: {name}")
         
         return experiment_id
     
@@ -132,7 +132,7 @@ class ABTestingService:
         metric: str,
         value: float
     ) -> bool:
-        logger.info(f"📊 Conversion: {metric}={value} for user {user_id}")
+        logger.info(f"[CHART] Conversion: {metric}={value} for user {user_id}")
         return True
     
     def get_results(self, experiment_id: str) -> Dict:

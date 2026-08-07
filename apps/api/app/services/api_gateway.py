@@ -241,7 +241,7 @@ class APIGateway:
             timeout=route.circuit_breaker_timeout
         )
         
-        logger.info(f"✅ Route added: {path} -> {backend}")
+        logger.info(f"[OK] Route added: {path} -> {backend}")
     
     def register_auth(self, path: str, handler: Callable):
         """Register auth handler for route"""
@@ -331,7 +331,7 @@ class APIGateway:
             return response
             
         except Exception as e:
-            logger.error(f"❌ Request failed: {e}")
+            logger.error(f"[FAIL] Request failed: {e}")
             
             # Record failure
             if circuit:

@@ -18,12 +18,12 @@ class InstagramBrowserUploader:
         caption: str
     ) -> Dict[str, Any]:
         
-        logger.info(f"🚀 Starting Instagram Browser Automation for: {video_path}")
+        logger.info(f"[FALLBACK] Starting Instagram Browser Automation for: {video_path}")
         
         try:
             # 1. Navigate to Instagram
             page.goto("https://www.instagram.com")
-            logger.info("⏳ Waiting for Instagram Dashboard...")
+            logger.info("[WAIT] Waiting for Instagram Dashboard...")
             
             # 2. Click Create (+) button
             time.sleep(random.uniform(3.0, 5.0))
@@ -75,7 +75,7 @@ class InstagramBrowserUploader:
                     caption_input.type(rest_part, delay=0)
             
             # 6. Share
-            logger.info("🚀 Clicking Share...")
+            logger.info("[FALLBACK] Clicking Share...")
             share_btn = page.locator('button:has-text("Share"), div[role="button"]:has-text("공유하기")').first
             share_btn.click()
             
@@ -83,11 +83,11 @@ class InstagramBrowserUploader:
             success_msg = page.locator('text="Your reel has been shared.", text="릴스가 공유되었습니다."').first
             success_msg.wait_for(state="visible", timeout=120000)
             
-            logger.info("✅ Instagram Upload Complete")
+            logger.info("[OK] Instagram Upload Complete")
             return {"status": "success", "url": "https://www.instagram.com/profile"}
             
         except Exception as e:
-            logger.error(f"❌ Instagram Automation Error: {e}")
+            logger.error(f"[FAIL] Instagram Automation Error: {e}")
             return {"status": "error", "message": f"Browser Error: {str(e)}"}
 
 instagram_browser_uploader = InstagramBrowserUploader()

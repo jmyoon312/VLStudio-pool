@@ -211,7 +211,7 @@ class YTDLPDownloader:
             try:
                 return future.result(timeout=timeout)
             except FutureTimeoutError:
-                print(f"⏱️ get_channel_info timeout after {timeout}s for {url}")
+                print(f"[TIME] get_channel_info timeout after {timeout}s for {url}")
                 return None
             except Exception as e:
                 print(f"YTDLP get_channel_info error: {e}")
@@ -298,7 +298,7 @@ class YTDLPDownloader:
             try:
                 return future.result(timeout=timeout)
             except FutureTimeoutError:
-                print(f"⏱️ get_video_info timeout after {timeout}s for {url}")
+                print(f"[TIME] get_video_info timeout after {timeout}s for {url}")
                 return None
             except Exception as e:
                 err_msg = str(e)
@@ -395,12 +395,12 @@ class YTDLPDownloader:
             video_format = 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
             if force_hd:
                 video_format = 'bestvideo[height>=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height>=720]+bestaudio/bestvideo[height<=1080]+bestaudio/best'
-                print("🎬 [MANUAL HD] Using aggressive HD format selector")
+                print("[VIDEO] [MANUAL HD] Using aggressive HD format selector")
             else:
                 print("📹 [DEFAULT] Using HD format (1080p max, mp4 preferred)")
         else:
             video_format = None
-            print("🚀 Script-Only Mode: Skipping video format selection.")
+            print("[FALLBACK] Script-Only Mode: Skipping video format selection.")
         
         # [FIX] Use centralized FFmpeg path from settings
         from app.config import settings
@@ -509,9 +509,9 @@ class YTDLPDownloader:
                             return 2
                         sub_files.sort(key=sub_sort)
                         final_video_path = sub_files[0]
-                        print(f"✅ Script-Only: Found subtitle file: {os.path.basename(final_video_path)}")
+                        print(f"[OK] Script-Only: Found subtitle file: {os.path.basename(final_video_path)}")
                     else:
-                        print(f"❌ Script-Only: No subtitle file found for {video_id}. (Possible 429 error or no CC)")
+                        print(f"[FAIL] Script-Only: No subtitle file found for {video_id}. (Possible 429 error or no CC)")
                         final_video_path = None
                         return {'status': 'failed', 'error': 'No subtitle file found (Possible 429 error or no CC)'}
                 else:

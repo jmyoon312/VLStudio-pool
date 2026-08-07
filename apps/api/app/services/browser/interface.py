@@ -11,6 +11,8 @@ class ProfileConfig:
     proxy_host: str = ''
     proxy_port: int = 0
     proxy_type: str = 'http'  # http / socks5
+    proxy_username: str = ''
+    proxy_password: str = ''
     lte_interface_ip: Optional[str] = None  # USB tethering IP
     engine_mode: str = 'cloakbrowser'  # cloakbrowser / ixbrowser
 

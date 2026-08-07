@@ -56,16 +56,90 @@ def main():
     ]
 
     proxy = None
+    proxy_ext_dir = None
     if proxy_port and proxy_port not in ('0', 'None', ''):
         # Support full proxy URL strings or port numbers
         if proxy_port.startswith('http://') or proxy_port.startswith('https://') or proxy_port.startswith('socks5://') or proxy_port.startswith('socks4://'):
-            proxy = proxy_port
+            from urllib.parse import urlparse
+            parsed = urlparse(proxy_port)
+            if parsed.username and parsed.password:
+                # Playwright persistent context proxy auth is flaky for new tabs.
+                # Generate a background extension to handle proxy auth automatically.
+                proxy_ext_dir = os.path.join(profile_dir, "proxy_auth_ext")
+                os.makedirs(proxy_ext_dir, exist_ok=True)
+                
+                manifest_json = """
+                {
+                    "version": "1.0.0",
+                    "manifest_version": 2,
+                    "name": "Proxy Auth Extension",
+                    "permissions": [
+                        "proxy",
+                        "tabs",
+                        "unlimitedStorage",
+                        "storage",
+                        "<all_urls>",
+                        "webRequest",
+                        "webRequestBlocking"
+                    ],
+                    "background": {
+                        "scripts": ["background.js"]
+                    },
+                    "minimum_chrome_version":"22.0.0"
+                }
+                """
+                
+                scheme = parsed.scheme if parsed.scheme in ('http', 'https', 'socks4', 'socks5') else 'http'
+                
+                background_js = f"""
+                var config = {{
+                    mode: "fixed_servers",
+                    rules: {{
+                      singleProxy: {{
+                        scheme: "{scheme}",
+                        host: "{parsed.hostname}",
+                        port: parseInt({parsed.port})
+                      }},
+                      bypassList: ["localhost", "127.0.0.1"]
+                    }}
+                  }};
+                
+                chrome.proxy.settings.set({{value: config, scope: "regular"}}, function() {{}});
+                
+                function callbackFn(details) {{
+                    return {{
+                        authCredentials: {{
+                            username: "{parsed.username}",
+                            password: "{parsed.password}"
+                        }}
+                    }};
+                }}
+                
+                chrome.webRequest.onAuthRequired.addListener(
+                            callbackFn,
+                            {{urls: ["<all_urls>"]}},
+                            ['blocking']
+                );
+                """
+                
+                with open(os.path.join(proxy_ext_dir, "manifest.json"), "w") as f:
+                    f.write(manifest_json)
+                with open(os.path.join(proxy_ext_dir, "background.js"), "w") as f:
+                    f.write(background_js)
+                
+                browser_args.append(f"--disable-extensions-except={proxy_ext_dir}")
+                browser_args.append(f"--load-extension={proxy_ext_dir}")
+                
+                # Do NOT set proxy dict to avoid conflicts with the extension
+                proxy = None 
+            else:
+                proxy = {"server": proxy_port}
         elif str(proxy_port) == '8080':
-            proxy = f"http://127.0.0.1:{proxy_port}"
+            proxy = {"server": f"http://127.0.0.1:{proxy_port}"}
         else:
-            proxy = f"socks5://127.0.0.1:{proxy_port}"
+            proxy = {"server": f"socks5://127.0.0.1:{proxy_port}"}
 
-    logger.info(f"Launching CloakBrowser at '{profile_dir}' -> {url} (Proxy: {proxy})")
+    logger.info(f"Launching CloakBrowser at '{profile_dir}' -> {url} (Proxy: {proxy}, Ext: {proxy_ext_dir})")
 
     ctx = launch_persistent_context(
         user_data_dir=profile_dir,
@@ -170,7 +244,7 @@ def main():
                     logger.info("✍️ Typing password naturally...")
                     human_type_into(pwd_locator, password)
                     page.keyboard.press('Enter')
-                    logger.info("✅ Login credentials naturally submitted.")
+                    logger.info("[OK] Login credentials naturally submitted.")
                 else:
                     logger.warning("Password field not visible yet. Please complete manually if needed.")
             except Exception as login_e:

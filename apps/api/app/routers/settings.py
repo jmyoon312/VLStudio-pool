@@ -25,7 +25,7 @@ def read_settings(db: Session = Depends(database.get_db)):
     if not settings.root_download_path:
         settings.root_download_path = settings_conf.MEDIA_ROOT
     if not settings.cookies_path:
-        settings.cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "cookies.txt").replace("\\", "/")
+        settings.cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "04_Profiles", "cookies.txt").replace("\\", "/")
 
     # Safe FFmpeg Check
     try:
@@ -61,8 +61,8 @@ def update_settings(
     # If the user saved the default resolved path, convert it back to empty string for portability
     if settings.root_download_path in [settings_conf.MEDIA_ROOT, settings_conf.root_download_path]:
         settings.root_download_path = ""
-    default_cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "cookies.txt").replace("\\", "/")
-    if settings.cookies_path in [default_cookies_path, os.path.join(settings_conf.MEDIA_ROOT, "cookies.txt")]:
+    default_cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "04_Profiles", "cookies.txt").replace("\\", "/")
+    if settings.cookies_path in [default_cookies_path, os.path.join(settings_conf.MEDIA_ROOT, "04_Profiles", "cookies.txt")]:
         settings.cookies_path = None
         
     updated = crud.update_settings(db, settings)
@@ -75,7 +75,7 @@ def update_settings(
         from app.agent.brain_router import brain_router
         brain_router.clear_cache()
     except Exception as e:
-        print(f"⚠️ Failed to clear LLM cache: {e}")
+        print(f"[WARN] Failed to clear LLM cache: {e}")
     
     # Also clear DB model cache to force fresh fetch
     try:
@@ -85,23 +85,23 @@ def update_settings(
             db_settings.model_cache_updated_at = None
             db.commit()
     except Exception as e:
-        print(f"⚠️ Failed to clear DB model cache: {e}")
+        print(f"[WARN] Failed to clear DB model cache: {e}")
 
     # [NEW] Automatic Sync to Agents (The OpenClaw Way)
     try:
         orchestrator = SovereignOrchestrator(db)
         background_tasks.add_task(orchestrator.sync_paperclip)
         background_tasks.add_task(orchestrator.sync_openclaude)
-        print("🔄 [Settings] Automatic Agent Sync Scheduled.")
+        print("[REFRESH] [Settings] Automatic Agent Sync Scheduled.")
     except Exception as e:
-        print(f"⚠️ Failed to trigger automatic agent sync: {e}")
+        print(f"[WARN] Failed to trigger automatic agent sync: {e}")
 
     # [NEW] Refresh ADB service configuration
     try:
         from app.services.adb_service import adb_service
         adb_service.refresh_config(updated)
     except Exception as e:
-        print(f"⚠️ Failed to refresh ADB service: {e}")
+        print(f"[WARN] Failed to refresh ADB service: {e}")
 
     return updated
 
@@ -124,8 +124,8 @@ def patch_settings(
         if update_data['root_download_path'] in [settings_conf.MEDIA_ROOT, settings_conf.root_download_path]:
             update_data['root_download_path'] = ""
     if 'cookies_path' in update_data:
-        default_cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "cookies.txt").replace("\\", "/")
-        if update_data['cookies_path'] in [default_cookies_path, os.path.join(settings_conf.MEDIA_ROOT, "cookies.txt")]:
+        default_cookies_path = os.path.join(settings_conf.MEDIA_ROOT, "04_Profiles", "cookies.txt").replace("\\", "/")
+        if update_data['cookies_path'] in [default_cookies_path, os.path.join(settings_conf.MEDIA_ROOT, "04_Profiles", "cookies.txt")]:
             update_data['cookies_path'] = None
     
     threshold_changed = (
@@ -146,7 +146,7 @@ def patch_settings(
         from app.agent.brain_router import brain_router
         brain_router.clear_cache()
     except Exception as e:
-        print(f"⚠️ Failed to clear LLM cache: {e}")
+        print(f"[WARN] Failed to clear LLM cache: {e}")
     
     # Also clear DB model cache to force fresh fetch
     try:
@@ -156,7 +156,7 @@ def patch_settings(
             db_settings.model_cache_updated_at = None
             db.commit()
     except Exception as e:
-        print(f"⚠️ Failed to clear DB model cache: {e}")
+        print(f"[WARN] Failed to clear DB model cache: {e}")
 
     if threshold_changed:
         try:
@@ -166,9 +166,9 @@ def patch_settings(
                 import app.services.auto_hd
                 try:
                     importlib.reload(app.services.auto_hd)
-                    print("🔄 [AUTO-HD] Module reloaded successfully.")
+                    print("[REFRESH] [AUTO-HD] Module reloaded successfully.")
                 except Exception as reload_err:
-                    print(f"⚠️ [AUTO-HD] Module reload failed: {reload_err}")
+                    print(f"[WARN] [AUTO-HD] Module reload failed: {reload_err}")
 
                 from app.services.auto_hd import scan_all_videos_for_auto_hd
                 db_new = database.SessionLocal()
@@ -178,24 +178,24 @@ def patch_settings(
                     db_new.close()
 
             background_tasks.add_task(run_scan)
-            print("🚀 Scheduled immediate Auto HD scan.")
+            print("[FALLBACK] Scheduled immediate Auto HD scan.")
         except Exception as e:
-             print(f"⚠️ Failed to schedule Auto HD scan: {e}")
+             print(f"[WARN] Failed to schedule Auto HD scan: {e}")
         
     try:
         from app.services.orchestrator import SovereignOrchestrator
         orchestrator = SovereignOrchestrator(db)
         orchestrator.sync_all()
-        print("✅ [Orchestrator] Synchronized LLM settings to all Hubs.")
+        print("[OK] [Orchestrator] Synchronized LLM settings to all Hubs.")
     except Exception as e:
-        print(f"⚠️ [Orchestrator] Sync failed: {e}")
+        print(f"[WARN] [Orchestrator] Sync failed: {e}")
 
     # [NEW] Refresh ADB service configuration
     try:
         from app.services.adb_service import adb_service
         adb_service.refresh_config(current_settings)
     except Exception as e:
-        print(f"⚠️ Failed to refresh ADB service: {e}")
+        print(f"[WARN] Failed to refresh ADB service: {e}")
 
     return current_settings
 
@@ -209,7 +209,7 @@ def restore_settings(settings: schemas.SettingsBase, db: Session = Depends(datab
         from app.agent.brain_router import brain_router
         brain_router.clear_cache()
     except Exception as e:
-        print(f"⚠️ Failed to clear LLM cache: {e}")
+        print(f"[WARN] Failed to clear LLM cache: {e}")
     return updated
 
 @router.get("/check-openrouter-key", response_model=dict)

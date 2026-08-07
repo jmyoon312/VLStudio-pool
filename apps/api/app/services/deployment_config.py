@@ -403,7 +403,7 @@ class DeploymentConfigManager:
         
         self._configs[name] = new_config
         
-        logger.info(f"✅ Created environment: {name}")
+        logger.info(f"[OK] Created environment: {name}")
         
         return True
 

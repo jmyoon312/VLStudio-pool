@@ -172,7 +172,7 @@ def update_hermes_agent(db: Session = Depends(database.get_db)):
             version_info=hermes_latest["name"]
         )
     except Exception as e:
-        logger.error(f"❌ [Hermes] Update system error: {str(e)}")
+        logger.error(f"[FAIL] [Hermes] Update system error: {str(e)}")
         return schemas.HermesUpdateResponse(
             status="error",
             message=str(e),

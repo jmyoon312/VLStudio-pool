@@ -19,7 +19,7 @@ class VerificationWorker:
         self.running = True
         self.worker_thread = threading.Thread(target=self._run_loop, daemon=True, name="VerificationWorker")
         self.worker_thread.start()
-        logger.info("✅ Verification Worker Started (intelligent aging & copyright checking)")
+        logger.info("[OK] Verification Worker Started (intelligent aging & copyright checking)")
 
     def _calculate_aging_minutes(self, item) -> int:
         """영상 크기와 채널의 네트워크 종류에 기반한 지능적 aging 시간 계산"""
@@ -83,7 +83,7 @@ class VerificationWorker:
                         if item.upload_completed_at and item.upload_completed_at > aging_cutoff:
                             continue  # 아직 aging 안 됨
 
-                        logger.info(f"🔍 CCVerificationWorker/Verifying item {item.id} after {aging}min aging...")
+                        logger.info(f"[SEARCH] CCVerificationWorker/Verifying item {item.id} after {aging}min aging...")
                         
                         # 1한성 타임아웃 (60분))
                         if item.upload_completed_at and item.upload_completed_at <= datetime.now() - timedelta(minutes=60):
@@ -96,7 +96,7 @@ class VerificationWorker:
                         try:
                             browser_uploader.verify_and_publish_video(db, item.id)
                         except Exception as e:
-                            logger.error(f"❌ [VerificationWorker] Verification execution failed for {item.id}: {e}")
+                            logger.error(f"[FAIL] [VerificationWorker] Verification execution failed for {item.id}: {e}")
                             
                     # --- [NEW] Garbage Collector for MP4 files ---
                     settings = db.query(models.Settings).first()
@@ -114,12 +114,12 @@ class VerificationWorker:
                                     os.remove(cleanup_item.video_file_path)
                                     logger.info(f"🗑️ [GarbageCollector] Auto-deleted old video file for item {cleanup_item.id}: {cleanup_item.video_file_path}")
                                 except Exception as e:
-                                    logger.error(f"❌ [GarbageCollector] Failed to delete file {cleanup_item.video_file_path}: {e}")
+                                    logger.error(f"[FAIL] [GarbageCollector] Failed to delete file {cleanup_item.video_file_path}: {e}")
                                     
                 finally:
                     db.close()
             except Exception as e:
-                logger.error(f"❌ [VerificationWorker] Loop error: {e}")
+                logger.error(f"[FAIL] [VerificationWorker] Loop error: {e}")
             
             time.sleep(60)
 

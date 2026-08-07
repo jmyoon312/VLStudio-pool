@@ -94,7 +94,7 @@ async def async_search_task(query: str, settings: Any = None):
         # Pass settings instead of db to avoid SQLAlchemy concurrency errors
         return await asyncio.to_thread(tool_manager.search, query, include_images=False, settings=settings, time_range='week')
     except Exception as e:
-        print(f"⚠️ Search failed for '{query}': {e}")
+        print(f"[WARN] Search failed for '{query}': {e}")
         return {"results": []}
 
 def fetch_category_trends_micro_topic(category: str, db: Session):
@@ -105,7 +105,7 @@ def fetch_category_trends_micro_topic(category: str, db: Session):
     3. LLM Synthesis & Scoring
     4. DB Upsert
     """
-    print(f"[{datetime.now()}] 🔄 Processing Micro-Topic Batch: {category}")
+    print(f"[{datetime.now()}] [REFRESH] Processing Micro-Topic Batch: {category}")
     
     # 1. Get Micro-Topics (Seed)
     micro_topics = category_manager.get_random_micro_topics(category, count=1)
@@ -114,7 +114,7 @@ def fetch_category_trends_micro_topic(category: str, db: Session):
     else:
         target_topic = micro_topics[0] # Pick primary
     
-    print(f"🎯 Targeting Micro-Topic: {target_topic}")
+    print(f"[TARGET] Targeting Micro-Topic: {target_topic}")
 
     # 2. Construct Dynamic Queries for Parallel Fetching
     queries = [
@@ -136,7 +136,7 @@ def fetch_category_trends_micro_topic(category: str, db: Session):
     try:
         results = asyncio.run(run_searches())
     except Exception as e:
-        print(f"⚠️ Parallel search failed for {target_topic}: {e}")
+        print(f"[WARN] Parallel search failed for {target_topic}: {e}")
         results = [{"results": []} for _ in queries]
     
     # 4. Context Assembly (Context Truncation)
@@ -191,7 +191,7 @@ def fetch_category_trends_micro_topic(category: str, db: Session):
         try:
             data = json.loads(cleaned_resp)
         except json.JSONDecodeError as je:
-            print(f"❌ JSON Decode Error for {category}: {je}. Raw: {cleaned_resp[:100]}...")
+            print(f"[FAIL] JSON Decode Error for {category}: {je}. Raw: {cleaned_resp[:100]}...")
             return
         
         # [ROBUSTNESS] Normalize
@@ -224,10 +224,10 @@ def fetch_category_trends_micro_topic(category: str, db: Session):
             existing.viral_score = max([d.get("viral_score", 0) for d in data]) if data else 0 
             
             db.commit()
-            print(f"✅ [Super-Batch] Cached {len(data)} trends for {category} (Micro: {target_topic})")
+            print(f"[OK] [Super-Batch] Cached {len(data)} trends for {category} (Micro: {target_topic})")
             
     except Exception as e:
-        print(f"❌ Failed to output trends for {category}: {e}")
+        print(f"[FAIL] Failed to output trends for {category}: {e}")
 
 def run_rapid_batch():
     """
@@ -260,7 +260,7 @@ def run_rapid_batch():
 
 def initial_scan_thread():
     """Background startup scan."""
-    print("🚀 [Startup] Triggering initial micro-topic scan (Background)...")
+    print("[FALLBACK] [Startup] Triggering initial micro-topic scan (Background)...")
     time.sleep(10)
     db = SessionLocal()
     try:
@@ -271,7 +271,7 @@ def initial_scan_thread():
                 fetch_category_trends_micro_topic(cat, db)
                 time.sleep(1)
         else:
-             print("✅ Cache warm. Skipping initial scan.")
+             print("[OK] Cache warm. Skipping initial scan.")
     finally:
         db.close()
 
@@ -323,9 +323,9 @@ def full_channel_scan_logic():
                         ch_info = downloader.downloader.get_channel_info(channel.url)
                         if ch_info and ch_info.get('thumbnail'):
                              channel.thumbnail_path = ch_info.get('thumbnail')
-                             print(f"✅ Updated thumbnail: {channel.thumbnail_path}")
+                             print(f"[OK] Updated thumbnail: {channel.thumbnail_path}")
                     except Exception as e:
-                        print(f"⚠️ Failed to update thumbnail: {e}")
+                        print(f"[WARN] Failed to update thumbnail: {e}")
 
                 db.commit()
 
@@ -337,7 +337,7 @@ def full_channel_scan_logic():
                     # Check DB properly
                     exists = db.query(models.Video).filter_by(video_id=v_id).first() # Video ID should be unique globally
                     if not exists:
-                        print(f"✨ New Video Found: {vid.get('title')} ({v_id})")
+                        print(f"[MAGIC] New Video Found: {vid.get('title')} ({v_id})")
                         new_video = models.Video(
                             channel_id=channel.id, 
                             video_id=v_id, 
@@ -354,7 +354,7 @@ def full_channel_scan_logic():
                         
                         # 2. Trigger Auto-Download
                         if global_auto and channel.auto_download:
-                            print(f"⬇️ Auto-downloading: {new_video.title}")
+                            print(f"[DOWN] Auto-downloading: {new_video.title}")
                             new_video.status = "downloading"
                             db.commit()
                             
@@ -412,7 +412,7 @@ def full_channel_scan_logic():
                                         new_video.viral_score = viral_score
                                         new_video.velocity_score = velocity_score
                                     except Exception as e:
-                                        print(f"⚠️ Viral score calculation failed: {e}")
+                                        print(f"[WARN] Viral score calculation failed: {e}")
                                     
                                     # [FIX] Create VideoHistory record for graph
                                     try:
@@ -422,32 +422,32 @@ def full_channel_scan_logic():
                                             timestamp=datetime.now()
                                         )
                                         db.add(history_record)
-                                        print(f"✅ Created VideoHistory: views={new_video.view_count}")
+                                        print(f"[OK] Created VideoHistory: views={new_video.view_count}")
                                     except Exception as e:
-                                        print(f"⚠️ VideoHistory creation failed: {e}")
+                                        print(f"[WARN] VideoHistory creation failed: {e}")
                                 else:
                                     new_video.status = "failed"
                                     new_video.failure_reason = result.get('error')
-                                    print(f"❌ Download failed: {result.get('error')}")
+                                    print(f"[FAIL] Download failed: {result.get('error')}")
                                     
                             except Exception as e:
                                 new_video.status = "failed"
                                 new_video.failure_reason = str(e)
-                                print(f"❌ Download Exception: {e}")
+                                print(f"[FAIL] Download Exception: {e}")
                                 
                             db.commit()
                             
                 print(f"[{datetime.now()}] Finished {channel.name}: {new_videos_found} new videos.")
                 
             except Exception as e:
-                print(f"⚠️ Error scanning channel {channel.name}: {e}")
+                print(f"[WARN] Error scanning channel {channel.name}: {e}")
                 # [FIX] Track Consecutive Failures
                 channel.fail_count += 1
                 channel.last_error = str(e)[:500] # Truncate
                 db.commit()
                 
                 if channel.fail_count >= 3:
-                     print(f"🚨 CRITICAL WARNING: Channel '{channel.name}' has failed {channel.fail_count} consecutive scans!")
+                     print(f"[ALERT] CRITICAL WARNING: Channel '{channel.name}' has failed {channel.fail_count} consecutive scans!")
             
             # [FIX] polite delay between channels
             sleep_time = random.randint(10, 30)
@@ -476,16 +476,16 @@ def scheduler_watchdog():
         for ch in channels:
             # Check Staleness (Active but not scanned recently)
             if ch.status == 'active' and (not ch.last_scanned_at or ch.last_scanned_at < cutoff):
-                print(f"⚠️ Watchdog Alert: Channel '{ch.name}' is stale. Last scanned: {ch.last_scanned_at}")
+                print(f"[WARN] Watchdog Alert: Channel '{ch.name}' is stale. Last scanned: {ch.last_scanned_at}")
                 count_stale += 1
                 
             # Check Failures
             if ch.fail_count >= 3:
-                 print(f"🚨 Watchdog Alert: Channel '{ch.name}' has {ch.fail_count} failures. Error: {ch.last_error}")
+                 print(f"[ALERT] Watchdog Alert: Channel '{ch.name}' has {ch.fail_count} failures. Error: {ch.last_error}")
                  count_failed += 1
 
         if count_stale > 0 or count_failed > 0:
-            print(f"⚠️ Watchdog Summary: {count_stale} stale channels, {count_failed} failing channels.")
+            print(f"[WARN] Watchdog Summary: {count_stale} stale channels, {count_failed} failing channels.")
             
     except Exception as e:
         print(f"Watchdog Error: {e}")
@@ -499,7 +499,7 @@ def check_warmup_progression():
     """
     db = SessionLocal()
     try:
-        print(f"[{datetime.now()}] 🔥 Checking Warmup Progression...")
+        print(f"[{datetime.now()}] [FIRE] Checking Warmup Progression...")
         
         # Find channels ready for next stage
         channels = db.query(models.BrandChannel).filter(
@@ -531,13 +531,13 @@ def check_warmup_progression():
                         session_manager.run_warmup_routine(channel.channel_id, next_stage)
                         progressed_count += 1
                     except Exception as e:
-                        print(f"❌ Failed to progress {channel.channel_name}: {e}")
+                        print(f"[FAIL] Failed to progress {channel.channel_name}: {e}")
                         channel.warmup_status = "FAILED"
                         channel.warmup_last_error = str(e)
                         db.commit()
         
         if progressed_count > 0:
-            print(f"✅ Auto-progressed {progressed_count} channels")
+            print(f"[OK] Auto-progressed {progressed_count} channels")
         else:
             print(f"ℹ️ No channels ready for progression")
             
@@ -566,10 +566,10 @@ def check_scheduled_publishes():
             
             for item in items:
                 try:
-                    print(f"🚀 Publishing Scheduled Item: {item.title} (ID: {item.id})")
+                    print(f"[FALLBACK] Publishing Scheduled Item: {item.title} (ID: {item.id})")
                     browser_uploader.publish_scheduled_video(db, item.id)
                 except Exception as e:
-                    print(f"❌ Failed to publish item {item.id}: {e}")
+                    print(f"[FAIL] Failed to publish item {item.id}: {e}")
     except Exception as e:
         print(f"Scheduled Publish Error: {e}")
     finally:
@@ -594,7 +594,7 @@ def check_scheduled_uploads():
             
             for item in items:
                 try:
-                    print(f"🚀 Starting Scheduled Upload: {item.title} (ID: {item.id})")
+                    print(f"[FALLBACK] Starting Scheduled Upload: {item.title} (ID: {item.id})")
                     # Reset status to PENDING or TRIGGER upload directly?
                     # If we set to PENDING, the generic queue worker might pick it up?
                     # But generic worker picks PENDING.
@@ -610,7 +610,7 @@ def check_scheduled_uploads():
                     threading.Thread(target=browser_uploader.process_item, args=(item.id,), daemon=True).start()
                     
                 except Exception as e:
-                    print(f"❌ Failed to start scheduled upload {item.id}: {e}")
+                    print(f"[FAIL] Failed to start scheduled upload {item.id}: {e}")
                     # Revert status?
                     item.status = "FAILED"
                     item.log = f"Scheduled Start Failed: {str(e)}"
@@ -657,7 +657,7 @@ def start_scheduler():
             else:
                 raise
         except Exception as e:
-            print(f"❌ Stats update failed: {e}")
+            print(f"[FAIL] Stats update failed: {e}")
 
     # Delay first run by 3 min to avoid startup overload
     scheduler.add_job(stats_update_wrapper, 'interval', minutes=interval, id='video_stats_update',

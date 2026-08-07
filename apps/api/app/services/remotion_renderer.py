@@ -37,7 +37,7 @@ class RemotionRenderer:
             f"cd {self.frontend_dir} && npx remotion render src/remotion/Root.tsx {composition_id} {output_path} --props={temp_props_path} --pixel-format=yuv420p --crf=18 --quality=100 --gl=angle --concurrency=4 --browser-executable=/usr/bin/google-chrome --no-sandbox"
         ]
 
-        logger.info(f"🚀 [Remote Render] Delegating to swarm: {' '.join(cmd)}")
+        logger.info(f"[FALLBACK] [Remote Render] Delegating to swarm: {' '.join(cmd)}")
         
         try:
             # Execute asynchronously
@@ -51,14 +51,14 @@ class RemotionRenderer:
             
             if process.returncode != 0:
                 error_msg = stderr.decode()
-                logger.error(f"❌ Remote Remotion Failed ({process.returncode}): {error_msg}")
+                logger.error(f"[FAIL] Remote Remotion Failed ({process.returncode}): {error_msg}")
                 raise RuntimeError(f"Remote Remotion Render Failed: {error_msg}")
                 
-            logger.info(f"✅ Remote Remotion Render Success: {output_path}")
+            logger.info(f"[OK] Remote Remotion Render Success: {output_path}")
             return output_path
             
         except Exception as e:
-            logger.error(f"❌ Remote Remotion Execution Error: {e}")
+            logger.error(f"[FAIL] Remote Remotion Execution Error: {e}")
             raise
         finally:
             # Cleanup temp props

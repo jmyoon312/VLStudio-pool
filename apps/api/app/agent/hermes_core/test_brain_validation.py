@@ -45,7 +45,7 @@ def load_keys_from_db():
             logger.info(f"🔑 Loaded {len(keys)} Gemini keys from DB.")
         conn.close()
     except Exception as e:
-        logger.warning(f"⚠️ Could not load keys from DB: {e}")
+        logger.warning(f"[WARN] Could not load keys from DB: {e}")
 
 async def run_validation():
     logger.info("🧪 [Validation Gate A] Testing Hermes Brain Reflection with Mock Logs...")
@@ -79,19 +79,19 @@ async def run_validation():
         # 3. Call reflect_on_mission (which now uses LLM)
         summary = await brain.reflect_on_mission(session_id, niche, mock_logs)
         
-        logger.info(f"✅ Reflection Summary: {summary}")
+        logger.info(f"[OK] Reflection Summary: {summary}")
         
         # 4. Verify the strategy recorded in memory
         wisdom = brain.get_wisdom_context(niche)
-        logger.info(f"📊 Extracted Wisdom in Context:\n{wisdom}")
+        logger.info(f"[CHART] Extracted Wisdom in Context:\n{wisdom}")
         
         if wisdom and "Horror" in wisdom:
-            logger.info("✨ SUCCESS: Hermes Brain extracted non-generic strategy from logs.")
+            logger.info("[MAGIC] SUCCESS: Hermes Brain extracted non-generic strategy from logs.")
         else:
-            logger.warning("⚠️ WARNING: Wisdom might be generic or empty.")
+            logger.warning("[WARN] WARNING: Wisdom might be generic or empty.")
             
     except Exception as e:
-        logger.error(f"❌ Validation failed with error: {e}")
+        logger.error(f"[FAIL] Validation failed with error: {e}")
         import traceback
         traceback.print_exc()
     finally:

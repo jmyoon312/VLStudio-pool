@@ -85,7 +85,7 @@ class CaptainDataCollector:
                         # Consume quota
                         self.quota_manager.consume_quota(1)
                         
-                        logger.info(f"✅ Updated stats for channel {channel.channel_name}")
+                        logger.info(f"[OK] Updated stats for channel {channel.channel_name}")
                     
                 except Exception as e:
                     logger.error(f"Failed to collect stats for {channel.channel_id}: {e}")
@@ -214,7 +214,7 @@ class CaptainDataCollector:
                         await asyncio.sleep(2)  # yt-dlp rate limiting
                     
                     if new_videos:
-                        logger.info(f"✅ Detected and collected {len(new_videos)} new videos for {channel.channel_name}")
+                        logger.info(f"[OK] Detected and collected {len(new_videos)} new videos for {channel.channel_name}")
                     
                 except Exception as e:
                     logger.error(f"Failed to detect new videos for {channel.channel_id}: {e}")
@@ -224,15 +224,15 @@ class CaptainDataCollector:
         
         async def _collect():
             try:
-                logger.info(f"🚀 yt-dlp: Starting metadata collection for {video_id}...")
+                logger.info(f"[FALLBACK] yt-dlp: Starting metadata collection for {video_id}...")
                 downloader = YTDLPDownloader()
                 info = downloader.get_video_info(f"https://youtube.com/watch?v={video_id}")
                 
                 if not info:
-                    logger.warning(f"❌ yt-dlp: No info returned for {video_id}")
+                    logger.warning(f"[FAIL] yt-dlp: No info returned for {video_id}")
                     return
                 
-                logger.info(f"✅ yt-dlp: Successfully downloaded info for '{info.get('title', 'Unknown')}'")
+                logger.info(f"[OK] yt-dlp: Successfully downloaded info for '{info.get('title', 'Unknown')}'")
                 
                 # Parse upload date
                 upload_date_str = info.get('upload_date', '20000101')
@@ -259,7 +259,7 @@ class CaptainDataCollector:
                 self.db.merge(cache_entry)
                 self.db.commit()
                 
-                logger.info(f"✅ Collected metadata for video {video_id}")
+                logger.info(f"[OK] Collected metadata for video {video_id}")
                 
             except Exception as e:
                 logger.error(f"Failed to collect metadata for {video_id}: {e}")
@@ -351,7 +351,7 @@ class CaptainDataCollector:
                 )
                 
                 self.db.add(daily_stats)
-                logger.info(f"✅ Aggregated daily stats for {channel.channel_name}")
+                logger.info(f"[OK] Aggregated daily stats for {channel.channel_name}")
                 
             except Exception as e:
                 logger.error(f"Failed to aggregate stats for {channel.channel_id}: {e}")

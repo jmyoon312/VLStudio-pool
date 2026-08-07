@@ -79,7 +79,7 @@ class ChannelPoolManager:
                 return False
             elif result.get('action') == 'assign' and result.get('category_name') in sub_map:
                 assigned_category_id = sub_map[result['category_name']]
-                logger.info(f"✨ AI Assigned {channel_name} to existing subcategory '{result['category_name']}'")
+                logger.info(f"[MAGIC] AI Assigned {channel_name} to existing subcategory '{result['category_name']}'")
             elif result.get('action') == 'propose' and result.get('category_name'):
                 proposed_name = result['category_name']
                 existing_sub = _find_fuzzy_category(db, proposed_name, category.id)
@@ -97,11 +97,11 @@ class ChannelPoolManager:
                     db.commit()
                     db.refresh(new_sub)
                     assigned_category_id = new_sub.id
-                    logger.info(f"💡 AI Proposed new subcategory '{proposed_name}' for {channel_name}")
+                    logger.info(f"[INFO] AI Proposed new subcategory '{proposed_name}' for {channel_name}")
 
                 lifecycle_status = "CANDIDATE"
 
-        logger.info(f"🚀 [Viral Chain] New Faceless Channel Discovered: {channel_name} ({channel_url}) -> {lifecycle_status}")
+        logger.info(f"[FALLBACK] [Viral Chain] New Faceless Channel Discovered: {channel_name} ({channel_url}) -> {lifecycle_status}")
         
         # Add new channel
         new_channel = DiscoveryChannel(

@@ -137,7 +137,7 @@ class CDNManager:
                 enabled=True
             )
             
-            logger.info(f"✅ CDN configured: {provider}")
+            logger.info(f"[OK] CDN configured: {provider}")
             return True
             
         except ValueError:
@@ -224,7 +224,7 @@ class CDNManager:
             response = await client.post(url, json=data, headers=headers)
             
             if response.status_code == 200:
-                logger.info(f"✅ Cloudflare cache purged: {pattern or 'all'}")
+                logger.info(f"[OK] Cloudflare cache purged: {pattern or 'all'}")
                 return True
             
             logger.error(f"Cloudflare purge failed: {response.text}")

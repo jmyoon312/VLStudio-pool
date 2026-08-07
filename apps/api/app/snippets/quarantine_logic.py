@@ -26,7 +26,7 @@ def quarantine_profile(id: str, reason: str = Body(..., embed=True), db: Session
     profile.quarantine_reason = reason
     db.commit()
     
-    logger.warning(f"🚨 Profile {id} has been QUARANTINED. Reason: {reason}")
+    logger.warning(f"[ALERT] Profile {id} has been QUARANTINED. Reason: {reason}")
     return {"status": "quarantined", "msg": "90-day lockdown initiated"}
 
 
@@ -41,7 +41,7 @@ def release_profile(id: str, db: Session = Depends(get_db)):
     profile.quarantine_reason = None
     db.commit()
     
-    logger.info(f"✅ Profile {id} manually released from quarantine.")
+    logger.info(f"[OK] Profile {id} manually released from quarantine.")
     return {"status": "released", "msg": "Account restored to ACTIVE status"}
 
 

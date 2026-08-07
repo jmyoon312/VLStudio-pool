@@ -32,9 +32,9 @@ async def capture_scene_clip(
         fps: FPS
         scene_data: Optional dict of scene data to inject via store
     """
-    print(f"🎬 Starting scene capture: {scene_url}")
+    print(f"[VIDEO] Starting scene capture: {scene_url}")
     print(f"📐 Resolution: {width}x{height} @ {fps}fps")
-    print(f"⏱️  Duration: {duration_seconds}s")
+    print(f"[TIME]  Duration: {duration_seconds}s")
     
     browser = None
     temp_webm = None
@@ -74,11 +74,11 @@ async def capture_scene_clip(
         for path in possible_paths:
             if os.path.exists(path):
                 executable_path = path
-                print(f"✅ Found system browser: {path}")
+                print(f"[OK] Found system browser: {path}")
                 break
         
         if not executable_path:
-            print("⚠️ No system browser found. Will use default (puppeteer/chromium).")
+            print("[WARN] No system browser found. Will use default (puppeteer/chromium).")
         
         launch_args = {
             'headless': True,
@@ -106,7 +106,7 @@ async def capture_scene_clip(
         page = await browser.newPage()
         await page.setViewport({'width': width, 'height': height})
         
-        print(f"🌐 Loading page: {scene_url}")
+        print(f"[WEB] Loading page: {scene_url}")
         # Load Live Studio page
         await page.goto(scene_url, {'waitUntil': 'networkidle0', 'timeout': 120000})  # 2min timeout
         
@@ -123,16 +123,16 @@ async def capture_scene_clip(
                         const scene = {scene_json};
                         // Use loadFromStation to hydrate scene + playlist
                         store.getState().loadFromStation({{ scene: scene, playlist: scene.playlist || [] }});
-                        console.log("✅ Scene injected successfully via Puppeteer");
+                        console.log("[OK] Scene injected successfully via Puppeteer");
                         // Force setActiveScene just in case
                         store.getState().setActiveScene(scene.id);
                         return true;
                     }} else {{
-                        console.error("❌ window.lofiStudioStore not found");
+                        console.error("[FAIL] window.lofiStudioStore not found");
                         return false;
                     }}
                 }} catch (e) {{
-                    console.error("❌ Scene injection failed:", e);
+                    console.error("[FAIL] Scene injection failed:", e);
                     return false;
                 }}
             }})();
@@ -143,7 +143,7 @@ async def capture_scene_clip(
         
         # Wait for canvas to be ready
         await page.waitForSelector('canvas', {'timeout': 60000})
-        print("✅ Canvas found")
+        print("[OK] Canvas found")
         
         # Create temporary file for WebM
         temp_webm = tempfile.NamedTemporaryFile(suffix='.webm', delete=False).name
@@ -201,14 +201,14 @@ async def capture_scene_clip(
         with open(temp_webm, 'wb') as f:
             f.write(webm_data)
         
-        print(f"✅ Recording saved to: {temp_webm}")
+        print(f"[OK] Recording saved to: {temp_webm}")
         
         # Close browser
         await browser.close()
         browser = None
         
         # Convert WebM to MP4 using FFmpeg
-        print(f"🔄 Converting WebM to MP4...")
+        print(f"[REFRESH] Converting WebM to MP4...")
         
         ffmpeg_cmd = [
             'ffmpeg', '-y',
@@ -229,12 +229,12 @@ async def capture_scene_clip(
         if result.returncode != 0:
             raise Exception(f"FFmpeg conversion failed: {result.stderr}")
         
-        print(f"✅ MP4 saved to: {output_path}")
+        print(f"[OK] MP4 saved to: {output_path}")
         
         return output_path
         
     except Exception as e:
-        print(f"❌ Scene capture failed: {e}")
+        print(f"[FAIL] Scene capture failed: {e}")
         raise
         
     finally:

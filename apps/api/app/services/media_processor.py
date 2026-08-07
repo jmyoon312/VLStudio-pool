@@ -13,7 +13,7 @@ class MediaProcessor:
         else:
              self.ffmpeg_exe = self.ffmpeg_path if os.path.exists(self.ffmpeg_path) else "ffmpeg"
              
-        self.output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "downloads", "_processed")
+        self.output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "07_Downloads", "_processed")
         os.makedirs(self.output_dir, exist_ok=True)
 
     def process(self, input_path: str, tasks: list):

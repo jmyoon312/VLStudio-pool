@@ -91,7 +91,7 @@ class CaptainScheduler:
         # 스케줄러는 시작하지만 작업이 없음
         self.scheduler.start()
         self.is_running = True
-        logger.info("✅ Captain scheduler started (manual mode)")
+        logger.info("[OK] Captain scheduler started (manual mode)")
     
     def stop_scheduler(self):
         """스케줄러 중지"""

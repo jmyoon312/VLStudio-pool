@@ -130,8 +130,8 @@ class VideoGenClient:
                 
             return filepath
         except Exception as e:
-            logger.error(f"❌ Scene Image Gen Failed: {e}")
-            logger.warning("⚠️ Falling back to dummy image generation for testing.")
+            logger.error(f"[FAIL] Scene Image Gen Failed: {e}")
+            logger.warning("[WARN] Falling back to dummy image generation for testing.")
             
             # Create Dummy Image (Red Background with Text)
             try:
@@ -145,7 +145,7 @@ class VideoGenClient:
                 img.save(filepath)
                 return filepath
             except Exception as ex:
-                logger.error(f"❌ Dummy Image Gen Failed: {ex}")
+                logger.error(f"[FAIL] Dummy Image Gen Failed: {ex}")
                 raise e
 
     async def generate_video(self, prompt: str, model: str = "kling-v1", aspect_ratio: str = "9:16") -> str:
@@ -155,7 +155,7 @@ class VideoGenClient:
         # Determine engine (Support partial matches like 'kling-v1')
         model_lower = model.lower()
         if any(m in model_lower for m in ["higgsfield", "kling", "luma", "sora", "wan", "ltx"]):
-            logger.info(f"🚀 Dispatching to HiggsfieldService (Muapi): {model}")
+            logger.info(f"[FALLBACK] Dispatching to HiggsfieldService (Muapi): {model}")
             return await self.higgsfield.generate_video(prompt, model=model)
         
         # Fallback Task ID for polling logic
@@ -225,7 +225,7 @@ class VideoGenClient:
 
             return audio_path
         except Exception as e:
-            logger.error(f"❌ Scene TTS Failed: {e}")
+            logger.error(f"[FAIL] Scene TTS Failed: {e}")
             raise e
 
     def build_ffmpeg_filter(self, aspect_ratio: str, duration: float, motion_config: dict = None) -> str:
@@ -960,7 +960,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 chart_path = dedup.generate_growth_chart("SWARM DATA INSIGHT", [random.randint(10, 100) for _ in range(5)], [])
                 escaped_chart_path = chart_path.replace(os.sep, '/').replace(':', r'\:')
                 
-                logger.info(f"📈 Overlaying Dynamic Infographic: {chart_path}")
+                logger.info(f"[TREND] Overlaying Dynamic Infographic: {chart_path}")
                 # We use movie filter to overlay without changing input indices
                 overlay_filter = f",movie='{escaped_chart_path}'[chart];[v_base][chart]overlay=x=(W-w)/2:y=H-h-120:enable='between(t,2,7)'[v_base]"
                 # Adjust base label if we use overlay
@@ -1130,7 +1130,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         Analyzes a long-form video, finds viral segments, and converts them to vertical shorts.
         Returns a list of generated video paths.
         """
-        logger.info(f"🎬 Starting Long-to-Shorts for: {video_path}")
+        logger.info(f"[VIDEO] Starting Long-to-Shorts for: {video_path}")
         
         if not os.path.exists(video_path):
             raise FileNotFoundError(f"Video not found: {video_path}")
@@ -1222,7 +1222,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         """
         Upscales video using Real-ESRGAN (if available).
         """
-        logger.info(f"✨ Upscaling video {video_path} (x{scale})...")
+        logger.info(f"[MAGIC] Upscaling video {video_path} (x{scale})...")
         
         if not os.path.exists(video_path):
             raise FileNotFoundError(f"Video not found: {video_path}")

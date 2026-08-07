@@ -120,7 +120,7 @@ class UploadOrchestrator:
                         item.description = seo_data.get("description", item.description)
                         item.hashtags = seo_data.get("hashtags", item.hashtags)
                         db.commit()
-                        logger.info(f"✨ SEO Optimized for item {queue_item_id}")
+                        logger.info(f"[MAGIC] SEO Optimized for item {queue_item_id}")
                 elif not item.title or "Sovereign" in item.title:
                     from app.config.feature_flags import get_llm_client
                     llm = get_llm_client()

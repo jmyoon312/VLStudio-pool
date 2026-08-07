@@ -85,7 +85,7 @@ class VideoAnalyzer:
         """
         Combines local forensics with Gemini 1.5 Multimodal analysis.
         """
-        logger.info(f"🔍 [Deep Analysis] Starting for {video_path}")
+        logger.info(f"[SEARCH] [Deep Analysis] Starting for {video_path}")
         
         # 1. Local Stage
         local_results = self.analyze_local_forensics(video_path)

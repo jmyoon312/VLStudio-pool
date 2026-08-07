@@ -35,7 +35,7 @@ if celery_app is not None:
         Args:
             queue_item_id: WorkQueueItem ID (문자열)
         """
-        logger.info(f"🚀 Processing Work Queue Item: {queue_item_id}")
+        logger.info(f"[FALLBACK] Processing Work Queue Item: {queue_item_id}")
         return _do_execute_upload_task(queue_item_id)
 
     @celery_app.task(bind=True, name='app.tasks.execute_upload_task')

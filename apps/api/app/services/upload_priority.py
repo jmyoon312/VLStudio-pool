@@ -105,7 +105,7 @@ class UploadPriorityManager:
         
         # Check for consecutive failures - if too many, use browser
         if self._consecutive_failures.get(channel_id, 0) >= self.max_consecutive_failures:
-            logger.warning(f"⚠️ Channel {channel_id} has {self._consecutive_failures[channel_id]} consecutive failures, switching to browser")
+            logger.warning(f"[WARN] Channel {channel_id} has {self._consecutive_failures[channel_id]} consecutive failures, switching to browser")
             return UploadMethod.BROWSER_AUTO
         
         # Check video type
@@ -154,12 +154,12 @@ class UploadPriorityManager:
             # Check for non-retryable errors
             non_retryable = ["video not found", "invalid video"]
             if any(e in error_str for e in non_retryable):
-                logger.error(f"❌ API error is not retryable: {error}")
+                logger.error(f"[FAIL] API error is not retryable: {error}")
                 return None
         
         elif current_method == UploadMethod.BROWSER_AUTO:
             # Browser failed - escalate to manual
-            logger.error(f"❌ Browser automation failed: {error}. Escalating to manual.")
+            logger.error(f"[FAIL] Browser automation failed: {error}. Escalating to manual.")
             return UploadMethod.MANUAL
         
         return None
@@ -194,7 +194,7 @@ class UploadPriorityManager:
         else:
             self._consecutive_failures[channel_id] = self._consecutive_failures.get(channel_id, 0) + 1
         
-        logger.info(f"📊 Upload attempt recorded: channel={channel_id}, method={method.value}, success={success}")
+        logger.info(f"[CHART] Upload attempt recorded: channel={channel_id}, method={method.value}, success={success}")
     
     def should_escalate_to_manual(self, channel_id: int) -> bool:
         """
@@ -250,7 +250,7 @@ class UploadPriorityManager:
     def reset_failures(self, channel_id: int):
         """Reset failure count after successful upload"""
         self._consecutive_failures[channel_id] = 0
-        logger.info(f"🔄 Failure count reset for channel {channel_id}")
+        logger.info(f"[REFRESH] Failure count reset for channel {channel_id}")
     
     def get_recommended_method_for_error(self, error: Exception) -> UploadMethod:
         """

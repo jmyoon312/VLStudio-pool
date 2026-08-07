@@ -22,7 +22,7 @@ class ADBService:
             self.adb_path = legacy_path
         else:
             from app.config import settings as settings_conf
-            self.adb_path = os.path.join(settings_conf.MEDIA_ROOT, "bin", "adb", "adb.exe").replace("\\", "/")
+            self.adb_path = os.path.join(settings_conf.MEDIA_ROOT, "09_System", "bin", "adb", "adb.exe").replace("\\", "/")
         self.CMD_POWERSHELL = "powershell.exe"
         
         # 장치별 캐시
@@ -54,14 +54,14 @@ class ADBService:
                 self.default_serial = db_settings.adb_default_serial
             if db_settings.adb_connection_method:
                 self.config_connection_method = db_settings.adb_connection_method
-            logger.info(f"🔄 ADB Service config refreshed from DB (Serial: {self.default_serial})")
+            logger.info(f"[REFRESH] ADB Service config refreshed from DB (Serial: {self.default_serial})")
 
     def list_devices(self) -> List[str]:
         """연결된 모든 ADB 장치 시리얼 목록 반환"""
         try:
             # 윈도우에서 ADB 실행파일 존재 확인
             if not os.path.exists(self.adb_path):
-                logger.error(f"❌ ADB executable not found at: {self.adb_path}")
+                logger.error(f"[FAIL] ADB executable not found at: {self.adb_path}")
                 return []
 
             # [NEW] Try to connect via wireless if configured
@@ -83,7 +83,7 @@ class ADBService:
 
             return devices
         except Exception as e:
-            logger.error(f"❌ 장치 목록 조회 실패: {e}")
+            logger.error(f"[FAIL] 장치 목록 조회 실패: {e}")
             return []
 
     def ensure_tethering_active(self, serial: Optional[str] = None):
@@ -109,13 +109,13 @@ class ADBService:
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
             if result.stderr and "error" in result.stderr.lower():
-                logger.warning(f"⚠️ ADB Error ({target_serial}): {result.stderr.strip()}")
+                logger.warning(f"[WARN] ADB Error ({target_serial}): {result.stderr.strip()}")
             return result.stdout.strip()
         except subprocess.TimeoutExpired:
-            logger.error(f"❌ ADB 명령 타임아웃: {' '.join(full_cmd)}")
+            logger.error(f"[FAIL] ADB 명령 타임아웃: {' '.join(full_cmd)}")
             return ""
         except Exception as e:
-            logger.error(f"❌ ADB 명령 실패: {' '.join(full_cmd)} - {e}")
+            logger.error(f"[FAIL] ADB 명령 실패: {' '.join(full_cmd)} - {e}")
             return ""
 
     def get_current_ip(self, serial: Optional[str] = None, force: bool = False) -> str:
@@ -248,7 +248,7 @@ class ADBService:
     def rotate_ip(self, serial: Optional[str] = None, method: str = 'hard') -> bool:
         """IP 로테이션 실행 (비행기 모드 토글) — [Bug 10] USB 테더링 재활성화 보장"""
         target = serial or "default"
-        logger.info(f"🔄 [{target}] IP 로테이션 시작 (방식: {method})")
+        logger.info(f"[REFRESH] [{target}] IP 로테이션 시작 (방식: {method})")
 
         try:
             self._cached_public_ips[target] = "갱신 중..."
@@ -294,10 +294,10 @@ class ADBService:
             if not new_ip or not re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', new_ip):
                 self._cached_public_ips.pop(target, None)
                 
-            logger.info(f"✅ [{target}] IP 갱신 완료: {new_ip}")
+            logger.info(f"[OK] [{target}] IP 갱신 완료: {new_ip}")
             return True
         except Exception as e:
-            logger.error(f"❌ [{target}] 로테이션 실패: {e}")
+            logger.error(f"[FAIL] [{target}] 로테이션 실패: {e}")
             return False
 
     def enable_wifi(self, serial: Optional[str] = None):

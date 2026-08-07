@@ -89,12 +89,12 @@ class HermesMissionRunner:
                 channel_id=self.config.get("channel_id")
             )
             
-            logger.info(f"🔍 [Phase 7] Quality Score: {result['score']} - Status: {result['status']}")
+            logger.info(f"[SEARCH] [Phase 7] Quality Score: {result['score']} - Status: {result['status']}")
             
             return result
             
         except Exception as e:
-            logger.error(f"❌ Quality verification failed: {e}")
+            logger.error(f"[FAIL] Quality verification failed: {e}")
             return {"score": 50, "status": "REVIEW", "passed": False}  # Default to review on error
     
     async def _rollback_to_phase_3(self, reason: str):
@@ -103,12 +103,12 @@ class HermesMissionRunner:
         This is called when quality score is below threshold
         """
         await self._broadcast(
-            f"⚠️ 품질 검토 결과 {self.quality_score}점으로 기준치(70점)에 미달하였습니다. "
+            f"[WARN] 품질 검토 결과 {self.quality_score}점으로 기준치(70점)에 미달하였습니다. "
             f"더 나은 대본을 위해 {self.retry_count}회차 재집필을 시작합니다! ✍️",
             type="task_progress"
         )
         
-        logger.warning(f"🔄 [ROLLBACK] Initiating rollback to Phase 3. Reason: {reason}")
+        logger.warning(f"[REFRESH] [ROLLBACK] Initiating rollback to Phase 3. Reason: {reason}")
         
         # Log the rollback for tracking
         rollback_info = {
@@ -141,7 +141,7 @@ class HermesMissionRunner:
                 details=info
             )
         except Exception as e:
-            logger.warning(f"⚠️ Notification failed: {e}")
+            logger.warning(f"[WARN] Notification failed: {e}")
 
     async def _check_quality_and_branch(self, script: str, dna: dict) -> str:
         """
@@ -154,12 +154,12 @@ class HermesMissionRunner:
         
         if quality_result["passed"]:
             # Score >= 70, continue to publishing
-            logger.info(f"✅ Quality check passed ({self.quality_score}), continuing to Phase 8")
+            logger.info(f"[OK] Quality check passed ({self.quality_score}), continuing to Phase 8")
             return "continue"
             
         elif quality_result.get("needs_human_review", False):
             # Score 50-70, need human review
-            logger.warning(f"⚠️ Quality score {self.quality_score} requires human review")
+            logger.warning(f"[WARN] Quality score {self.quality_score} requires human review")
             await self._notify_human_reviewer({
                 "session_id": self.session_id,
                 "quality_score": self.quality_score,
@@ -172,7 +172,7 @@ class HermesMissionRunner:
             self.retry_count += 1
             
             if self.retry_count >= self.max_retries:
-                logger.error(f"❌ Max retries ({self.max_retries}) exceeded. Stopping mission.")
+                logger.error(f"[FAIL] Max retries ({self.max_retries}) exceeded. Stopping mission.")
                 return "stop"
             
             await self._rollback_to_phase_3(
@@ -192,13 +192,13 @@ class HermesMissionRunner:
                     "action": action
                 })
         except Exception as e:
-            logger.warning(f"⚠️ Broadcast failed: {e}")
+            logger.warning(f"[WARN] Broadcast failed: {e}")
 
     async def run(self):
         """
         [SOVEREIGN] Upgraded 10-Phase Cycle with Intelligent Failover.
         """
-        logger.info(f"⚡ [MissionRunner] Initiating 10-Phase Sovereign Cycle for: {self.topic}")
+        logger.info(f"[TURBO] [MissionRunner] Initiating 10-Phase Sovereign Cycle for: {self.topic}")
         
         # [FAILOVER CONFIG] - STRICT LOCKDOWN: Single model only, no fallbacks as per user command
         models_to_try = [self.agent_model]
@@ -225,7 +225,7 @@ class HermesMissionRunner:
             
             # [BROADCAST] Notify user of current status
             if self.retry_count > 0:
-                await self._broadcast(f"🔄 [시도 {self.retry_count + 1}] {current_agent_model} 모델로 다시 시도합니다...")
+                await self._broadcast(f"[REFRESH] [시도 {self.retry_count + 1}] {current_agent_model} 모델로 다시 시도합니다...")
 
             server_params = StdioServerParameters(
                 command="/usr/bin/node",
@@ -255,7 +255,7 @@ class HermesMissionRunner:
 
                         # Phase 1: Discovery (Research)
                         logger.info("🔎 Phase 1: Market Gap Analysis...")
-                        await self._broadcast(f"🔍 [Phase 1] {self.topic} 관련 시장 분석을 시작합니다...")
+                        await self._broadcast(f"[SEARCH] [Phase 1] {self.topic} 관련 시장 분석을 시작합니다...")
                         research = await session.call_tool("scout_market_gap", {"niche": niche}, read_timeout_seconds=timedelta(seconds=300))
                         
                         # Phase 2: DNA Injection & Direction
@@ -268,7 +268,7 @@ class HermesMissionRunner:
                                     dna_resp = await client.get(f"http://api:8000/api/channels/{channel_id}/dna")
                                     dna = dna_resp.json() if dna_resp.status_code == 200 else {}
                             except Exception as e:
-                                logger.warning(f"⚠️ DNA fetch failed for channel {channel_id}: {e}")
+                                logger.warning(f"[WARN] DNA fetch failed for channel {channel_id}: {e}")
                         
                         if not dna:
                             dna = {"brand_voice": "professional, calm, and helpful", "target_audience_avatar": "Senior/Informational", "visual": {"color_grading": "natural"}}
@@ -289,7 +289,7 @@ class HermesMissionRunner:
                         # Detect Failover Need
                         result_text = str(script_gen.content)
                         if any(x in result_text.lower() for x in ["rate limit", "429", "quota", "limit exceeded"]) or "Tool Execution Error" in result_text:
-                             logger.warning(f"⚠️ [Failover] Issue detected on {current_agent_model}. Switching to stronger intelligence...")
+                             logger.warning(f"[WARN] [Failover] Issue detected on {current_agent_model}. Switching to stronger intelligence...")
                              current_model_idx += 1
                              self.retry_count += 1
                              continue # Restart with new model
@@ -303,12 +303,12 @@ class HermesMissionRunner:
                         current_script = str(mutated_script.content)
                         
                         if "Tool Execution Error" in current_script or "exited with code 1" in current_script:
-                            logger.warning(f"⚠️ [Persona Error] Mutation failed with {current_agent_model}. Escalating...")
+                            logger.warning(f"[WARN] [Persona Error] Mutation failed with {current_agent_model}. Escalating...")
                             current_model_idx += 1
                             self.retry_count += 1
                             continue
 
-                        await self._broadcast("✅ 대본 초안 작성이 완료되었습니다. 페르소나 최적화 중...")
+                        await self._broadcast("[OK] 대본 초안 작성이 완료되었습니다. 페르소나 최적화 중...")
                         
                         validation = await session.call_tool("verify_script_dna", {
                             "channel_id": channel_id, "script_content": current_script
@@ -318,12 +318,12 @@ class HermesMissionRunner:
                         quality_branch = await self._check_quality_and_branch(current_script, dna)
                         
                         if quality_branch == "continue":
-                            await self._broadcast("🎬 [Phase 7] 대본이 품질 기준을 통과했습니다! 영상 제작을 시작합니다.")
+                            await self._broadcast("[VIDEO] [Phase 7] 대본이 품질 기준을 통과했습니다! 영상 제작을 시작합니다.")
                             render_result = await session.call_tool("render_video_shorts", {
                                 "script_content": current_script, "niche": niche,
                                 "voice_actor": dna.get("voice", {}).get("actor", "ko-KR-Standard-A")
                             }, read_timeout_seconds=timedelta(seconds=300))
-                            await self._broadcast("✅ 영상 렌더링이 성공적으로 시작되었습니다.")
+                            await self._broadcast("[OK] 영상 렌더링이 성공적으로 시작되었습니다.")
                             
                             # Final Reflection
                             learnings = await self.brain.reflect_on_mission(self.session_id, niche, self.log_collector.logs)
@@ -345,7 +345,7 @@ class HermesMissionRunner:
                 
                 self.retry_count += 1
                 await self._broadcast(
-                    f"⚠️ 시스템 오류 또는 모델 응답 지연이 발생했습니다. "
+                    f"[WARN] 시스템 오류 또는 모델 응답 지연이 발생했습니다. "
                     f"현재 {self.retry_count}회차 자동 복구를 시도 중입니다... (원인: {str(e)[:50]}...)",
                     type="task_progress"
                 )

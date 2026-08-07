@@ -29,7 +29,7 @@ class AIWorkflowGenerator:
             
             # 3. Initialize LLM Client
             self.llm = LLMClient(settings_schema)
-            logger.info("✅ AI Workflow Generator: LLM Client Initialized.")
+            logger.info("[OK] AI Workflow Generator: LLM Client Initialized.")
         except Exception as e:
             logger.error(f"Failed to initialize LLM Client for Workflow Generator: {e}")
             self.llm = None

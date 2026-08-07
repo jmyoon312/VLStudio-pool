@@ -35,31 +35,19 @@ logger.setLevel(logging.DEBUG)
 
 from app.config import settings as app_settings
 
-def sanitize_folder_name(name):
-    return re.sub(r'[\\/*?:"<>|]', "", name).replace(" ", "_")
+from ..utils.path_utils import get_channel_download_path as utils_get_channel_download_path, sanitize_folder_name
 
 def get_channel_download_path(settings, channel):
-    """Constructs the correct path: Root / downloads / Category / Channel"""
-    # [FIX] Force absolute path and avoid relative leaks
-    raw_root = settings.root_download_path or app_settings.MEDIA_ROOT
-    
-    # Safety: Ensure the path is absolute for the current OS
-    is_absolute = os.path.isabs(raw_root)
-    if not is_absolute:
-        logger.warning(f"⚠️ Suspicious relative path: '{raw_root}'. Forcing absolute root: '{app_settings.MEDIA_ROOT}'.")
-        raw_root = app_settings.MEDIA_ROOT
-        
-    from ..utils.path_utils import get_standardized_download_path
-    downloads_path = get_standardized_download_path(settings)
-    
+    """Constructs the correct path using unified utils"""
+    category_name = None
     if channel.category:
-        cat_folder = channel.category.folder_name or sanitize_folder_name(channel.category.name)
-        full_path = os.path.join(downloads_path, cat_folder, channel.folder_name)
-    else:
-        full_path = os.path.join(downloads_path, "_temp_storage", channel.folder_name)
+        category_name = channel.category.folder_name or channel.category.name
         
-    # [FIX] Ensure forward slashes and normalize
-    resolved_path = full_path.replace("\\", "/").replace("//", "/")
+    resolved_path = utils_get_channel_download_path(
+        settings, 
+        category_name=category_name, 
+        channel_name=channel.folder_name or channel.name
+    )
     logger.info(f"📍 Resolved Download Path: {resolved_path}")
     return resolved_path
 
@@ -103,12 +91,12 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                 try:
                     # 1. Ensure platform_id exists
                     if not channel.platform_id:
-                        logger.info(f"🔍 [ID FETCH] Fetching platform_id for {channel.name}...")
+                        logger.info(f"[SEARCH] [ID FETCH] Fetching platform_id for {channel.name}...")
                         c_info = downloader.get_channel_info(channel.url)
                         if c_info and c_info.get('id'):
                             channel.platform_id = c_info['id']
                             db.commit()
-                            logger.info(f"✅ Saved platform_id: {channel.platform_id}")
+                            logger.info(f"[OK] Saved platform_id: {channel.platform_id}")
                     
                     if channel.platform_id:
                         rss_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel.platform_id}"
@@ -157,10 +145,10 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                                     logger.warning(f"Error parsing RSS entry: {inner_e}")
                             
                             if entries:
-                                logger.info(f"✅ [RSS SUCCESS] Found {len(entries)} videos via RSS.")
+                                logger.info(f"[OK] [RSS SUCCESS] Found {len(entries)} videos via RSS.")
                                 is_rss_success = True
                 except Exception as rss_e:
-                    logger.warning(f"⚠️ [RSS FAILED] {rss_e}. Falling back to standard scan.")
+                    logger.warning(f"[WARN] [RSS FAILED] {rss_e}. Falling back to standard scan.")
 
             if not is_rss_success:
                 # YouTube / Others via yt-dlp
@@ -286,13 +274,13 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                             )
                             db.add(history)
                             db.commit()
-                            logger.info(f"📈 [UPDATE] {log_prefix} [{title}] | Views: {new_views} | URL: {url}")
+                            logger.info(f"[TREND] [UPDATE] {log_prefix} [{title}] | Views: {new_views} | URL: {url}")
                         else:
                             logger.debug(f"x [KNOWN] {log_prefix} (No View Data)")
                         
                         continue # Skip re-download, only metadata updated
                     else:
-                        logger.info(f"🔄 [RE-PROCESS] {log_prefix} Mode change detected ({existing.is_script_only} -> {current_script_only}) for [{title}]")
+                        logger.info(f"[REFRESH] [RE-PROCESS] {log_prefix} Mode change detected ({existing.is_script_only} -> {current_script_only}) for [{title}]")
                         is_existing_failed = True
             
             # B. Date Filter (YouTube only)
@@ -317,13 +305,13 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                                     date_info = item['date']
                                     logger.debug(f"✓ [Got Date] {log_prefix} {date_info}")
                             except FutureTimeoutError:
-                                logger.warning(f"⏱️ [TIMEOUT] {log_prefix} Metadata fetch timeout (30s)")
+                                logger.warning(f"[TIME] [TIMEOUT] {log_prefix} Metadata fetch timeout (30s)")
                             except Exception as e:
                                 err_msg = str(e)
                                 if '429' in err_msg or 'rate limit' in err_msg.lower():
-                                    logger.error(f"🚨 [RATE LIMIT] {log_prefix} YouTube blocked us. Stopping scan immediately.")
+                                    logger.error(f"[ALERT] [RATE LIMIT] {log_prefix} YouTube blocked us. Stopping scan immediately.")
                                     return {"status": "failed", "error": "YouTube Rate Limit (429)"}
-                                logger.warning(f"❌ [ERROR] {log_prefix} Metadata fetch failed: {e}")
+                                logger.warning(f"[FAIL] [ERROR] {log_prefix} Metadata fetch failed: {e}")
                     except Exception as e:
                         err_msg = str(e)
                         if '429' in err_msg or 'rate limit' in err_msg.lower():
@@ -345,7 +333,7 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                                 logger.info(f"🛑 [STOP] {log_prefix} Found 3 consecutive old videos > {limit_days} days. Stopping scan.")
                                 break
                             else:
-                                logger.debug(f"⏳ [AGED] {log_prefix} Skipping old video [{title}] ({consecutive_old_misses}/3)")
+                                logger.debug(f"[WAIT] [AGED] {log_prefix} Skipping old video [{title}] ({consecutive_old_misses}/3)")
                                 continue
                         else:
                             consecutive_old_misses = 0
@@ -356,13 +344,13 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                     logger.warning(f"⏭️ [SKIP] {log_prefix} (No Date): [{title}]")
                     continue
 
-            logger.info(f"✨ [NEW FOUND] {log_prefix} ⬇️ Downloading: [{title}] | {url}")
+            logger.info(f"[MAGIC] [NEW FOUND] {log_prefix} [DOWN] Downloading: [{title}] | {url}")
             
             # [ANTI-BLOCKING] Add robust jitter between individual video downloads
             import time
             # [FIX] Reduced jitter for manual scans or general responsiveness (10-30s was too long)
             delay = random.uniform(2.0, 5.0) 
-            logger.debug(f"⏳ Intra-Channel Jitter: Waiting {delay:.1f}s before download...")
+            logger.debug(f"[WAIT] Intra-Channel Jitter: Waiting {delay:.1f}s before download...")
             time.sleep(delay)
             
             try:
@@ -398,24 +386,24 @@ def scan_specific_channel(db: Session, channel: models.Channel, headless: bool =
                     from app.routers.videos import save_video_to_db 
                     save_video_to_db(db, result, result.get('metadata'), channel.id, channel.category_id, is_script_only=actual_script_only)
                     new_videos_found += 1
-                    logger.info(f"✅ [SAVED] {log_prefix} [{title}] (script_only={actual_script_only})")
+                    logger.info(f"[OK] [SAVED] {log_prefix} [{title}] (script_only={actual_script_only})")
                 else:
-                    logger.error(f"❌ [FAILED] {log_prefix} {result.get('error')}")
+                    logger.error(f"[FAIL] [FAILED] {log_prefix} {result.get('error')}")
                     
             except Exception as e:
                 err_msg = str(e)
                 if '429' in err_msg or 'rate limit' in err_msg.lower():
-                    logger.error(f"🚨 [RATE LIMIT] {log_prefix} YouTube blocked us during download. Stopping scan.")
+                    logger.error(f"[ALERT] [RATE LIMIT] {log_prefix} YouTube blocked us during download. Stopping scan.")
                     return {"status": "failed", "error": "YouTube Rate Limit (429)"}
-                logger.error(f"❌ [ERROR] {log_prefix} {e}")
+                logger.error(f"[FAIL] [ERROR] {log_prefix} {e}")
 
-        logger.info(f"✅ Scan Complete. Found {items_processed}, Downloaded {new_videos_found}.")
+        logger.info(f"[OK] Scan Complete. Found {items_processed}, Downloaded {new_videos_found}.")
         return {"status": "success", "found": items_processed, "downloaded": new_videos_found}
 
     except Exception as e:
         err_msg = str(e)
         if '429' in err_msg or 'rate limit' in err_msg.lower():
-            logger.error(f"🚨 [CRITICAL RATE LIMIT] {log_prefix} Global YouTube block detected. Stopping.")
+            logger.error(f"[ALERT] [CRITICAL RATE LIMIT] {log_prefix} Global YouTube block detected. Stopping.")
             return {"status": "failed", "error": "YouTube Rate Limit (429) - Please wait an hour."}
         logger.error(f"Scan failed: {e}")
         return {"status": "failed", "error": str(e)}
@@ -458,7 +446,7 @@ async def run_channel_scan():
             # [ANTI-BLOCKING] Random jitter/sleep to prevent burst requests and rate-limiting
             # Sleep 30-60 seconds before processing each channel. 
             delay = random.uniform(30.0, 60.0)
-            # logger.debug(f"⏳ Jitter: Waiting {delay:.1f}s for {cid}")
+            # logger.debug(f"[WAIT] Jitter: Waiting {delay:.1f}s for {cid}")
             await asyncio.sleep(delay)
 
             # Create dedicated DB session for this thread
@@ -468,13 +456,13 @@ async def run_channel_scan():
                 if not channel: 
                     return
                 
-                logger.info(f"🚀 Starting scan for {channel.name} (Thread-Safe)...")
+                logger.info(f"[FALLBACK] Starting scan for {channel.name} (Thread-Safe)...")
                 
                 # Run blocking scan function in a separate thread to not block the event loop
                 await asyncio.to_thread(scan_specific_channel, db_thread, channel, headless=True)
                 
             except Exception as e:
-                logger.error(f"❌ Error scanning channel {cid}: {e}")
+                logger.error(f"[FAIL] Error scanning channel {cid}: {e}")
             finally:
                 db_thread.close()
 
@@ -487,6 +475,6 @@ async def run_channel_scan():
     # Run the async loop
     try:
         await orchestrator()
-        logger.info("✅ Scheduled Channel Scan Completed.")
+        logger.info("[OK] Scheduled Channel Scan Completed.")
     except Exception as e:
         logger.error(f"Critical Scheduler Error: {e}")

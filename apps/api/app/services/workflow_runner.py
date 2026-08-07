@@ -106,7 +106,7 @@ class WorkflowRunner:
                     missing_fields.append(field)
             
             if missing_fields:
-                logger.warning(f"⚠️ {node_type} missing fields: {missing_fields}. Attempting to proceed...")
+                logger.warning(f"[WARN] {node_type} missing fields: {missing_fields}. Attempting to proceed...")
         
         # 파일 경로 검증
         for field, valid_extensions in file_path_fields.items():
@@ -121,16 +121,16 @@ class WorkflowRunner:
                 if isinstance(file_path, str):
                     # 파일 존재 확인
                     if not os.path.exists(file_path):
-                        logger.error(f"❌ File not found: {file_path}")
+                        logger.error(f"[FAIL] File not found: {file_path}")
                         raise FileNotFoundError(f"{field}: File does not exist - {file_path}")
                     
                     # 파일 확장자 검증
                     ext = os.path.splitext(file_path)[1].lower()
                     if ext not in valid_extensions:
-                        logger.error(f"❌ Invalid file type: {ext} (expected: {valid_extensions})")
+                        logger.error(f"[FAIL] Invalid file type: {ext} (expected: {valid_extensions})")
                         raise ValueError(f"{field}: Invalid file type {ext}. Expected one of {valid_extensions}")
                     
-                    logger.debug(f"✅ File validated: {file_path}")
+                    logger.debug(f"[OK] File validated: {file_path}")
     
     def _merge_inputs(self, *packets: Any) -> Dict[str, Any]:
         """
@@ -202,14 +202,14 @@ class WorkflowRunner:
                     reachable.add(neighbor)
                     queue.append(neighbor)
                     
-        logger.info(f"🔍 Graph Analysis: {len(nodes)} total nodes. {len(reachable)} reachable from {len(entry_points)} roots.")
+        logger.info(f"[SEARCH] Graph Analysis: {len(nodes)} total nodes. {len(reachable)} reachable from {len(entry_points)} roots.")
 
         # [NEW] Target Specific Branch Pruning (Reverse Reachability)
         # If target_node_id is specified, we ONLY execute nodes that are ancestors of (or are) the target node.
         # This prevents executing parallel, disconnected, or downstream branches.
         ancestors_of_target = set()
         if target_node_id:
-            logger.info(f"🎯 Target Node Mode: Executing chain for {target_node_id} only.")
+            logger.info(f"[TARGET] Target Node Mode: Executing chain for {target_node_id} only.")
             
             # Build Reverse Adjacency List (Target -> Source)
             rev_adj = defaultdict(list)
@@ -227,7 +227,7 @@ class WorkflowRunner:
                         ancestors_of_target.add(parent)
                         q.append(parent)
                         
-            logger.info(f"🎯 Ancestors Found: {len(ancestors_of_target)} nodes required for target.")
+            logger.info(f"[TARGET] Ancestors Found: {len(ancestors_of_target)} nodes required for target.")
             
             # Intersect Reachable (Forward from Root) with Ancestors (Backward from Target)
             # The node must be reachable from start AND needed for the end.
@@ -243,7 +243,7 @@ class WorkflowRunner:
         # Filter topological order to only include reachable nodes
         final_execution_list = [nid for nid in execution_order if nid in final_runnable_set]
 
-        logger.info(f"🚀 Starting Workflow Execution: {len(final_execution_list)} steps (Filtered from {len(nodes)})")
+        logger.info(f"[FALLBACK] Starting Workflow Execution: {len(final_execution_list)} steps (Filtered from {len(nodes)})")
 
         for node_id in final_execution_list:
             node = node_map.get(node_id)
@@ -262,7 +262,7 @@ class WorkflowRunner:
                 logger.info(f"▶️ Executing Node: {node['data'].get('label', node['type'])} ({node_id})")
                 output = await self._execute_node(node, inputs, db, override_assets)
                 node_outputs[node_id] = output
-                logger.info(f"✅ Node Finished: {node_id}")
+                logger.info(f"[OK] Node Finished: {node_id}")
                 
                 # --- PHASE 4: Vault Archiving ---
                 try:
@@ -313,12 +313,12 @@ class WorkflowRunner:
                             channel = db.query(BrandChannel).filter(BrandChannel.id == context['channel_id']).first()
                             if channel and channel.is_autonomous_enabled:
                                 is_autonomous = True
-                                logger.info(f"🚀 [Swarm] Channel #{context['channel_id']} is in AUTONOMOUS mode. Bypassing manual approval.")
+                                logger.info(f"[FALLBACK] [Swarm] Channel #{context['channel_id']} is in AUTONOMOUS mode. Bypassing manual approval.")
                         except Exception as e:
                             logger.error(f"Failed to check channel autonomous status: {e}")
 
                     if not is_autonomous:
-                        logger.info(f"⚠️ [HITL] Node {node_id} requires manual approval. Pausing workflow.")
+                        logger.info(f"[WARN] [HITL] Node {node_id} requires manual approval. Pausing workflow.")
                     
                     # 텔레그램 알림 발송 (임시 미션 ID와 노드 라벨 사용)
                     try:
@@ -337,7 +337,7 @@ class WorkflowRunner:
                     }
                     
             except Exception as e:
-                logger.error(f"❌ Node Execution Failed ({node_id}): {e}")
+                logger.error(f"[FAIL] Node Execution Failed ({node_id}): {e}")
                 import traceback
                 traceback.print_exc()
                 node_outputs[node_id] = {"error": str(e), "status": "failed"}
@@ -393,7 +393,7 @@ class WorkflowRunner:
         )
         db.add(new_artifact)
         db.commit()
-        logger.info(f"💾 [Artifact] Saved v{new_artifact.version} for stage {stage_label} ({node_id})")
+        logger.info(f"[SAVE] [Artifact] Saved v{new_artifact.version} for stage {stage_label} ({node_id})")
 
     async def rollback_to_stage(self, db: Session, session_id: str, artifact_id: int):
         """
@@ -417,7 +417,7 @@ class WorkflowRunner:
         # 3. Mark the target node as the next resumption point
         # This might involve updating persistent workflow state in the DB if stored
         
-        logger.info(f"🔄 [Rollback] Session {session_id} rolled back to node {artifact.node_id} (v{artifact.version})")
+        logger.info(f"[REFRESH] [Rollback] Session {session_id} rolled back to node {artifact.node_id} (v{artifact.version})")
         return True
 
     def _topological_sort(self, nodes: List[Dict], edges: List[Dict]) -> List[str]:
@@ -532,14 +532,14 @@ class WorkflowRunner:
         # 입력 검증
         self._validate_node_inputs(node_type, inputs)
         
-        logger.info(f"🔄 Executing {node_type} (ID: {node_id})")
+        logger.info(f"[REFRESH] Executing {node_type} (ID: {node_id})")
         
         # --- 1. Source / Trigger Nodes ---
         # --- INPUT NODES ---
         if node_type == 'manualTriggerNode':
             # Manual trigger: pass through inputs with optional trigger data
             trigger_data = data.get('trigger_data', {})
-            logger.info(f"🎯 Manual Trigger activated with data: {trigger_data}")
+            logger.info(f"[TARGET] Manual Trigger activated with data: {trigger_data}")
             
             # Merge trigger data with inputs
             result = {**inputs, **trigger_data}
@@ -1126,10 +1126,10 @@ class WorkflowRunner:
                                 audit_score = int(audit_result.get("score", 100))
                                 audit_critique = audit_result.get("critique", "")
                                 
-                                logger.info(f"🎯 [Auditor] Script Score: {audit_score}/100 | {audit_critique}")
+                                logger.info(f"[TARGET] [Auditor] Script Score: {audit_score}/100 | {audit_critique}")
                                 
                                 if audit_score >= 80 or not audit_result.get("rewrite_needed", False):
-                                    logger.info(f"✅ [Auditor] Script passed auditor ({audit_score}/100). Proceeding.")
+                                    logger.info(f"[OK] [Auditor] Script passed auditor ({audit_score}/100). Proceeding.")
                                     break
                                 
                                 # REWRITE: Pass critique back to writer
@@ -1157,7 +1157,7 @@ class WorkflowRunner:
                                 output_text = output_text.strip()
                                 
                             except Exception as audit_err:
-                                logger.warning(f"⚠️ [Auditor] Auditor failed, skipping: {audit_err}")
+                                logger.warning(f"[WARN] [Auditor] Auditor failed, skipping: {audit_err}")
                                 break
                     # ── END REFLEXIVE AUDITOR LOOP ──────────────────────────
                     
@@ -1355,7 +1355,7 @@ class WorkflowRunner:
                 script = inputs.get('script') or inputs.get('text')
                 # If script exists and has [SFX] tags, use premium mixer
                 if script and "[SFX:" in script:
-                    logger.info("✨ [Premium] SFX markers detected. Using High-Impact Mixer.")
+                    logger.info("[MAGIC] [Premium] SFX markers detected. Using High-Impact Mixer.")
                     mixed_path = await self._mix_premium_audio(
                         voice_path=voice_path, 
                         bgm_path=bgm_path, 
@@ -1574,7 +1574,7 @@ class WorkflowRunner:
                             category_id=metadata.get('category_id', '22')
                         )
                         results['youtube'] = {'status': 'success', 'video_id': result}
-                        logger.info(f"✅ YouTube upload success: {result}")
+                        logger.info(f"[OK] YouTube upload success: {result}")
                         
                     elif platform == 'tiktok':
                         from app.services.browser_session_manager import session_manager
@@ -1584,7 +1584,7 @@ class WorkflowRunner:
                             hashtags=metadata.get('tags', [])
                         )
                         results['tiktok'] = result
-                        logger.info(f"✅ TikTok upload initiated")
+                        logger.info(f"[OK] TikTok upload initiated")
                         
                     elif platform == 'instagram':
                         username = os.getenv('INSTAGRAM_USERNAME')
@@ -1604,10 +1604,10 @@ class WorkflowRunner:
                         )
                         uploader.logout()
                         results['instagram'] = result
-                        logger.info(f"✅ Instagram upload success")
+                        logger.info(f"[OK] Instagram upload success")
                         
                 except Exception as e:
-                    logger.error(f"❌ {platform} upload failed: {e}")
+                    logger.error(f"[FAIL] {platform} upload failed: {e}")
                     results[platform] = {'status': 'failed', 'error': str(e)}
             
             return StandardDataPacket(items=[
@@ -1767,7 +1767,7 @@ class WorkflowRunner:
             """
             Upload to Queue Node - 완성된 영상을 Work Queue에 추가
             """
-            logger.info("🚀 Upload to Queue Node: Starting...")
+            logger.info("[FALLBACK] Upload to Queue Node: Starting...")
             
             # 입력 데이터 추출
             input_items = []
@@ -1896,14 +1896,14 @@ class WorkflowRunner:
                             'platforms': target_platforms
                         })
                         
-                        logger.info(f"✅ Created Work Queue Item: {queue_item.id} - {final_title}")
+                        logger.info(f"[OK] Created Work Queue Item: {queue_item.id} - {final_title}")
                         
                         # 자동 승인 시 Celery 작업 트리거
                         if auto_approve:
                             try:
                                 from app.tasks import process_work_queue_item
                                 process_work_queue_item.delay(queue_item.id)
-                                logger.info(f"🚀 Triggered upload task for: {queue_item.id}")
+                                logger.info(f"[FALLBACK] Triggered upload task for: {queue_item.id}")
                             except Exception as e:
                                 logger.error(f"Failed to trigger Celery task: {e}")
                     
@@ -1916,7 +1916,7 @@ class WorkflowRunner:
             if db:
                 try:
                     db.commit()
-                    logger.info(f"✅ Committed {len(created_items)} Work Queue Items")
+                    logger.info(f"[OK] Committed {len(created_items)} Work Queue Items")
                 except Exception as e:
                     db.rollback()
                     logger.error(f"Failed to commit: {e}")
@@ -2022,7 +2022,7 @@ class WorkflowRunner:
                     DataItem(json={"status": "failed", "error": "URL is required"})
                 ])
             
-            logger.info(f"🌐 Web Scraping: {url}")
+            logger.info(f"[WEB] Web Scraping: {url}")
             logger.info(f"   Type: {scrape_type}, Selector: {css_selector}")
             
             # 실제 구현 시 Playwright/Selenium 사용
@@ -2057,7 +2057,7 @@ class WorkflowRunner:
                     DataItem(json={"status": "failed", "error": "Prompt is required"})
                 ])
             
-            logger.info(f"🎬 AI Video Generation: {ai_model}")
+            logger.info(f"[VIDEO] AI Video Generation: {ai_model}")
             logger.info(f"   Prompt: {prompt[:100]}...")
             logger.info(f"   Duration: {duration}s, Quality: {quality}")
             
@@ -2147,7 +2147,7 @@ class WorkflowRunner:
                     DataItem(json={"status": "failed", "error": "Both video and audio are required"})
                 ])
             
-            logger.info(f"🔄 Syncing Video & Audio")
+            logger.info(f"[REFRESH] Syncing Video & Audio")
             logger.info(f"   Method: {sync_method}")
             logger.info(f"   Trim silence: {trim_silence}, Align: {align_start}")
             
@@ -2230,7 +2230,7 @@ class WorkflowRunner:
                     DataItem(json={"status": "failed", "error": "Text is required"})
                 ])
             
-            logger.info(f"✨ Text Animation: {animation_type}")
+            logger.info(f"[MAGIC] Text Animation: {animation_type}")
             logger.info(f"   Text: {text[:50]}...")
             logger.info(f"   Font: {font_family} {font_size}px")
             
@@ -2374,9 +2374,9 @@ class WorkflowRunner:
             output_path
         ]
         
-        logger.info(f"📝 Burning subtitle: {ass_path} → {video_path}")
+        logger.info(f"[SCRIPT] Burning subtitle: {ass_path} → {video_path}")
         subprocess.run(cmd, check=True, capture_output=True)
-        logger.info(f"✅ Subtitle burned: {output_path}")
+        logger.info(f"[OK] Subtitle burned: {output_path}")
         
         return output_path
     
@@ -2400,7 +2400,7 @@ class WorkflowRunner:
         data = json.loads(result.stdout)
         duration = float(data['format']['duration'])
         
-        logger.info(f"⏱️ Video duration: {duration:.2f}s")
+        logger.info(f"[TIME] Video duration: {duration:.2f}s")
         return duration
     async def execute_workflow_for_mission(self, db: Session, mission_id: int) -> Dict[str, Any]:
         """

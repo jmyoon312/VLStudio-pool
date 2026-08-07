@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api, { ScriptStyle, ScriptGenerationRequest, ScriptGenerationResponse, ScriptRefinementRequest, TrendItem, TrendKeyword } from '@/lib/api';
+import api, { ScriptStyle, ScriptGenerationRequest, ScriptGenerationResponse, ScriptRefinementRequest, TrendItem, TrendKeyword, SafetyReviewRequest, SafetyReviewResponse } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, Sparkles, Wand2, ShieldAlert, Copy, Check, Trash2, Edit, Plus, Mic, Globe, Search, TrendingUp, ChevronDown, ChevronRight, FileText, ExternalLink, Zap, Activity, BarChart3 } from 'lucide-react';
+import { Bot, Sparkles, Wand2, ShieldAlert, Copy, Check, Trash2, Edit, Plus, Mic, Globe, Search, TrendingUp, ChevronDown, ChevronRight, FileText, ExternalLink, Zap, Activity, BarChart3, Undo, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatTextWithLineBreaks } from "@/lib/utils";
 import AIModelSelector from '@/components/shared/AIModelSelector';
@@ -46,6 +46,24 @@ const ScriptWriter = () => {
 
     const [lastResponse, setLastResponse] = useState<ScriptGenerationResponse | null>(null);
     const [showResearch, setShowResearch] = useState(false);
+
+    // [NEW] Undo History & Safety Review State
+    const [undoHistory, setUndoHistory] = useState<string[]>([]);
+    const [isSafetyReviewModalOpen, setIsSafetyReviewModalOpen] = useState(false);
+    const [safetyReviewData, setSafetyReviewData] = useState<SafetyReviewResponse | null>(null);
+    const [safetyEditText, setSafetyEditText] = useState("");
+
+    const pushHistory = (text: string) => {
+        setUndoHistory(prev => [...prev, text]);
+    };
+
+    const handleUndo = () => {
+        if (undoHistory.length > 0) {
+            const prevText = undoHistory[undoHistory.length - 1];
+            setResultText(prevText);
+            setUndoHistory(prev => prev.slice(0, -1));
+        }
+    };
 
     // Auto-save texts to localStorage for session durability
     useEffect(() => {
@@ -127,6 +145,7 @@ const ScriptWriter = () => {
             return response.data;
         },
         onSuccess: (data: any) => {
+            pushHistory(resultText);
             setResultText(data.script);
             if (data.warning) {
                 toast.warning("모델 자동 전환됨", {
@@ -140,6 +159,36 @@ const ScriptWriter = () => {
         onError: (error: any) => {
             console.error(" Refinement failed:", error);
             let errorMessage = "대본 수정 실패";
+            if (error.code === 'ECONNABORTED') {
+                errorMessage = "요청 시간이 초과되었습니다. (Timeout)";
+            } else if (error.response?.data?.detail) {
+                errorMessage = `오류: ${error.response.data.detail}`;
+            } else if (error.message) {
+                errorMessage = `오류: ${error.message}`;
+            }
+            toast.error(errorMessage, { duration: 5000 });
+        }
+    });
+
+    const safetyReviewMutation = useMutation({
+        mutationFn: async (data: any) => {
+            console.log(" Sending safety review request...", data);
+            const response = await api.post('/script/safety-review', data, { timeout: 180000 });
+            console.log(" Safety review received:", response.status, response.data);
+            return response.data;
+        },
+        onSuccess: (data: any) => {
+            if (data.changes && data.changes.length > 0) {
+                setSafetyReviewData(data);
+                setSafetyEditText(data.revised_script);
+                setIsSafetyReviewModalOpen(true);
+            } else {
+                toast.success("현재 텍스트에서 정책 위반 요소가 발견되지 않았습니다.");
+            }
+        },
+        onError: (error: any) => {
+            console.error(" Safety review failed:", error);
+            let errorMessage = "안전 검토 실패";
             if (error.code === 'ECONNABORTED') {
                 errorMessage = "요청 시간이 초과되었습니다. (Timeout)";
             } else if (error.response?.data?.detail) {
@@ -525,15 +574,26 @@ const ScriptWriter = () => {
                             onChange={(e) => setResultText(e.target.value)}
                         />
 
-                        <div className="p-2 border-t bg-muted/20 flex gap-2 overflow-x-auto">
-                            <Button variant="outline" size="sm" onClick={() => handleRefine("기존 스타일을 유지하면서 전체 내용을 더 짧고 간결하게 줄여줘.")} disabled={isGenerating || !resultText}>
+                        <div className="p-2 border-t bg-muted/20 flex gap-2 overflow-x-auto items-center">
+                            <Button variant="outline" size="sm" onClick={() => handleRefine("기존 대본의 맥락, 말투, 톤앤매너를 100% 완벽하게 유지하면서, 전체 분량을 20~30% 정도 줄여서 더 빠르고 간결하게 만들어줘. 불필요한 번역투, 한자어, 중국어투가 절대 들어가지 않도록 극도로 주의해. 오직 자연스러운 한국어로만 작성해.")} disabled={isGenerating || !resultText}>
                                 <Wand2 className="w-3 h-3 mr-1" /> 더 짧게
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleRefine("기존 스타일을 유지하면서 내용을 더 재미있고 활기차게 만들어줘.")} disabled={isGenerating || !resultText}>
+                            <Button variant="outline" size="sm" onClick={() => handleRefine("기존 대본의 핵심 주제와 흐름을 유지하면서, 훨씬 더 유머러스하고 텐션이 높은 숏폼 스타일로 다듬어줘. 억지스러운 번역투나 중국어투는 절대 배제하고, 한국 네티즌들이 쓰는 자연스러운 밈과 말투를 활용해.")} disabled={isGenerating || !resultText}>
                                 <Sparkles className="w-3 h-3 mr-1" /> 더 재미있게
                             </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleRefine("기존 스타일을 유지하면서 모든 표현을 안전하고 부드러운 순화된 언어로 수정해줘.")} disabled={isGenerating || !resultText}>
+                            <Button variant="outline" size="sm" onClick={() => {
+                                setSafetyEditText(resultText);
+                                safetyReviewMutation.mutate({
+                                    current_text: resultText,
+                                    provider: scriptProvider,
+                                    model: scriptModel
+                                });
+                            }} disabled={safetyReviewMutation.isPending || !resultText}>
                                 <ShieldAlert className="w-3 h-3 mr-1" /> 안전 표현 수정
+                            </Button>
+                            <div className="flex-1" />
+                            <Button variant="ghost" size="sm" onClick={handleUndo} disabled={undoHistory.length === 0 || isGenerating} className="h-8 text-xs text-muted-foreground hover:text-foreground">
+                                <Undo className="w-3 h-3 mr-1" /> 되돌리기
                             </Button>
                         </div>
                     </CardContent>
@@ -591,6 +651,59 @@ const ScriptWriter = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog >
+
+            {/* Safety Review Modal */}
+            <Dialog open={isSafetyReviewModalOpen} onOpenChange={setIsSafetyReviewModalOpen}>
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>안전 표현 검토</DialogTitle>
+                        <DialogDescription>
+                            AI가 제안한 변경 사항을 확인하고 추가로 수정할 수 있습니다.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex-1 flex flex-col md:flex-row gap-4 overflow-y-auto py-4 min-h-[400px]">
+                        {/* Left Side: Changes List */}
+                        <div className="w-full md:w-1/3 flex flex-col gap-2 overflow-y-auto pr-2 border-r">
+                            <h4 className="text-sm font-semibold sticky top-0 bg-background py-1">제안된 변경 내역</h4>
+                            {safetyReviewData?.changes && safetyReviewData.changes.length > 0 ? (
+                                safetyReviewData.changes.map((change, i) => (
+                                    <div key={i} className="p-3 bg-muted/30 rounded-md border text-sm">
+                                        <div className="flex items-center gap-2 mb-2 font-medium">
+                                            <span className="line-through text-destructive">{change.original}</span>
+                                            <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                            <span className="text-green-600 dark:text-green-400">{change.replacement}</span>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground flex items-start gap-1">
+                                            <span className="font-semibold shrink-0">이유:</span>
+                                            <span>{change.reason}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-sm text-muted-foreground p-4 text-center">제안된 변경 사항이 없습니다. (현재 대본이 안전함)</div>
+                            )}
+                        </div>
+                        {/* Right Side: Editable Text */}
+                        <div className="w-full md:w-2/3 flex flex-col gap-2">
+                            <h4 className="text-sm font-semibold">수정된 대본 확인 및 추가 편집</h4>
+                            <Textarea
+                                className="flex-1 resize-none h-full"
+                                value={safetyEditText}
+                                onChange={(e) => setSafetyEditText(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsSafetyReviewModalOpen(false)}>취소</Button>
+                        <Button onClick={() => {
+                            setUndoHistory(prev => [...prev, resultText]);
+                            setResultText(safetyEditText);
+                            setIsSafetyReviewModalOpen(false);
+                        }}>수정 사항 적용</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div >
     );
 };

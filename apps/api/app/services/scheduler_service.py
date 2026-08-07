@@ -35,7 +35,7 @@ class WorkflowScheduler:
         if not self.running:
             self.scheduler.start()
             self.running = True
-            logger.info("✅ WorkflowScheduler started")
+            logger.info("[OK] WorkflowScheduler started")
     
     def shutdown(self):
         """스케줄러 종료"""
@@ -82,14 +82,14 @@ class WorkflowScheduler:
             # 다음 실행 시간 계산
             next_run = self.get_next_run_time(job_id)
             
-            logger.info(f"✅ Schedule added: Workflow {workflow_id}")
+            logger.info(f"[OK] Schedule added: Workflow {workflow_id}")
             logger.info(f"   Cron: {cron_expression}")
             logger.info(f"   Next run: {next_run}")
             
             return job_id
             
         except Exception as e:
-            logger.error(f"❌ Failed to add schedule for workflow {workflow_id}: {e}")
+            logger.error(f"[FAIL] Failed to add schedule for workflow {workflow_id}: {e}")
             raise
     
     def remove_schedule(self, workflow_id: int) -> bool:
@@ -106,10 +106,10 @@ class WorkflowScheduler:
         
         try:
             self.scheduler.remove_job(job_id)
-            logger.info(f"✅ Schedule removed: Workflow {workflow_id}")
+            logger.info(f"[OK] Schedule removed: Workflow {workflow_id}")
             return True
         except Exception as e:
-            logger.warning(f"⚠️ Failed to remove schedule for workflow {workflow_id}: {e}")
+            logger.warning(f"[WARN] Failed to remove schedule for workflow {workflow_id}: {e}")
             return False
     
     def pause_schedule(self, workflow_id: int) -> bool:
@@ -121,7 +121,7 @@ class WorkflowScheduler:
             logger.info(f"⏸️ Schedule paused: Workflow {workflow_id}")
             return True
         except Exception as e:
-            logger.warning(f"⚠️ Failed to pause schedule for workflow {workflow_id}: {e}")
+            logger.warning(f"[WARN] Failed to pause schedule for workflow {workflow_id}: {e}")
             return False
     
     def resume_schedule(self, workflow_id: int) -> bool:
@@ -133,7 +133,7 @@ class WorkflowScheduler:
             logger.info(f"▶️ Schedule resumed: Workflow {workflow_id}")
             return True
         except Exception as e:
-            logger.warning(f"⚠️ Failed to resume schedule for workflow {workflow_id}: {e}")
+            logger.warning(f"[WARN] Failed to resume schedule for workflow {workflow_id}: {e}")
             return False
     
     def get_next_run_time(self, job_id: str) -> Optional[datetime]:
@@ -143,7 +143,7 @@ class WorkflowScheduler:
             if job and job.next_run_time:
                 return job.next_run_time
         except Exception as e:
-            logger.warning(f"⚠️ Failed to get next run time for {job_id}: {e}")
+            logger.warning(f"[WARN] Failed to get next run time for {job_id}: {e}")
         return None
     
     def get_schedule_info(self, workflow_id: int) -> Optional[Dict[str, Any]]:
@@ -161,7 +161,7 @@ class WorkflowScheduler:
                     "pending": job.pending
                 }
         except Exception as e:
-            logger.warning(f"⚠️ Failed to get schedule info for workflow {workflow_id}: {e}")
+            logger.warning(f"[WARN] Failed to get schedule info for workflow {workflow_id}: {e}")
         return None
     
     def list_all_schedules(self) -> list:

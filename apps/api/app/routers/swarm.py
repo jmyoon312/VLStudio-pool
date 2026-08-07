@@ -364,7 +364,7 @@ async def trigger_swarm_reconcile():
         asyncio.create_task(global_master.reconcile_all_channels())
         return {"status": "success", "message": "Global swarm reconciliation triggered successfully."}
     except Exception as e:
-        logger.error(f"❌ [Swarm] Reconcile trigger failed: {e}")
+        logger.error(f"[FAIL] [Swarm] Reconcile trigger failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # === Hermes / Loopie Async Agent Endpoints ===
@@ -402,9 +402,9 @@ async def swarm_websocket_endpoint(websocket: WebSocket):
                         "session_id": session_id
                     }))
             except json.JSONDecodeError:
-                logger.warning(f"⚠️ [Swarm WS] Received non-JSON data: {data}")
+                logger.warning(f"[WARN] [Swarm WS] Received non-JSON data: {data}")
             except Exception as e:
-                logger.error(f"❌ [Swarm WS] Error processing message: {e}")
+                logger.error(f"[FAIL] [Swarm WS] Error processing message: {e}")
                 
     except WebSocketDisconnect:
         swarm_manager.disconnect(websocket)
@@ -436,7 +436,7 @@ async def dispatch_swarm_mission(request: SwarmDispatchRequest):
     try:
         from ..services.openclaw.orchestrator import orchestrator
         
-        logger.info(f"🚀 [Swarm] Dispatching mission: {request.mission_type} with context: {request.context[:50]}...")
+        logger.info(f"[FALLBACK] [Swarm] Dispatching mission: {request.mission_type} with context: {request.context[:50]}...")
         
         # [SOVEREIGN UPGRADE] Dispatch real mission via Orchestrator (RabbitMQ)
         session_id = await orchestrator.spawn_agent(
@@ -446,5 +446,5 @@ async def dispatch_swarm_mission(request: SwarmDispatchRequest):
         
         return {"status": "dispatched", "session_id": session_id}
     except Exception as e:
-        logger.error(f"❌ [Swarm] Dispatch failed: {e}")
+        logger.error(f"[FAIL] [Swarm] Dispatch failed: {e}")
         return {"status": "error", "message": str(e)}

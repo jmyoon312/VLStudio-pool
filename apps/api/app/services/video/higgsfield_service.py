@@ -73,10 +73,10 @@ class HiggsfieldService:
                 
             for attempt in range(provider["retries"] + 1):
                 try:
-                    logger.info(f"🔄 Trying fallback provider: {provider['name']} (attempt {attempt + 1})")
+                    logger.info(f"[REFRESH] Trying fallback provider: {provider['name']} (attempt {attempt + 1})")
                     result = await self._try_generate(prompt, provider["endpoint"], duration, image_url)
                     if result:
-                        logger.info(f"✅ Fallback succeeded: {provider['name']}")
+                        logger.info(f"[OK] Fallback succeeded: {provider['name']}")
                         return result
                 except Exception as e:
                     logger.warning(f"Provider {provider['name']} attempt {attempt + 1} failed: {e}")
@@ -93,7 +93,7 @@ class HiggsfieldService:
             return hf_result
         
         # 5. Final fallback: Generate placeholder with better quality
-        logger.warning("⚠️ All providers exhausted. Generating enhanced placeholder.")
+        logger.warning("[WARN] All providers exhausted. Generating enhanced placeholder.")
         return await self._generate_placeholder_video(prompt, duration)
 
     async def _try_generate(self, prompt: str, model: str, duration: int, image_url: Optional[str]) -> Optional[str]:
@@ -143,7 +143,7 @@ class HiggsfieldService:
         # Try Kling direct API
         if self.api_key:
             try:
-                logger.info("🔄 Trying Kling direct API...")
+                logger.info("[REFRESH] Trying Kling direct API...")
                 kling_response = requests.post(
                     "https://api.klingai.com/v1/videos/generations",
                     headers={
@@ -170,7 +170,7 @@ class HiggsfieldService:
     async def _try_huggingface(self, prompt: str, duration: int) -> Optional[str]:
         """Try open-source models via HuggingFace Inference API"""
         try:
-            logger.info("🔄 Trying HuggingFace open-source video generation...")
+            logger.info("[REFRESH] Trying HuggingFace open-source video generation...")
             
             # Using Zeroscope or similar open models
             hf_api_key = os.getenv("HF_API_KEY")
@@ -239,7 +239,7 @@ class HiggsfieldService:
         filename = f"placeholder_{int(time.time())}.mp4"
         output_path = os.path.join(self.temp_dir, filename)
         
-        logger.info(f"🛠️ [Fail-Safe] Generating styled placeholder: {output_path}")
+        logger.info(f"[TOOL] [Fail-Safe] Generating styled placeholder: {output_path}")
         
         # Create more visually appealing placeholder
         # Use gradient background with prompt text

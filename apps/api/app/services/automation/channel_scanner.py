@@ -102,7 +102,7 @@ class ChannelScanner:
             self.db.commit()
             
         except Exception as e:
-            logger.error(f"❌ Scan failed: {e}")
+            logger.error(f"[FAIL] Scan failed: {e}")
             results["success"] = False
             results["error"] = str(e)
             

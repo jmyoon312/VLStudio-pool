@@ -147,7 +147,7 @@ async def process_render_task(task_id: str, request: RenderRequest):
         render_tasks[task_id]["progress"] = 30
         
         # 4. Generate
-        print(f"🎬 Starting FFmpeg Render: BG={visual_source}, AudioCount={len(audio_paths)}")
+        print(f"[VIDEO] Starting FFmpeg Render: BG={visual_source}, AudioCount={len(audio_paths)}")
         duration_sec = request.duration_minutes * 60
         
         # Get FFmpeg path
@@ -169,7 +169,7 @@ async def process_render_task(task_id: str, request: RenderRequest):
                  ffprobe_path = os.path.join(parent, "ffprobe")
                  
              if not os.path.exists(ffprobe_path):
-                 print(f"⚠️ ffprobe not found at {ffprobe_path}, trying default 'ffprobe'")
+                 print(f"[WARN] ffprobe not found at {ffprobe_path}, trying default 'ffprobe'")
                  ffprobe_path = "ffprobe"
 
         generator = FFmpegGenerator(ffmpeg_path=ffmpeg_path, ffprobe_path=ffprobe_path)
@@ -184,10 +184,10 @@ async def process_render_task(task_id: str, request: RenderRequest):
         render_tasks[task_id]["progress"] = 100
         render_tasks[task_id]["status"] = "COMPLETED"
         render_tasks[task_id]["output_path"] = final_output
-        print(f"✅ Render complete: {final_output}")
+        print(f"[OK] Render complete: {final_output}")
 
     except Exception as e:
-        print(f"❌ Render Failed: {e}")
+        print(f"[FAIL] Render Failed: {e}")
         render_tasks[task_id]["status"] = "FAILED"
         render_tasks[task_id]["error"] = str(e)
 

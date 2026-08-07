@@ -36,6 +36,6 @@ class ImageGenService:
                  logger.warning("No image API keys available. Mocking image generation for testing.")
                  return "https://dummyimage.com/1024x1024/000/fff&text=Mock+Image"
         except Exception as e:
-            logger.error(f"❌ API Gen Failed: {e}")
+            logger.error(f"[FAIL] API Gen Failed: {e}")
             logger.warning("Falling back to mock image due to API error...")
             return "https://dummyimage.com/1024x1024/000/fff&text=Mock+Image"

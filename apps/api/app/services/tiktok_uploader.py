@@ -20,12 +20,12 @@ class TikTokUploader:
         privacy: str = "PUBLIC" # PUBLIC, FRIENDS, PRIVATE
     ) -> Dict[str, Any]:
         
-        logger.info(f"🚀 Starting TikTok Browser Automation for: {video_path}")
+        logger.info(f"[FALLBACK] Starting TikTok Browser Automation for: {video_path}")
         
         try:
             # 1. Navigate to Upload Page
             page.goto("https://www.tiktok.com/creator-center/upload")
-            logger.info("⏳ Waiting for TikTok Upload Dashboard...")
+            logger.info("[WAIT] Waiting for TikTok Upload Dashboard...")
             
             # Wait for file input or dashboard layout
             time.sleep(random.uniform(4.0, 6.0))
@@ -88,7 +88,7 @@ class TikTokUploader:
                     option.click()
             
             # 5. Post
-            logger.info("🚀 Clicking Post...")
+            logger.info("[FALLBACK] Clicking Post...")
             # Locate Post button (often a primary button)
             post_btn = upload_frame.locator('button:has-text("Post"), button:has-text("게시")').first
             post_btn.click()
@@ -96,11 +96,11 @@ class TikTokUploader:
             # Wait for success dialog or redirection
             time.sleep(10) # Simple wait, in robust script we'd wait for a specific selector
             
-            logger.info("✅ TikTok Upload Complete")
+            logger.info("[OK] TikTok Upload Complete")
             return {"status": "success", "url": "https://www.tiktok.com/profile"} # Exact URL might be hard to fetch
             
         except Exception as e:
-            logger.error(f"❌ TikTok Automation Error: {e}")
+            logger.error(f"[FAIL] TikTok Automation Error: {e}")
             return {"status": "error", "message": f"Browser Error: {str(e)}"}
         finally:
             # We don't close the context here as it's managed by BrowserSessionManager

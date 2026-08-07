@@ -20,5 +20,5 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from app.services.mcp.mcp_server import mcp
 
 if __name__ == "__main__":
-    print("🚀 [MCP] Starting ViraLoop Sovereign MCP Server on port 4100...")
+    print("[FALLBACK] [MCP] Starting ViraLoop Sovereign MCP Server on port 4100...")
     mcp.run(transport="streamable-http", host="0.0.0.0", port=4100, path="/mcp")

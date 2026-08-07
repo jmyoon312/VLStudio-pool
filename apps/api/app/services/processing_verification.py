@@ -138,7 +138,7 @@ class ProcessingVerificationService:
         if assigned_reviewer:
             self._team_assignments[item_id] = assigned_reviewer
         
-        logger.info(f"📝 Registered: {title} -> {assigned_reviewer or 'unassigned'}")
+        logger.info(f"[SCRIPT] Registered: {title} -> {assigned_reviewer or 'unassigned'}")
         
         return item_id
     
@@ -173,7 +173,7 @@ class ProcessingVerificationService:
             sla_hours = self._sla_config["upload_timeout_hours"]
             record.sla_deadline = datetime.now() + timedelta(hours=sla_hours)
         
-        logger.info(f"🔄 Stage updated: {item_id} -> {stage.value}")
+        logger.info(f"[REFRESH] Stage updated: {item_id} -> {stage.value}")
         
         return True
     
@@ -314,7 +314,7 @@ class ProcessingVerificationService:
         
         self._alerts[alert_key] = alert
         
-        logger.warning(f"🚨 Alert: {message}")
+        logger.warning(f"[ALERT] Alert: {message}")
     
     async def resolve_alert(self, alert_id: str) -> bool:
         alert = self._alerts.get(alert_id)

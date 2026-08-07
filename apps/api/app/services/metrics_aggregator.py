@@ -294,7 +294,7 @@ class MetricsAggregator:
             "query_fail": query_fail
         }
         
-        logger.info(f"📊 Registered KPI: {name}")
+        logger.info(f"[CHART] Registered KPI: {name}")
     
     def get_metric_names(self) -> List[str]:
         return list(self._metrics.keys())

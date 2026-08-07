@@ -162,7 +162,7 @@ class LoadBalancer:
         
         self._services[service][backend_id] = backend
         
-        logger.info(f"✅ Backend added: {service}/{backend_id} -> {url} (weight: {weight})")
+        logger.info(f"[OK] Backend added: {service}/{backend_id} -> {url} (weight: {weight})")
     
     def remove_backend(self, service: str, backend_id: str) -> bool:
         """Remove backend from service"""
@@ -312,7 +312,7 @@ class LoadBalancer:
     async def start_health_checks(self):
         """Start backend health checking"""
         async def on_status_change(backend_id: str, status: BackendStatus):
-            logger.info(f"🔍 Backend {backend_id} status changed to: {status.value}")
+            logger.info(f"[SEARCH] Backend {backend_id} status changed to: {status.value}")
         
         await self._health_checker.start(self._services, on_status_change)
     

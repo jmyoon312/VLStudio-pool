@@ -158,7 +158,7 @@ class AdvancedCache:
         
         self._stats["sets"] += 1
         
-        logger.debug(f"💾 Cached: {key} (TTL: {ttl or 'default'})")
+        logger.debug(f"[SAVE] Cached: {key} (TTL: {ttl or 'default'})")
     
     async def get(
         self,
@@ -185,7 +185,7 @@ class AdvancedCache:
             entry.last_accessed = datetime.now()
             self._stats["hits"] += 1
             self._stats["by_layer"][CacheLayer.MEMORY.value] += 1
-            logger.debug(f"✅ Cache hit (memory): {key}")
+            logger.debug(f"[OK] Cache hit (memory): {key}")
             return entry.value
         
         # Try Redis
@@ -196,7 +196,7 @@ class AdvancedCache:
                 await self.set(key, value, ttl=self._config["memory_ttl"])
                 self._stats["hits"] += 1
                 self._stats["by_layer"][CacheLayer.REDIS.value] += 1
-                logger.debug(f"✅ Cache hit (redis): {key}")
+                logger.debug(f"[OK] Cache hit (redis): {key}")
                 return value
         
         # Try disk
@@ -207,12 +207,12 @@ class AdvancedCache:
                 await self.set(key, value, ttl=self._config["memory_ttl"])
                 self._stats["hits"] += 1
                 self._stats["by_layer"][CacheLayer.DISK.value] += 1
-                logger.debug(f"✅ Cache hit (disk): {key}")
+                logger.debug(f"[OK] Cache hit (disk): {key}")
                 return value
         
         # Cache miss
         self._stats["misses"] += 1
-        logger.debug(f"❌ Cache miss: {key}")
+        logger.debug(f"[FAIL] Cache miss: {key}")
         
         # Call fallback if provided
         if fallback:
@@ -402,7 +402,7 @@ class AdvancedCache:
             keys: List of keys to warm
             loader: Async function to load data
         """
-        logger.info(f"🔥 Warming cache for {len(keys)} keys...")
+        logger.info(f"[FIRE] Warming cache for {len(keys)} keys...")
         
         for key in keys:
             try:
@@ -412,7 +412,7 @@ class AdvancedCache:
             except Exception as e:
                 logger.warning(f"Cache warm failed for {key}: {e}")
         
-        logger.info("✅ Cache warming complete")
+        logger.info("[OK] Cache warming complete")
     
     def clear_all(self):
         """Clear all caches"""

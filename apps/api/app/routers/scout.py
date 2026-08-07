@@ -74,7 +74,7 @@ async def start_scout_mission(background_tasks: BackgroundTasks, request: Option
             "niche": niche
         }
     except Exception as e:
-        logger.error(f"🔥 [Scout] Mission failure: {e}")
+        logger.error(f"[FIRE] [Scout] Mission failure: {e}")
         return JSONResponse(status_code=500, content={"status": "ERROR", "message": str(e)})
 
 @router.get("/candidates")

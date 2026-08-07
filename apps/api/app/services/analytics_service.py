@@ -258,21 +258,21 @@ class AnalyticsService:
         for trend in trends:
             if trend.trend == "up" and trend.change_percent > 20:
                 insights.append(
-                    f"📈 {trend.metric} increased by {trend.change_percent:.1f}% - Great momentum!"
+                    f"[TREND] {trend.metric} increased by {trend.change_percent:.1f}% - Great momentum!"
                 )
             elif trend.trend == "down" and trend.change_percent < -10:
                 insights.append(
-                    f"⚠️ {trend.metric} decreased by {abs(trend.change_percent):.1f}% - Needs attention"
+                    f"[WARN] {trend.metric} decreased by {abs(trend.change_percent):.1f}% - Needs attention"
                 )
         
         # Engagement insight
         if metrics.engagement_rate < 3.0:
             insights.append(
-                "💡 Engagement rate is below 3% - Consider more call-to-actions"
+                "[INFO] Engagement rate is below 3% - Consider more call-to-actions"
             )
         elif metrics.engagement_rate > 5.0:
             insights.append(
-                "✅ Excellent engagement rate! Your audience is highly active."
+                "[OK] Excellent engagement rate! Your audience is highly active."
             )
         
         # Publishing frequency
@@ -286,7 +286,7 @@ class AnalyticsService:
     async def generate_daily_report(self) -> Dict[str, Any]:
         """Generate daily automated report"""
         
-        logger.info("📊 Generating daily report...")
+        logger.info("[CHART] Generating daily report...")
         
         # Get all active channels
         # In real implementation, query database
@@ -316,7 +316,7 @@ class AnalyticsService:
             "system_health": await self._get_system_health()
         }
         
-        logger.info(f"✅ Daily report generated: {total_views} views across {len(channels)} channels")
+        logger.info(f"[OK] Daily report generated: {total_views} views across {len(channels)} channels")
         
         return report
     

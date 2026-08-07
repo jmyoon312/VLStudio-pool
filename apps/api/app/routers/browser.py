@@ -62,6 +62,8 @@ async def launch_browser(req: LaunchRequest, db=Depends(get_db)):
         proxy_host=req.proxy_host or (profile.proxy_info or {}).get("host", ""),
         proxy_port=req.proxy_port or (profile.proxy_info or {}).get("port", 0),
         proxy_type=req.proxy_type,
+        proxy_username=getattr(profile, "proxy_username", ""),
+        proxy_password=getattr(profile, "proxy_password", ""),
         lte_interface_ip=req.lte_interface_ip,
         engine_mode=req.engine_mode,
     )

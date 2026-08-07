@@ -35,7 +35,7 @@ class NativeQueueWorker:
         self.executor = ThreadPoolExecutor(max_workers=10, thread_name_prefix="UploadWorker")
         self.scheduler_thread = threading.Thread(target=self._process_scheduler, daemon=True, name="NativeUploadScheduler")
         self.scheduler_thread.start()
-        logger.info("✅ Native Queue Worker Started (Concurrent Mode - one per isolated profile)")
+        logger.info("[OK] Native Queue Worker Started (Concurrent Mode - one per isolated profile)")
 
     def add_task(self, item_id: int):
         logger.info(f"📥 [NativeQueue] Adding item {item_id} to queue")
@@ -77,7 +77,7 @@ class NativeQueueWorker:
             except queue.Empty:
                 continue
             except Exception as e:
-                logger.error(f"❌ [NativeQueue] Scheduler Error: {e}")
+                logger.error(f"[FAIL] [NativeQueue] Scheduler Error: {e}")
                 time.sleep(1)
 
     def _process_item(self, item_id: int, profile_id: str):
@@ -97,22 +97,22 @@ class NativeQueueWorker:
             self._profile_first_use.add(profile_id)
             
             if item and item.source_type == "SOVEREIGN_AI":
-                logger.info(f"🚀 [NativeQueue] SOVEREIGN_AI mission for {item_id}")
+                logger.info(f"[FALLBACK] [NativeQueue] SOVEREIGN_AI mission for {item_id}")
                 try:
                     import asyncio as aio
                     production_result = aio.run(workflow_runner_singleton.execute_workflow_for_mission(db, item_id))
                     logger.info(f"🎨 Production Success: {production_result.get('video_path')}")
                 except Exception as prod_err:
-                    logger.error(f"❌ Production Failed: {prod_err}")
+                    logger.error(f"[FAIL] Production Failed: {prod_err}")
                     item.status = "FAILED"
                     item.failure_reason = f"Production Error: {str(prod_err)}"
                     db.commit()
                     return
 
             result = upload_orchestrator.process_item(db, item_id, task_instance=None, force_ip_rotation=should_rotate)
-            logger.info(f"✅ [NativeQueue] Finished item {item_id}: {result}")
+            logger.info(f"[OK] [NativeQueue] Finished item {item_id}: {result}")
         except Exception as e:
-            logger.error(f"❌ [NativeQueue] Error processing {item_id}: {e}")
+            logger.error(f"[FAIL] [NativeQueue] Error processing {item_id}: {e}")
         finally:
             db.close()
             with self.profile_lock:

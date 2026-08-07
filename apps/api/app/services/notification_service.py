@@ -26,10 +26,10 @@ async def notify_quality_alert(
         
         # Build message
         status_emoji = {
-            "ROLLBACK": "🔄",
-            "REVIEW_NEEDED": "⚠️",
-            "APPROVED": "✅",
-            "REJECTED": "❌"
+            "ROLLBACK": "[REFRESH]",
+            "REVIEW_NEEDED": "[WARN]",
+            "APPROVED": "[OK]",
+            "REJECTED": "[FAIL]"
         }
         
         emoji = status_emoji.get(status, "📋")
@@ -84,7 +84,7 @@ async def notify_quality_alert(
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed to send quality alert: {e}")
+        logger.error(f"[FAIL] Failed to send quality alert: {e}")
         return False
 
 
@@ -107,10 +107,10 @@ async def notify_mission_status(
         from app.config import settings
         
         status_emoji = {
-            "STARTED": "🚀",
-            "COMPLETED": "✅",
-            "FAILED": "❌",
-            "ROLLED_BACK": "🔄",
+            "STARTED": "[FALLBACK]",
+            "COMPLETED": "[OK]",
+            "FAILED": "[FAIL]",
+            "ROLLED_BACK": "[REFRESH]",
             "PAUSED": "⏸️"
         }
         
@@ -144,7 +144,7 @@ async def notify_mission_status(
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed to send mission status notification: {e}")
+        logger.error(f"[FAIL] Failed to send mission status notification: {e}")
         return False
 
 
@@ -169,7 +169,7 @@ async def notify_error(
         phase_info = f" (Phase {phase})" if phase else ""
         
         message = f"""
-❌ **ViraLoop 오류 알림**
+[FAIL] **ViraLoop 오류 알림**
 
 **Mission:** {mission_id}{phase_info}
 **Error Type:** {error_type}
@@ -191,11 +191,11 @@ async def notify_error(
                     timeout=10.0
                 )
         
-        logger.error(f"❌ Error Alert: {error_type} - Mission {mission_id}{phase_info}")
+        logger.error(f"[FAIL] Error Alert: {error_type} - Mission {mission_id}{phase_info}")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Failed to send error notification: {e}")
+        logger.error(f"[FAIL] Failed to send error notification: {e}")
         return False
 
 
@@ -239,5 +239,5 @@ def send_notification(message: str):
         logger.info(f"📨 Notification sent: {message}")
         return True
     except Exception as e:
-        logger.error(f"❌ Failed to send notification: {e}")
-        return False
+        logger.error(f"[FAIL] Failed to send notification: {e}")
+        return False

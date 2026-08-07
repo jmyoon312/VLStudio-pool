@@ -56,18 +56,18 @@ class WhisperTranscriber:
         try:
             print(f"[Whisper] Initializing model '{model_size}' on '{device}' (compute: {compute_type}, local={is_local})...")
             self.model = _load_model(resolved_path, device, compute_type, is_local)
-            print(f"✅ [Whisper] Model '{model_size}' loaded successfully on '{device}'.")
+            print(f"[OK] [Whisper] Model '{model_size}' loaded successfully on '{device}'.")
         except Exception as e:
-            print(f"⚠️ [Whisper] Failed to initialize on '{device}': {e}")
+            print(f"[WARN] [Whisper] Failed to initialize on '{device}': {e}")
             if device == "cuda":
                 print("[Whisper] Retrying on CPU with 'int8'...")
                 self.device = "cpu"
                 self.compute_type = "int8"
                 try:
                     self.model = _load_model(resolved_path, "cpu", "int8", is_local)
-                    print(f"✅ [Whisper] Model '{model_size}' loaded successfully on CPU.")
+                    print(f"[OK] [Whisper] Model '{model_size}' loaded successfully on CPU.")
                 except Exception as e2:
-                    print(f"❌ [Whisper] CRITICAL: CPU fallback also failed: {e2}")
+                    print(f"[FAIL] [Whisper] CRITICAL: CPU fallback also failed: {e2}")
                     raise e2
             else:
                 raise e
@@ -142,8 +142,8 @@ class WhisperTranscriber:
                     "cudnn", "cuda", "dll is not found", "cannot be loaded"
                 ])
                 if is_gpu_error:
-                    print(f"⚠️ [Whisper] GPU execution failed: {str(e).splitlines()[-1]}")
-                    print(f"🔄 [Whisper] Emergency Fallback: Reloading model onto CPU...")
+                    print(f"[WARN] [Whisper] GPU execution failed: {str(e).splitlines()[-1]}")
+                    print(f"[REFRESH] [Whisper] Emergency Fallback: Reloading model onto CPU...")
                     self.model = None
                     import gc; gc.collect()
                     try:
@@ -154,7 +154,7 @@ class WhisperTranscriber:
                     self.device = "cpu"
                     self.compute_type = "int8"
                     self.model = WhisperModel(self.model_size, device="cpu", compute_type="int8", download_root=self.model_path)
-                    print("✅ [Whisper] CPU Model reloaded. Retrying transcription...")
+                    print("[OK] [Whisper] CPU Model reloaded. Retrying transcription...")
                     transcribe_kwargs["beam_size"] = 2
                     segments, info = self.model.transcribe(video_path, **transcribe_kwargs)
                 else:

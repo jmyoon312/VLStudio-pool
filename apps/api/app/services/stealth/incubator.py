@@ -13,7 +13,7 @@ class Incubator:
     COMMENTS = {
         "gaming": {
             "ko": ["개꿀잼 ㅋㅋㅋ", "실력 미쳤다 👍", "구독 박고 갑니다"],
-            "en": ["Insane gameplay! 🔥", "GG well played", "Subscribed!"],
+            "en": ["Insane gameplay! [FIRE]", "GG well played", "Subscribed!"],
         },
         "cooking": {
             "ko": ["맛있어 보여요 😋", "레시피 감사합니다", "따라해볼게요"],

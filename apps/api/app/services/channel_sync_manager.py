@@ -219,7 +219,7 @@ class ChannelSyncManager:
             except Exception as e:
                 operation.results[channel_id] = False
                 operation.errors[channel_id] = str(e)
-                logger.error(f"❌ Sync to channel {channel_id} failed: {e}")
+                logger.error(f"[FAIL] Sync to channel {channel_id} failed: {e}")
         
         # Update status
         self._update_operation_status(operation)
@@ -317,7 +317,7 @@ class ChannelSyncManager:
         config = self._channel_configs.get(channel_id)
         
         if not config or not config.sync_enabled:
-            logger.warning(f"⚠️ Sync disabled for channel {channel_id}")
+            logger.warning(f"[WARN] Sync disabled for channel {channel_id}")
             return False
         
         try:
@@ -332,11 +332,11 @@ class ChannelSyncManager:
             # Simulate processing time
             await asyncio.sleep(0.5)
             
-            logger.info(f"✅ Synced content {content_id} to channel {channel_id}")
+            logger.info(f"[OK] Synced content {content_id} to channel {channel_id}")
             return True
             
         except Exception as e:
-            logger.error(f"❌ Sync to channel {channel_id} failed: {e}")
+            logger.error(f"[FAIL] Sync to channel {channel_id} failed: {e}")
             return False
     
     def _update_operation_status(self, operation: SyncOperation):
@@ -400,7 +400,7 @@ class ChannelSyncManager:
         
         self._shared_resources[resource_id] = resource
         
-        logger.info(f"📦 Shared resource added: {resource_type} for channels {channel_ids}")
+        logger.info(f"[BOX] Shared resource added: {resource_type} for channels {channel_ids}")
         
         return resource_id
     

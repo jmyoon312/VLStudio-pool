@@ -35,7 +35,7 @@ class GlobalSwarmMaster:
             try:
                 await self.reconcile_all_channels()
             except Exception as e:
-                logger.error(f"❌ [Global Master] Error in reconcile loop: {e}")
+                logger.error(f"[FAIL] [Global Master] Error in reconcile loop: {e}")
             
             # Check every hour
             await asyncio.sleep(3600)
@@ -88,7 +88,7 @@ class GlobalSwarmMaster:
         Spawns a mission with resource arbitration (Semaphore).
         """
         async with self.mission_semaphore:
-            logger.info(f"🚀 [Global Master] Spawning dedicated CELL mission for Channel #{channel_id} (Phase: {phase})")
+            logger.info(f"[FALLBACK] [Global Master] Spawning dedicated CELL mission for Channel #{channel_id} (Phase: {phase})")
             
             # Trigger factory run via SwarmCoordinator
             success = await self.coordinator.execute_mission_factory_run(

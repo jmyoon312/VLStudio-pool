@@ -103,13 +103,13 @@ class WisdomDistiller:
                     importance=new_wisdom.importance_score
                 )
             except Exception as e_mem:
-                logger.warning(f"⚠️ Failed to update hybrid memory layers: {e_mem}")
+                logger.warning(f"[WARN] Failed to update hybrid memory layers: {e_mem}")
 
-            logger.info(f"✨ Distilled new wisdom for {niche}: {new_wisdom.title}")
+            logger.info(f"[MAGIC] Distilled new wisdom for {niche}: {new_wisdom.title}")
             return new_wisdom
             
         except Exception as e:
-            logger.error(f"❌ Failed to distill wisdom: {e}")
+            logger.error(f"[FAIL] Failed to distill wisdom: {e}")
             self.db.rollback()
             return None
 

@@ -79,11 +79,11 @@ class LocalizationEngine:
                 audit = self._audit_translation(result, target_langs)
                 
                 if audit.status == "APPROVED":
-                    logger.info(f"✅ Localization successful on attempt {attempts}")
+                    logger.info(f"[OK] Localization successful on attempt {attempts}")
                     return result
                 else:
                     feedback = audit.feedback
-                    logger.warning(f"⚠️ Localization rejected (Attempt {attempts}/{max_attempts}): {feedback}")
+                    logger.warning(f"[WARN] Localization rejected (Attempt {attempts}/{max_attempts}): {feedback}")
                     continue
 
             except Exception as e:

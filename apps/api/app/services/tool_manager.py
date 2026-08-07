@@ -51,7 +51,7 @@ class WebSearchTool:
         if not HAS_DDG:
             return None
         try:
-            logger.info(f"🔍 [DDG] Searching for '{query}'...")
+            logger.info(f"[SEARCH] [DDG] Searching for '{query}'...")
             with DDGS() as ddgs:
                 results = list(ddgs.text(query, max_results=5))
                 if not results:
@@ -64,20 +64,20 @@ class WebSearchTool:
                         "content": r.get("body", ""),
                         "score": 0.9
                     })
-                logger.info(f"✅ [DDG] Found {len(formatted)} results.")
+                logger.info(f"[OK] [DDG] Found {len(formatted)} results.")
                 return {
                     "summary": formatted[0]["content"][:200] if formatted else "",
                     "results": formatted,
                     "images": []
                 }
         except Exception as e:
-            logger.warning(f"❌ [DDG] Failed: {e}")
+            logger.warning(f"[FAIL] [DDG] Failed: {e}")
             return None
 
     def _search_searxng(self, query: str) -> Optional[Dict[str, Any]]:
         for instance in SEARXNG_INSTANCES:
             try:
-                logger.info(f"🔍 [SearXNG] Trying {instance}...")
+                logger.info(f"[SEARCH] [SearXNG] Trying {instance}...")
                 resp = requests.get(instance, params={"q": query, "format": "json", "categories": "general"}, timeout=8)
                 if resp.status_code != 200:
                     continue
@@ -93,19 +93,19 @@ class WebSearchTool:
                         "content": r.get("content", ""),
                         "score": r.get("score", 0.5)
                     })
-                logger.info(f"✅ [SearXNG] {instance} returned {len(formatted)} results.")
+                logger.info(f"[OK] [SearXNG] {instance} returned {len(formatted)} results.")
                 return {
                     "summary": formatted[0]["content"][:200] if formatted else "",
                     "results": formatted,
                     "images": []
                 }
             except Exception as e:
-                logger.warning(f"❌ [SearXNG] {instance} failed: {e}")
+                logger.warning(f"[FAIL] [SearXNG] {instance} failed: {e}")
                 continue
         return None
 
     def _get_mock_results(self, query: str, include_images: bool, error_msg: str = "") -> Dict[str, Any]:
-        logger.info(f"🔍 [Mock] All backends failed. Returning mock for '{query}'")
+        logger.info(f"[SEARCH] [Mock] All backends failed. Returning mock for '{query}'")
         return {
             "summary": f"This is a mock summary for '{query}'. {error_msg}",
             "results": [

@@ -16,7 +16,7 @@ async def list_mcp_skills():
         # Fetch tools from the external Root MCP Server
         mcp_tools = await root_mcp.list_tools()
     except Exception as e:
-        logger.error(f"❌ Failed to fetch Root MCP tools: {e}")
+        logger.error(f"[FAIL] Failed to fetch Root MCP tools: {e}")
         return {"status": "error", "message": f"Root MCP connection failed: {str(e)}", "skills": []}
 
     if not mcp_tools:

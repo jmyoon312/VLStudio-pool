@@ -83,10 +83,10 @@ class SOPOrchestrator:
             audit_result = await self._run_dna_audit(script_data['content'], channel_dna)
             script_data['dna_audit'] = audit_result
             if audit_result.get('score', 100) < 70:
-                logger.warning(f"⚠️ Script DNA Score Low ({audit_result.get('score')}). Feedback: {audit_result.get('feedback')}")
+                logger.warning(f"[WARN] Script DNA Score Low ({audit_result.get('score')}). Feedback: {audit_result.get('feedback')}")
         
         # --- Stage 3: Asset Coordination ---
-        logger.info("🎬 Stage 3: Media Scouting & Scene Building...")
+        logger.info("[VIDEO] Stage 3: Media Scouting & Scene Building...")
         scenes = self.writer.segment_script(
             text=script_data['content'],
             style_prompt=analysis.get('visual_style', ""),

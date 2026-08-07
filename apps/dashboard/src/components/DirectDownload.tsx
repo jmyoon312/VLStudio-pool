@@ -18,14 +18,15 @@ interface QueueItem {
     filePath?: string;
     useBypass?: boolean; // Added field
     scriptOnly?: boolean; // [NEW]
+    profileId?: string | null; // [NEW]
 }
 
 // Official Platform Links
 const SUPPORTED_PLATFORMS = [
     // Global
     { name: 'YouTube', url: 'https://www.youtube.com', color: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300' },
-    { name: 'Music', url: 'https://www.tiktok.com', color: 'bg-black text-white border-slate-200 dark:bg-white dark:text-black' },
-    { name: 'Camera', url: 'https://www.instagram.com', color: 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300' },
+    { name: 'TikTok', url: 'https://www.tiktok.com', color: 'bg-black text-white border-slate-200 dark:bg-white dark:text-black' },
+    { name: 'Instagram', url: 'https://www.instagram.com', color: 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300' },
 
     // Chinese Platforms (Direct Links)
     { name: 'Douyin', url: 'https://www.douyin.com', color: 'bg-slate-100 text-slate-800 border-slate-200' },
@@ -57,6 +58,7 @@ const DirectDownload = () => {
     const [useBypass, setUseBypass] = useState(false);
     const [showBrowser, setShowBrowser] = useState(false); // Debug toggle
     const [scriptOnly, setScriptOnly] = useState(false); // [NEW]
+    const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null); // [NEW]
 
     // Single Download State
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -86,7 +88,8 @@ const DirectDownload = () => {
                 categoryId: selectedCategoryId,
                 status: 'pending',
                 useBypass: finalBypass,
-                scriptOnly: scriptOnly
+                scriptOnly: scriptOnly,
+                profileId: selectedProfileId
             }));
 
             setQueue(prev => [...prev, ...newItems]);
@@ -106,14 +109,21 @@ const DirectDownload = () => {
         queryFn: async () => (await api.get('/categories/')).data
     });
 
+    // [NEW] Fetch Browser Profiles
+    const { data: browserProfiles } = useQuery<any[]>({
+        queryKey: ['browserProfiles'],
+        queryFn: async () => (await api.get('/browser-profiles')).data
+    });
+
     const downloadMutation = useMutation({
-        mutationFn: (data: { url: string, category_id: number | null, use_bypass: boolean, headless: boolean, script_only?: boolean }) =>
+        mutationFn: (data: { url: string, category_id: number | null, use_bypass: boolean, headless: boolean, script_only?: boolean, profile_id?: string | null }) =>
             api.post('/videos/download', {
                 url: data.url,
                 category_id: data.category_id,
                 use_bypass: data.use_bypass,
-                headless: data.headless, // Send headless flag
-                script_only: data.script_only // [NEW]
+                headless: data.headless,
+                script_only: data.script_only,
+                profile_id: data.profile_id
             }),
     });
 
@@ -166,7 +176,8 @@ const DirectDownload = () => {
                 categoryId: selectedCategoryId,
                 status: 'pending',
                 useBypass: useBypass,
-                scriptOnly: scriptOnly
+                scriptOnly: scriptOnly,
+                profileId: selectedProfileId
             }));
             setQueue(prev => [...prev, ...newItems]);
             setUrlInput('');
@@ -186,7 +197,8 @@ const DirectDownload = () => {
                 category_id: selectedCategoryId,
                 use_bypass: useBypass,
                 headless: !showBrowser, // If showBrowser is true, headless is false
-                script_only: scriptOnly
+                script_only: scriptOnly,
+                profile_id: selectedProfileId
             });
             setStatus('success');
             setResult(res.data);
@@ -223,7 +235,8 @@ const DirectDownload = () => {
                     category_id: item.categoryId,
                     use_bypass: item.useBypass ?? false,
                     headless: true, // Batch always headless for safety
-                    script_only: item.scriptOnly ?? false
+                    script_only: item.scriptOnly ?? false,
+                    profile_id: item.profileId
                 });
 
                 setQueue(prev => prev.map(i => i.id === item.id ? {
@@ -345,16 +358,35 @@ const DirectDownload = () => {
                                 </div>
 
                                 {useBypass && (
-                                    <div className="flex items-center space-x-2 ml-12 animate-in fade-in slide-in-from-top-1">
-                                        <Switch
-                                            id="show-browser"
-                                            checked={showBrowser}
-                                            onCheckedChange={setShowBrowser}
-                                            disabled={isBatchProcessing || status === 'loading'}
-                                        />
-                                        <Label htmlFor="show-browser" className="text-sm font-medium cursor-pointer text-blue-600 dark:text-blue-400">
-                                            브라우저 화면 보기 (디버깅용)
-                                        </Label>
+                                    <div className="flex flex-col gap-3 ml-12 animate-in fade-in slide-in-from-top-1">
+                                        <div className="flex items-center space-x-2">
+                                            <Switch
+                                                id="show-browser"
+                                                checked={showBrowser}
+                                                onCheckedChange={setShowBrowser}
+                                                disabled={isBatchProcessing || status === 'loading'}
+                                            />
+                                            <Label htmlFor="show-browser" className="text-sm font-medium cursor-pointer text-blue-600 dark:text-blue-400">
+                                                브라우저 화면 보기 (디버깅용)
+                                            </Label>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-1 w-full max-w-sm">
+                                            <Label htmlFor="profile-select" className="text-sm font-medium min-w-[100px]">연결할 프로필:</Label>
+                                            <select
+                                                id="profile-select"
+                                                value={selectedProfileId || ''}
+                                                onChange={(e) => setSelectedProfileId(e.target.value || null)}
+                                                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                                disabled={isBatchProcessing || status === 'loading'}
+                                            >
+                                                <option value="">(선택 안함 - 기본 브라우저 환경)</option>
+                                                {browserProfiles?.map((profile: any) => (
+                                                    <option key={profile.id} value={profile.id}>
+                                                        {profile.name} {profile.platform ? `(${profile.platform})` : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                 )}
                             </div>

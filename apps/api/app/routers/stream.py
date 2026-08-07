@@ -267,12 +267,12 @@ async def stream_video(path: str):
                 target_path = os.path.join(MEDIA_ROOT, rel)
                 break
 
-    # Step 4: C:/ViraLoopMedia/downloads/... or C:/ViraLoopMedia\\downloads\\ → MEDIA_ROOT/downloads/...
-    elif "ViraLoopMedia" in path and ("downloads" in path):
-        for marker in ["ViraLoopMedia/downloads/", "ViraLoopMedia\\downloads\\"]:
+    # Step 4: C:/ViraLoopMedia/07_Downloads/... or C:/ViraLoopMedia\\07_Downloads\\ → MEDIA_ROOT/07_Downloads/...
+    elif "ViraLoopMedia" in path and ("07_Downloads" in path):
+        for marker in ["ViraLoopMedia/07_Downloads/", "ViraLoopMedia\\07_Downloads\\"]:
             if marker in path:
                 rel = path.split(marker, 1)[-1]
-                target_path = os.path.join(MEDIA_ROOT, "downloads", rel)
+                target_path = os.path.join(MEDIA_ROOT, "07_Downloads", rel)
                 break
 
     # Step 5: Relative path → MEDIA_ROOT

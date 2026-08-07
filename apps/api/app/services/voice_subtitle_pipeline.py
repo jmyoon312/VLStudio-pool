@@ -77,7 +77,7 @@ class VoiceSubtitlePipeline:
         if output_dir is None:
             output_dir = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "downloads", "voice_subtitle"
+                "07_Downloads", "voice_subtitle"
             )
         
         self.output_dir = output_dir
@@ -158,7 +158,7 @@ class VoiceSubtitlePipeline:
                 word_timestamps, output_format
             )
             
-            logger.info(f"✅ [Pipeline] Complete!")
+            logger.info(f"[OK] [Pipeline] Complete!")
             logger.info(f"   Audio: {audio_path}")
             logger.info(f"   Subtitles: {subtitle_paths}")
             
@@ -171,7 +171,7 @@ class VoiceSubtitlePipeline:
             )
             
         except Exception as e:
-            logger.error(f"❌ [Pipeline] Failed: {e}")
+            logger.error(f"[FAIL] [Pipeline] Failed: {e}")
             return PipelineResult(
                 success=False,
                 error=str(e)

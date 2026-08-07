@@ -397,3 +397,9 @@ def mark_report_read(db: Session, report_id: int):
 
 def get_daily_report(db: Session, report_id: int):
     return db.query(models.DailyReport).filter(models.DailyReport.id == report_id).first()
+
+
+# [NEW] Category methods
+def get_category(db, category_id: int):
+    from . import models
+    return db.query(models.Category).filter(models.Category.id == category_id).first()

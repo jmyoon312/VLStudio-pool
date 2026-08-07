@@ -46,16 +46,16 @@ class BrowserSessionManager:
         [Hybrid] 윈도우 에이전트에게 브라우저 생성을 요청합니다.
         engine_mode: standard, cloak, fox
         """
-        logger.info(f"🌐 Requesting hybrid browser for profile: {profile_id} (Mode: {engine_mode}, Headless: {headless})")
+        logger.info(f"[WEB] Requesting hybrid browser for profile: {profile_id} (Mode: {engine_mode}, Headless: {headless})")
 
         # 1. 윈도우 에이전트를 통해 브라우저 실행
         page = stealth_ops.create_page(profile_id=profile_id, headless=headless)
 
         if not page:
-            logger.error("❌ Failed to create hybrid browser session")
+            logger.error("[FAIL] Failed to create hybrid browser session")
             raise Exception("Hybrid browser creation failed")
 
-        logger.info(f"✅ Hybrid browser session active for {profile_id}")
+        logger.info(f"[OK] Hybrid browser session active for {profile_id}")
         return page
 
     def launch_channel(self, channel_id: str, db: Session, rotate_ip: bool = True) -> any:
@@ -65,7 +65,7 @@ class BrowserSessionManager:
             from app.services.network_stealth_manager import network_stealth_manager
             success = network_stealth_manager.prepare_upload_session(serial=None, captain_id=channel_id)
             if not success:
-                logger.error("❌ [SAIF] Network hardening failed. Aborting session for safety.")
+                logger.error("[FAIL] [SAIF] Network hardening failed. Aborting session for safety.")
                 raise Exception("Network isolation failure")
 
         # Profile DB에서 해당 브랜드 채널을 위임받은 CAPTAIN(관리자) 이메일/비밀번호 추출
@@ -122,7 +122,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
 
         with self._session_lock:
             if profile_id in self._sessions:
-                logger.info(f"⚡ [Context Reuse] Reusing browser session for profile {profile_id}")
+                logger.info(f"[TURBO] [Context Reuse] Reusing browser session for profile {profile_id}")
                 page = self._sessions[profile_id]
             else:
                 self._sessions[profile_id] = None  # placeholder while creating
@@ -182,10 +182,10 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
             channel = db.query(YouTubeChannel).filter(YouTubeChannel.channel_id == channel_id).first()
             
             if not channel:
-                logger.error(f"❌ [Warmup] Channel not found: {channel_id}")
+                logger.error(f"[FAIL] [Warmup] Channel not found: {channel_id}")
                 return False
             
-            logger.info(f"🚀 [Warmup] Starting Stage {stage} for channel: {channel.title} (owner_profile: {channel.owner_profile_id})")
+            logger.info(f"[FALLBACK] [Warmup] Starting Stage {stage} for channel: {channel.title} (owner_profile: {channel.owner_profile_id})")
 
             # DNA 로드 (없으면 None으로 진행)
             dna = None
@@ -196,7 +196,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                     dna = ChannelDNA.parse_obj(warmup_config)
                     logger.info(f"🧬 DNA Loaded for {channel_id}: {dna.positioning.micro_niche}")
                 except Exception as e:
-                    logger.warning(f"⚠️ Failed to parse DNA for {channel_id}: {e} — continuing without DNA")
+                    logger.warning(f"[WARN] Failed to parse DNA for {channel_id}: {e} — continuing without DNA")
 
             # Intelligence Generator (설정 없으면 기본 사용)
             try:
@@ -204,7 +204,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                 settings = crud.get_settings(db)
                 intel = get_intelligence_generator(settings)
             except Exception as e:
-                logger.warning(f"⚠️ Failed to load intelligence generator: {e}")
+                logger.warning(f"[WARN] Failed to load intelligence generator: {e}")
                 intel = get_intelligence_generator(None)
 
             # 브라우저 실행 (유튜브 홈으로 이동)
@@ -257,14 +257,14 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                     )
                     db.add(warmup_log)
                 except Exception as e:
-                    logger.error(f"❌ Failed to save warmup log: {e}")
+                    logger.error(f"[FAIL] Failed to save warmup log: {e}")
                     
                 channel.warmup_last_run = datetime.now()
                 db.commit()
                 
             return success == True
         except Exception as e:
-            logger.error(f"❌ [Warmup] run_warmup_routine error: {e}", exc_info=True)
+            logger.error(f"[FAIL] [Warmup] run_warmup_routine error: {e}", exc_info=True)
             # 실패 상태 기록
             try:
                 channel = db.query(YouTubeChannel).filter(YouTubeChannel.channel_id == channel_id).first()
@@ -283,11 +283,11 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
             if success == True:
                 try:
                     from app.services.adb_service import adb_service
-                    logger.info("🔄 [Warmup] Post-warmup IP rotation started.")
+                    logger.info("[REFRESH] [Warmup] Post-warmup IP rotation started.")
                     adb_service.rotate_ip(method='soft')
-                    logger.info("✅ [Warmup] Post-warmup IP rotation finished.")
+                    logger.info("[OK] [Warmup] Post-warmup IP rotation finished.")
                 except Exception as e:
-                    logger.warning(f"⚠️ [Warmup] Post-warmup IP rotation failed: {e}")
+                    logger.warning(f"[WARN] [Warmup] Post-warmup IP rotation failed: {e}")
 
 
     def close_session(self, profile_id: str = None):
@@ -329,22 +329,22 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
         if not sign_in_btn.is_visible():
         return True  # 이미 로그인된 상태
                 
-        logger.warning("⚠️ Not logged in — attempting auto-login...")
+        logger.warning("[WARN] Not logged in — attempting auto-login...")
             
         # 자동 로그인 시도: DB에서 이메일/비밀번호 조회
         if not channel_id or not db:
-        logger.error("❌ Cannot auto-login: channel_id or db not provided")
+        logger.error("[FAIL] Cannot auto-login: channel_id or db not provided")
         return False
                 
         import app.models as _models
         channel = db.query(_models.YouTubeChannel).filter(_models.YouTubeChannel.channel_id == channel_id).first()
         if not channel or not channel.owner_profile_id:
-        logger.error("❌ Cannot auto-login: no owner_profile_id")
+        logger.error("[FAIL] Cannot auto-login: no owner_profile_id")
         return False
                 
         profile = db.query(_models.Profile).filter(_models.Profile.id == channel.owner_profile_id).first()
         if not profile or not profile.email or not profile.password:
-        logger.error("❌ Cannot auto-login: profile has no credentials")
+        logger.error("[FAIL] Cannot auto-login: profile has no credentials")
         return False
             
         logger.info(f"🔑 Auto-login attempt for {profile.email}")
@@ -376,10 +376,10 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
         # 다시 로그인 상태 확인
         try:
         page.wait_for_selector('button#avatar-btn, yt-img-shadow#avatar, #avatar-btn', timeout=10000)
-        logger.info("✅ Auto-login successful!")
+        logger.info("[OK] Auto-login successful!")
         return True
         except Exception:
-        logger.error("❌ Auto-login failed: avatar not found after login attempt")
+        logger.error("[FAIL] Auto-login failed: avatar not found after login attempt")
         return False
                 
         except Exception as e:
@@ -454,16 +454,16 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                         submit_btn = page.locator('#submit-button').first
                         if submit_btn.is_visible():
                             submit_btn.click()
-                            logger.info("📝 Comment posted.")
+                            logger.info("[SCRIPT] Comment posted.")
             except Exception as e:
                 logger.warning(f"Comment attempt failed: {e}")
 
     def _warmup_day_1_discovery(self, page, db, channel_id, stage, dna, intel):
         """[Stage 1: 순수 관찰자] 홈 피드 탐색, 검색 없이 무작위 시청, 상호작용 불가"""
-        logger.info(f"🔍 [Stage 1] Passive Observer for {channel_id}")
+        logger.info(f"[SEARCH] [Stage 1] Passive Observer for {channel_id}")
         try:
         if not self._verify_login(page, channel_id=channel_id, db=db):
-        logger.error("❌ Session Dropped or Captcha blocked.")
+        logger.error("[FAIL] Session Dropped or Captcha blocked.")
         raise Exception("AUTH_DROPPED")
                 
         # 홈 피드 진입
@@ -488,7 +488,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
         self._active_watch(page, random.randint(45, 120), allow_like=False, allow_comment=False)
         except Exception as e:
         logger.warning(f"Could not click video from home feed (Empty feed?): {e}")
-        logger.info("🔄 Fallback: Performing generic search to populate watch history.")
+        logger.info("[REFRESH] Fallback: Performing generic search to populate watch history.")
                 
         # DNA 기반 검색어 생성 또는 기본 검색어 사용
         query = "요즘 뜨는 영상"
@@ -518,17 +518,17 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
         logger.info("📺 Selected video from Fallback Search.")
         self._active_watch(page, random.randint(45, 120), allow_like=False, allow_comment=False)
         except Exception as search_err:
-        logger.error(f"❌ Fallback search failed: {search_err}")
+        logger.error(f"[FAIL] Fallback search failed: {search_err}")
                 
         return True
         except Exception as e:
-        logger.error(f"❌ Stage 1 Failed: {e}")
+        logger.error(f"[FAIL] Stage 1 Failed: {e}")
         if str(e) == "AUTH_DROPPED": return "AUTH_DROPPED"
         return False
 
         def _warmup_day_2_interest(self, page, db, channel_id, stage, dna, intel):
         """[Stage 2: 관심사 좁히기] DNA 검색, Shorts 탐색, 제한적 상호작용"""
-        logger.info(f"🔍 [Stage 2] Niche Explorer for {channel_id}")
+        logger.info(f"[SEARCH] [Stage 2] Niche Explorer for {channel_id}")
         try:
             if not self._verify_login(page, channel_id=channel_id, db=db):
                 raise Exception("AUTH_DROPPED")
@@ -577,7 +577,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                 
             return True
         except Exception as e:
-            logger.error(f"❌ Stage 2 Failed: {e}")
+            logger.error(f"[FAIL] Stage 2 Failed: {e}")
             if str(e) == "AUTH_DROPPED": return "AUTH_DROPPED"
             return False
 
@@ -626,7 +626,7 @@ def _launch_orchestrator(self, channel_id: str, db: Session, rotate_ip: bool = T
                     
         return True
         except Exception as e:
-        logger.error(f"❌ Stage 3 Failed: {e}")
+        logger.error(f"[FAIL] Stage 3 Failed: {e}")
         if str(e) == "AUTH_DROPPED": return "AUTH_DROPPED"
         return False
 

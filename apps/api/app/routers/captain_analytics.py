@@ -51,7 +51,7 @@ async def get_captain_channels(
             ).first()
             
             if not captain:
-                print(f"⚠️ [CaptainAPI] Profile not found or not CAPTAIN: {profile_id}")
+                print(f"[WARN] [CaptainAPI] Profile not found or not CAPTAIN: {profile_id}")
                 raise HTTPException(404, "Captain profile not found")
 
             # 2. 관리 중인 모든 채널 조회 (공통)

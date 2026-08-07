@@ -80,36 +80,36 @@ class AutonomousRepairBroker:
         """
         Main entry point. Receives raw_stats from daily report.
         """
-        self.log(f"🚀 Auto-Fixer Started for Report #{self.report_id}")
+        self.log(f"[FALLBACK] Auto-Fixer Started for Report #{self.report_id}")
         
         diagnostics = report_stats.get("diagnostics", {})
         
         # 1. Fix Zero View Count
         zero_views = diagnostics.get("zero_view_count", 0)
-        self.log(f"🔍 Analyzing Zero View Videos: Found {zero_views} candidates.")
+        self.log(f"[SEARCH] Analyzing Zero View Videos: Found {zero_views} candidates.")
         if zero_views > 0:
             self.fix_zero_views()
         else:
-            self.log("✅ No Zero-View videos detected.")
+            self.log("[OK] No Zero-View videos detected.")
             
         # 2. Fix Missing Thumbnails
         missing_thumbs = diagnostics.get("missing_thumbnails", 0)
-        self.log(f"🔍 Analyzing Missing Thumbnails: Found {missing_thumbs} candidates.")
+        self.log(f"[SEARCH] Analyzing Missing Thumbnails: Found {missing_thumbs} candidates.")
         if missing_thumbs > 0:
              self.fix_missing_thumbnails()
         # 3. Apply Index Recalculation (Viral/Rising Scores)
-        self.log("🔍 Recalculating Viral Indices for all recent videos...")
+        self.log("[SEARCH] Recalculating Viral Indices for all recent videos...")
         self.fix_viral_indices()
 
         # 4. Sync View Counts from Metadata (if DB is 0 but metadata exists)
-        self.log("🔍 Syncing View Counts from Metadata JSON...")
+        self.log("[SEARCH] Syncing View Counts from Metadata JSON...")
         self.sync_view_counts()
 
         # 5. [NEW] Operational Auto-Fix (Search/LLM)
-        self.log("🔍 Analyzing Operational Metrics for Auto-Tune...")
+        self.log("[SEARCH] Analyzing Operational Metrics for Auto-Tune...")
         self.fix_operational_issues(report_stats.get("operational_metrics", {}))
 
-        self.log("✅ Auto-Fixer Cycle Complete.", "success")
+        self.log("[OK] Auto-Fixer Cycle Complete.", "success")
 
     def fix_zero_views(self):
         """
@@ -135,21 +135,21 @@ class AutonomousRepairBroker:
                             info = json.load(f)
                             v_count = info.get('view_count', 0)
                             if v_count > 0:
-                                self.log(f"    ✅ Recovered Views: {v_count}")
+                                self.log(f"    [OK] Recovered Views: {v_count}")
                                 video.view_count = v_count
                                 video.updated_at = datetime.now()
                                 self.db.commit()
                                 count_fixed += 1
                                 continue
                     except Exception as e:
-                        self.log(f"    ⚠️ Failed to read local JSON: {e}", "warning")
+                        self.log(f"    [WARN] Failed to read local JSON: {e}", "warning")
             
-            self.log(f"    ❌ Could not recover views.", "error")
+            self.log(f"    [FAIL] Could not recover views.", "error")
             
         if count_fixed > 0:
-             self.log(f"✨ Successfully fixed {count_fixed} videos with zero views.", "success")
+             self.log(f"[MAGIC] Successfully fixed {count_fixed} videos with zero views.", "success")
         else:
-             self.log("⚠️ Could not fix any zero-view videos.", "warning")
+             self.log("[WARN] Could not fix any zero-view videos.", "warning")
 
     def fix_missing_thumbnails(self):
         """
@@ -172,7 +172,7 @@ class AutonomousRepairBroker:
                  for ext in ['.jpg', '.webp', '.png']:
                      potential_path = os.path.join(directory, basename + ext)
                      if os.path.exists(potential_path):
-                         self.log(f"    ✅ Found orphaned thumbnail: {potential_path}")
+                         self.log(f"    [OK] Found orphaned thumbnail: {potential_path}")
                          video.thumbnail_path = potential_path
                          self.db.commit()
                          count_fixed += 1
@@ -180,10 +180,10 @@ class AutonomousRepairBroker:
                          break
                  
                  if not found:
-                     self.log(f"    ❌ No thumbnail file found for {video.title}", "warning")
+                     self.log(f"    [FAIL] No thumbnail file found for {video.title}", "warning")
         
         if count_fixed > 0:
-             self.log(f"✨ Successfully restored {count_fixed} thumbnails.", "success")
+             self.log(f"[MAGIC] Successfully restored {count_fixed} thumbnails.", "success")
 
     def fix_viral_indices(self):
         """
@@ -202,9 +202,9 @@ class AutonomousRepairBroker:
             # If `perform_viral_analysis` is an accessible function, use it.
             
             count = insights.perform_viral_analysis(self.db, timeframe_hours=24)
-            self.log(f"✨ Viral Indices Recalculated for {count} videos.", "success")
+            self.log(f"[MAGIC] Viral Indices Recalculated for {count} videos.", "success")
         except Exception as e:
-            self.log(f"⚠️ Viral Index Recalculation Partial Fail: {e}", "warning")
+            self.log(f"[WARN] Viral Index Recalculation Partial Fail: {e}", "warning")
 
     def sync_view_counts(self):
         """
@@ -227,9 +227,9 @@ class AutonomousRepairBroker:
         
         if count > 0:
             self.db.commit()
-            self.log(f"✨ Synced view counts for {count} videos from metadata.", "success")
+            self.log(f"[MAGIC] Synced view counts for {count} videos from metadata.", "success")
         else:
-            self.log("✅ View counts are already in sync (or no metadata available).")
+            self.log("[OK] View counts are already in sync (or no metadata available).")
 
     def fix_operational_issues(self, metrics: dict):
         """
@@ -243,28 +243,28 @@ class AutonomousRepairBroker:
         s_success = searxng.get("success", 0)
         
         if s_fail > 5 and s_success == 0:
-            self.log(f"⚠️ High SearXNG Failure Rate ({s_fail} fails). Switching to Tavily...", "warning")
+            self.log(f"[WARN] High SearXNG Failure Rate ({s_fail} fails). Switching to Tavily...", "warning")
             settings = self.db.query(models.Settings).first()
             if settings and settings.web_search_engine != "tavily_only":
                 settings.web_search_engine = "tavily_only"
                 self.db.commit()
-                self.log(f"✨ Auto-Switched Search Strategy to 'tavily_only'.", "success")
+                self.log(f"[MAGIC] Auto-Switched Search Strategy to 'tavily_only'.", "success")
         
         # Strategy 2: LLM Rate Limit Warnings
         llm_stats = metrics.get("llm", {})
         rate_limits = llm_stats.get("rate_limits", 0)
         if rate_limits > 10:
-             self.log(f"⚠️ High LLM Rate Limits ({rate_limits}). Consider adding more keys.", "warning")
+             self.log(f"[WARN] High LLM Rate Limits ({rate_limits}). Consider adding more keys.", "warning")
 
     async def heal_code(self, file_path: str, error_log: str):
         """
         [PHASE 11] Autonomous Code Healing
         Attempts to fix a logic error in a service file using a Drafter-Critic loop.
         """
-        self.log(f"🔧 Starting Code Healing for: {file_path}")
+        self.log(f"[WRENCH] Starting Code Healing for: {file_path}")
         
         if not os.path.exists(file_path):
-            self.log(f"❌ File not found: {file_path}", "error")
+            self.log(f"[FAIL] File not found: {file_path}", "error")
             return False
 
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -311,14 +311,14 @@ class AutonomousRepairBroker:
             )
 
             if success:
-                self.log(f"✅ Code healed and snapshot created for {file_path}", "success")
+                self.log(f"[OK] Code healed and snapshot created for {file_path}", "success")
                 return True
             else:
-                self.log(f"❌ Failed to write protected fix.", "error")
+                self.log(f"[FAIL] Failed to write protected fix.", "error")
                 return False
 
         except Exception as e:
-            self.log(f"❌ Code healing failed during LLM generation: {e}", "error")
+            self.log(f"[FAIL] Code healing failed during LLM generation: {e}", "error")
             return False
 
 

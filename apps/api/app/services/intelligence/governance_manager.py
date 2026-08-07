@@ -65,11 +65,11 @@ class GovernanceManager:
                 db.commit()
                 db.refresh(stats)
                 
-                logger.info(f"📊 [Governance] Logged usage for {agent_type} ({model_name}): ${total_cost:.6f}")
+                logger.info(f"[CHART] [Governance] Logged usage for {agent_type} ({model_name}): ${total_cost:.6f}")
                 return stats
                 
         except Exception as e:
-            logger.error(f"❌ [Governance] Failed to log usage: {e}")
+            logger.error(f"[FAIL] [Governance] Failed to log usage: {e}")
             return None
 
     @staticmethod

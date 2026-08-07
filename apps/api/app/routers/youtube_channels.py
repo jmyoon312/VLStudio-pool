@@ -496,7 +496,7 @@ def launch_channel_isolated(
     
     # 4. 브라우저 실행
     try:
-        logger.info(f"🚀 Launching isolated session for channel: {channel_id}")
+        logger.info(f"[FALLBACK] Launching isolated session for channel: {channel_id}")
         session_manager.launch_channel(
             channel_id=channel_id,
             db=db,
@@ -522,7 +522,7 @@ def launch_channel_isolated(
         
         return {"success": True, "message": "Channel launched"}
     except Exception as e:
-        logger.error(f"❌ Launch failed: {e}")
+        logger.error(f"[FAIL] Launch failed: {e}")
         raise HTTPException(500, f"Launch failed: {str(e)}")
 
 # ============================================
@@ -581,7 +581,7 @@ async def trigger_sentinel_audit(
     
     # 1. 런칭 시 Audit 수행을 위해 stealth_ops 호출
     # 실제 구현은 브라우저를 띄워서 감사 사이트 접속 후 점수 파싱
-    logger.info(f"🔍 [Sentinel] Manual audit triggered for channel: {channel_id}")
+    logger.info(f"[SEARCH] [Sentinel] Manual audit triggered for channel: {channel_id}")
     
     # [SAIF-2026] 실제 감사 로직 실행 및 점수 획득
     score = stealth_ops._perform_stealth_audit(channel_id)
@@ -613,22 +613,22 @@ def launch_channel_warmup(
         ).first()
         
         if not channel:
-            logger.error(f"❌ [Warmup] Channel not found: {channel_id}")
+            logger.error(f"[FAIL] [Warmup] Channel not found: {channel_id}")
             raise HTTPException(404, f"Channel not found: {channel_id}")
         
-        logger.info(f"✅ [Warmup] Found channel: {channel.title} (DB ID: {channel.channel_id})")
+        logger.info(f"[OK] [Warmup] Found channel: {channel.title} (DB ID: {channel.channel_id})")
         
         # Update status to RUNNING before starting
         channel.warmup_status = "RUNNING"
         db.commit()
-        logger.info(f"📝 [Warmup] Status set to RUNNING for {channel_id}")
+        logger.info(f"[SCRIPT] [Warmup] Status set to RUNNING for {channel_id}")
         
         # Execute warmup synchronously (no background task)
-        logger.info(f"🎬 [Warmup] Starting warmup routine for {channel_id}, stage={stage}")
+        logger.info(f"[VIDEO] [Warmup] Starting warmup routine for {channel_id}, stage={stage}")
         result = session_manager.run_warmup_routine(channel_id, stage, visible)
         
         if result:
-            logger.info(f"✅ [Warmup] Warmup completed successfully for {channel_id}")
+            logger.info(f"[OK] [Warmup] Warmup completed successfully for {channel_id}")
             return {
                 "success": True,
                 "message": "Warmup routine completed successfully",
@@ -636,7 +636,7 @@ def launch_channel_warmup(
                 "stage": stage
             }
         else:
-            logger.error(f"❌ [Warmup] Warmup failed for {channel_id}")
+            logger.error(f"[FAIL] [Warmup] Warmup failed for {channel_id}")
             # Do not raise 500, let frontend handle success:false
             return {
                 "success": False,
@@ -649,7 +649,7 @@ def launch_channel_warmup(
     except Exception as e:
         import traceback
         tb = traceback.format_exc()
-        logger.error(f"❌ [Warmup] Unexpected error for {channel_id}: {e}\n{tb}")
+        logger.error(f"[FAIL] [Warmup] Unexpected error for {channel_id}: {e}\n{tb}")
         # Return graceful error so frontend toast can show the reason
         return {
             "success": False,
@@ -893,7 +893,7 @@ def bulk_start_warmup(
             try:
                 next_stage = channel.warmup_stage + 1 if channel.warmup_stage > 0 else 1
                 
-                logger.info(f"🔄 [Bulk Warmup] Processing channel {idx}/{len(channels)}: {channel.title} (Day {next_stage})")
+                logger.info(f"[REFRESH] [Bulk Warmup] Processing channel {idx}/{len(channels)}: {channel.title} (Day {next_stage})")
                 
                 # Reset status
                 channel.warmup_status = "IDLE"
@@ -908,10 +908,10 @@ def bulk_start_warmup(
                 
                 if result:
                     success_count += 1
-                    logger.info(f"✅ [Bulk Warmup] Channel {idx}/{len(channels)} completed successfully")
+                    logger.info(f"[OK] [Bulk Warmup] Channel {idx}/{len(channels)} completed successfully")
                 else:
                     failed_count += 1
-                    logger.warning(f"⚠️ [Bulk Warmup] Channel {idx}/{len(channels)} failed")
+                    logger.warning(f"[WARN] [Bulk Warmup] Channel {idx}/{len(channels)} failed")
                 
                 # 다음 채널 전에 짧은 대기 (IP 안정화)
                 if idx < len(channels):
@@ -920,7 +920,7 @@ def bulk_start_warmup(
                     
             except Exception as e:
                 failed_count += 1
-                logger.error(f"❌ [Bulk Warmup] Channel {idx}/{len(channels)} error: {e}")
+                logger.error(f"[FAIL] [Bulk Warmup] Channel {idx}/{len(channels)} error: {e}")
                 continue
         
         logger.info(f"🏁 [Bulk Warmup] Completed: {success_count} success, {failed_count} failed")
@@ -1100,7 +1100,7 @@ async def quarantine_channel(
     
     db.commit()
     
-    logger.info(f"🚨 Channel quarantined: {channel_id} - {reason}")
+    logger.info(f"[ALERT] Channel quarantined: {channel_id} - {reason}")
     
     return {
         "success": True,
@@ -1129,7 +1129,7 @@ async def release_quarantine(
     
     db.commit()
     
-    logger.info(f"✅ Channel released from quarantine: {channel_id}")
+    logger.info(f"[OK] Channel released from quarantine: {channel_id}")
     
     return {"success": True, "channel_id": channel_id}
 
@@ -1215,7 +1215,7 @@ async def verify_channel_delegation(
                 updated_at=datetime.now()
             )
             db.add(channel)
-            logger.info(f"✅ Created YouTubeChannel: {channel_id}")
+            logger.info(f"[OK] Created YouTubeChannel: {channel_id}")
         else:
             # Update existing channel info
             channel.channel_name = channel_info['snippet']['title']
@@ -1225,7 +1225,7 @@ async def verify_channel_delegation(
             channel.view_count = channel_info['statistics'].get('viewCount', 0)
             channel.video_count = channel_info['statistics'].get('videoCount', 0)
             channel.updated_at = datetime.now()
-            logger.info(f"✅ Updated YouTubeChannel: {channel_id}")
+            logger.info(f"[OK] Updated YouTubeChannel: {channel_id}")
         
         # 5. ChannelAccess 등록
         # TIN_CAN: OWNER
@@ -1254,7 +1254,7 @@ async def verify_channel_delegation(
         
         db.commit()
         
-        logger.info(f"✅ Delegation verified and registered for channel: {channel_id}")
+        logger.info(f"[OK] Delegation verified and registered for channel: {channel_id}")
         
         return {
             "success": True,
@@ -1319,7 +1319,7 @@ async def update_cultivation_strategy(
             dna_data = generate_channel_dna(data.target_niche)
             channel.warmup_config = json.dumps(dna_data)
         except Exception as e:
-            logger.error(f"❌ Failed to generate DNA for {channel_id}: {e}")
+            logger.error(f"[FAIL] Failed to generate DNA for {channel_id}: {e}")
         
     db.commit()
     return {

@@ -42,7 +42,7 @@ class RecommendationEngine:
         context: Dict[str, Any] = None,
         limit: int = 10
     ) -> List[Dict]:
-        logger.info(f"🎯 Getting recommendations for user {user_id}")
+        logger.info(f"[TARGET] Getting recommendations for user {user_id}")
         
         # Get user preferences
         preferences = self._user_preferences.get(user_id, {})
@@ -86,7 +86,7 @@ class RecommendationEngine:
         preferences["watched_count"] = len(self._watch_history[user_id])
         preferences["last_updated"] = datetime.now().isoformat()
         
-        logger.info(f"✅ Updated preferences for user {user_id}")
+        logger.info(f"[OK] Updated preferences for user {user_id}")
     
     async def get_similar_content(
         self,

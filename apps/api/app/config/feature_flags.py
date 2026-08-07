@@ -50,13 +50,13 @@ class FeatureFlags:
         """플래그 활성화 (런타임)"""
         if flag_name in self._flags:
             self._flags[flag_name] = True
-            print(f"✅ Feature enabled: {flag_name}")
+            print(f"[OK] Feature enabled: {flag_name}")
             
     def disable(self, flag_name: str):
         """플래그 비활성화 (런타임)"""
         if flag_name in self._flags:
             self._flags[flag_name] = False
-            print(f"❌ Feature disabled: {flag_name}")
+            print(f"[FAIL] Feature disabled: {flag_name}")
             
     def get_all_flags(self) -> Dict[str, Any]:
         """모든 플래그 상태 반환"""

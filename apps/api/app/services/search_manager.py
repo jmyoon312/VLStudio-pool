@@ -50,7 +50,7 @@ class SearchManager:
                         "score": r.get("score", 0.5)
                     })
                 if results:
-                    logger.info(f"✅ [SearchManager/SearXNG] {instance} returned {len(results)} results")
+                    logger.info(f"[OK] [SearchManager/SearXNG] {instance} returned {len(results)} results")
                     return {"results": results, "answer": results[0]["content"][:200], "source": "SearXNG"}
             except Exception as e:
                 logger.debug(f"[SearchManager/SearXNG] {instance} failed: {e}")
@@ -72,7 +72,7 @@ class SearchManager:
                         "content": r.get("content", ""),
                         "score": r.get("score", 0.9)
                     })
-                logger.info(f"✅ [SearchManager/Tavily] Found {len(results)} results")
+                logger.info(f"[OK] [SearchManager/Tavily] Found {len(results)} results")
                 return {"results": results, "answer": data.get("answer", ""), "source": "Tavily"}
         except Exception as e:
             logger.warning(f"[SearchManager/Tavily] Failed: {e}")

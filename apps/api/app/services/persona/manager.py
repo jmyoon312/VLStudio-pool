@@ -25,10 +25,10 @@ class PersonaManager:
                     self.library = json.load(f)
             else:
                 # Fallback path check (sometimes it might be in current dir)
-                logger.warning(f"⚠️ Persona library not found at {self.library_path}. Using empty fallback.")
+                logger.warning(f"[WARN] Persona library not found at {self.library_path}. Using empty fallback.")
                 self.library = {"niches": []}
         except Exception as e:
-            logger.error(f"❌ Failed to load persona library: {e}")
+            logger.error(f"[FAIL] Failed to load persona library: {e}")
             self.library = {"niches": []}
 
     def get_persona_config(self, channel_id: int) -> dict:

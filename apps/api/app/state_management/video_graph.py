@@ -61,15 +61,15 @@ def type_b_gen_node(state: VideoProductionState) -> VideoProductionState:
 def hitl_gateway_node(state: VideoProductionState) -> VideoProductionState:
     """Halts the graph to wait for Human Approval."""
     if state.get("hitl_status") != "APPROVED":
-        logger.info("🚨 [HITL Gateway] Waiting for Human Approval...")
+        logger.info("[ALERT] [HITL Gateway] Waiting for Human Approval...")
         state["hitl_status"] = "PENDING_APPROVAL"
     else:
-        logger.info("✅ [HITL Gateway] Approval received. Proceeding to Render...")
+        logger.info("[OK] [HITL Gateway] Approval received. Proceeding to Render...")
     return state
 
 def final_render_node(state: VideoProductionState) -> VideoProductionState:
     """Renders the final video via Root MCP."""
-    logger.info("🎬 [Render Node] Sending to Root MCP Renderer...")
+    logger.info("[VIDEO] [Render Node] Sending to Root MCP Renderer...")
     # TODO: Call root_mcp.call_tool("app_render_video", ...)
     state["current_phase"] = "COMPLETED"
     return state

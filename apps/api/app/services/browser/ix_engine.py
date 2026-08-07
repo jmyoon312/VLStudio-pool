@@ -62,11 +62,6 @@ class IXBrowserEngine(BrowserInterface):
         http = await self._ensure_http()
         payload = {
             "group_id": config.engine_mode,  # use engine_mode as group tag
-            "user_proxy_config": {
-                "proxy_type": config.proxy_type,
-                "proxy_host": config.proxy_host,
-                "proxy_port": config.proxy_port,
-            },
             "fingerprint_config": {
                 "automatic_timezone": True,
                 "automatic_geolocation": True,
@@ -79,9 +74,26 @@ class IXBrowserEngine(BrowserInterface):
                 "media_devices": "noise",
             },
         }
+        
         if config.lte_interface_ip:
-            payload["user_proxy_config"]["proxy_host"] = config.lte_interface_ip
-            payload["user_proxy_config"]["proxy_type"] = "socks5"
+            payload["user_proxy_config"] = {
+                "proxy_mode": 1,
+                "proxy_type": "socks5",
+                "proxy_host": config.lte_interface_ip,
+                "proxy_port": 8080
+            }
+        elif config.proxy_host:
+            payload["user_proxy_config"] = {
+                "proxy_mode": 1,
+                "proxy_type": config.proxy_type or "http",
+                "proxy_host": config.proxy_host,
+                "proxy_port": int(config.proxy_port or 0),
+            }
+            if getattr(config, 'proxy_username', None):
+                payload["user_proxy_config"]["proxy_user"] = config.proxy_username
+                payload["user_proxy_config"]["proxy_password"] = getattr(config, 'proxy_password', '')
+        else:
+            payload["user_proxy_config"] = {"proxy_mode": 2} # Direct connection mode or unassigned
 
         r = await http.post("/profile/create", json=payload)
         data = self._raise_on_error(r)

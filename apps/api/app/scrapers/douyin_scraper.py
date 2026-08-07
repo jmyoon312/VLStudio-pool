@@ -64,7 +64,7 @@ class DouyinChannelScraper:
                 
                 # Check for Captcha (Just in case)
                 if not headless and page.locator('#captcha_verify_image').count() > 0:
-                     print("⚠️ Captcha detected. Waiting for user...")
+                     print("[WARN] Captcha detected. Waiting for user...")
                      try:
                         page.wait_for_selector('#captcha_verify_image', state='hidden', timeout=60000)
                      except:
@@ -130,7 +130,7 @@ class DouyinChannelScraper:
                 
                 # Check for Captcha
                 if page.locator('#captcha_verify_image').count() > 0:
-                     print("⚠️ Captcha detected during scan!")
+                     print("[WARN] Captcha detected during scan!")
                 
                 page.wait_for_load_state("networkidle")
                 

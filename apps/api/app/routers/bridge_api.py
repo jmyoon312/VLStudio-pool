@@ -233,7 +233,7 @@ async def render_remotion(request: Request, body: Dict[str, Any]):
         final_path = await harness.run_async(scene_data=props, output_path=output_path)
         return {"status": "success", "file_path": final_path, "self_healed": True}
     except RuntimeError as e:
-        logger.error(f"❌ [Bridge] Terminal render failure after all retries: {e}")
+        logger.error(f"[FAIL] [Bridge] Terminal render failure after all retries: {e}")
         raise HTTPException(status_code=500, detail=f"Render failed after retries: {str(e)[:300]}")
 
 @router.post("/trim")
@@ -255,7 +255,7 @@ async def trim_video(request: TrimRequest):
         actual_path = potential_path
 
     if not os.path.exists(actual_path):
-        print(f"❌ [Bridge] File not found: {actual_path} (Original: {request.file_path})")
+        print(f"[FAIL] [Bridge] File not found: {actual_path} (Original: {request.file_path})")
         raise HTTPException(status_code=404, detail=f"File not found: {actual_path}")
     
     try:
@@ -288,7 +288,7 @@ async def trim_video(request: TrimRequest):
         
         return {"status": "success", "file_path": out_path, "duration": request.duration}
     except Exception as e:
-        print(f"❌ [Bridge] Trim error: {str(e)}")
+        print(f"[FAIL] [Bridge] Trim error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/generate-asset")
@@ -424,7 +424,7 @@ async def generate_asset(request: AssetGenerateRequest):
         result = await asset_factory.generate_colab_asset(request.type, request.prompt, request.config)
         return result
     except Exception as e:
-        logger.error(f"❌ [Bridge] Generation Failed: {e}")
+        logger.error(f"[FAIL] [Bridge] Generation Failed: {e}")
         raise HTTPException(status_code=500, detail=f"Bridge generation error: {str(e)}")
 
 @router.post("/n8n-trigger")
@@ -787,7 +787,7 @@ async def get_channel_dna(
                         db.commit()
                         db.refresh(channel)
                 else:
-                    logger.warning(f"⚠️ [DNA Bridge] No video files found for reference channel {ref_id}")
+                    logger.warning(f"[WARN] [DNA Bridge] No video files found for reference channel {ref_id}")
 
             except Exception as e:
                 logger.error(f"DNA Sync Failed: {e}")

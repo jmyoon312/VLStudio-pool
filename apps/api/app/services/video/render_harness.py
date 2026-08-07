@@ -29,29 +29,29 @@ class RenderHarness:
 
         while attempts <= max_retries:
             try:
-                logger.info(f"🎬 [RenderHarness] Attempt {attempts + 1}/{max_retries + 1}...")
+                logger.info(f"[VIDEO] [RenderHarness] Attempt {attempts + 1}/{max_retries + 1}...")
                 result = await render_func(current_props)
-                logger.info("✅ [RenderHarness] Render successful!")
+                logger.info("[OK] [RenderHarness] Render successful!")
                 return result
 
             except Exception as e:
                 attempts += 1
                 error_log = traceback.format_exc()
-                logger.error(f"❌ [RenderHarness] Render failed: {str(e)}")
+                logger.error(f"[FAIL] [RenderHarness] Render failed: {str(e)}")
 
                 if attempts > max_retries:
                     logger.error("🛑 [RenderHarness] Max retries reached. Failing.")
                     raise e
 
                 # --- Self-Healing Logic ---
-                logger.info("🛠️ [RenderHarness] Initiating Self-Healing Protocol...")
+                logger.info("[TOOL] [RenderHarness] Initiating Self-Healing Protocol...")
                 
                 patched_props = await self._patch_props(current_props, error_log)
                 if not patched_props:
-                    logger.warning("⚠️ [RenderHarness] LLM failed to suggest a patch. Retrying with original props...")
+                    logger.warning("[WARN] [RenderHarness] LLM failed to suggest a patch. Retrying with original props...")
                     continue
                 
-                logger.info(f"✨ [RenderHarness] Applied Patch: {json.dumps(patched_props)[:200]}...")
+                logger.info(f"[MAGIC] [RenderHarness] Applied Patch: {json.dumps(patched_props)[:200]}...")
                 current_props = patched_props
 
     async def _patch_props(self, props: Dict[str, Any], error_log: str) -> Optional[Dict[str, Any]]:

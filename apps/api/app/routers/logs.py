@@ -62,7 +62,7 @@ async def full_scan_sequence():
     await run_channel_scan()
     
     # 2. Run Stats Update
-    print("⏳ Starting Post-Scan Stats Update...")
+    print("[WAIT] Starting Post-Scan Stats Update...")
     try:
         # We need to run this in a thread because it might be sync? 
         # update_video_stats is sync (uses blocking DB calls).
@@ -75,9 +75,9 @@ async def full_scan_sequence():
                 db.close()
                 
         await asyncio.to_thread(run_stats_sync)
-        print("✅ Post-Scan Stats Update Completed.")
+        print("[OK] Post-Scan Stats Update Completed.")
     except Exception as e:
-        print(f"❌ Post-Scan Stats Update Failed: {e}")
+        print(f"[FAIL] Post-Scan Stats Update Failed: {e}")
 
 @router.post("/scan")
 async def trigger_scan(background_tasks: BackgroundTasks):

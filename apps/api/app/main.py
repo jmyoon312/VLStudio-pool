@@ -144,93 +144,8 @@ async def lifespan(app: FastAPI):
     from app.global_swarm_master import global_master
     asyncio.create_task(global_master.start_monitoring_loop())
 
-    # [Startup Data Seeder] Seed DB with real YouTube data via yt-dlp if empty
-    def seed_initial_data():
-        import time as ttime
-        ttime.sleep(2) # Reduced from 15s for faster initial loading
-        try:
-            from app.database import SessionLocal
-            from app import models
-            import yt_dlp
-            db = SessionLocal()
-            all_vids = db.query(models.Video).all()
-            has_golden = False
-            stale_ids = []
-            for v in all_vids:
-                raw = v.metadata_json
-                meta = {}
-                if isinstance(raw, str):
-                    try: meta = json.loads(raw)
-                    except: meta = {}
-                elif isinstance(raw, dict):
-                    meta = raw
-                if meta.get("is_golden_nugget") is True:
-                    has_golden = True
-                else:
-                    stale_ids.append(v.id)
-            if has_golden:
-                logger.info(f"[Seeder] {len(all_vids)} golden nuggets already exist, skipping.")
-                db.close()
-                return
-            if stale_ids:
-                logger.info(f"[Seeder] Removing {len(stale_ids)} stale records without golden flag...")
-                db.query(models.Video).filter(models.Video.id.in_(stale_ids)).delete(synchronize_session=False)
-                db.commit()
-            logger.info("[Seeder] DB empty, fetching initial YouTube trending data...")
-            search_terms = ["유튜브 인기급상승", "최신 유행", "한국 트렌드", "숏폼 레전드"]
-            seen_ids = set()
-            for term in search_terms:
-                try:
-                    ydl_opts = {'quiet': True, 'no_warnings': True, 'extract_flat': False, 'playlistend': 8}
-                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                        info = ydl.extract_info(f"ytsearch8:{term}", download=False)
-                        for entry in (info.get('entries') or []):
-                            vid = entry.get('id', '')
-                            if not vid or vid in seen_ids:
-                                continue
-                            seen_ids.add(vid)
-                            views = entry.get('view_count') or 0
-                            subs = entry.get('channel_follower_count') or 0
-                            likes = entry.get('like_count') or 0
-                            comments = entry.get('comment_count') or 0
-                            if views == 0:
-                                continue
-                            vsr = round(views / subs, 1) if subs > 0 else 0
-                            ev = round((likes + comments) / views * 100, 2) if views > 0 else 0.0
-                            from datetime import datetime
-                            thumb = entry.get('thumbnail') or ''
-                            video = models.Video(
-                                video_id=vid,
-                                title=(entry.get('title') or 'Unknown Title')[:500],
-                                url=f"https://youtube.com/watch?v={vid}",
-                                thumbnail_path=thumb,
-                                view_count=views,
-                                duration=entry.get('duration') or 0,
-                                status="completed",
-                                downloaded_at=datetime.now(),
-                                metadata_json={
-                                    "is_golden_nugget": True,
-                                    "is_short": (entry.get('duration') or 0) <= 65,
-                                    "subscribers": subs,
-                                    "likes": likes,
-                                    "comments": comments,
-                                    "outlier_ratio": vsr,
-                                    "ev_ratio": ev,
-                                    "channel_name": entry.get('uploader', 'Unknown'),
-                                    "category": f"실시간 트렌드 > {term}",
-                                    "thumbnail": thumb,
-                                }
-                            )
-                            db.add(video)
-                except Exception as e:
-                    logger.warning(f"[Seeder] yt-dlp search '{term}' failed: {e}")
-            db.commit()
-            count = db.query(models.Video).count()
-            db.close()
-            logger.info(f"[Seeder] Initial data seeding complete. {count} golden nuggets stored.")
-        except Exception as e:
-            logger.error(f"[Seeder] Failed: {e}")
-    threading.Thread(target=seed_initial_data, daemon=True).start()
+    # [Startup Data Seeder] Disabled to prevent wiping user data or auto-respawning videos on restart
+    # threading.Thread(target=seed_initial_data, daemon=True).start() (Removed)
 
     # [Part 1: Database Self-Healing & Optional Migration]
     try:
@@ -380,7 +295,7 @@ def get_network_status_bypass():
 from app.config import settings as app_settings
 download_dir = os.environ.get("MEDIA_DIR", app_settings.MEDIA_ROOT)
 os.makedirs(download_dir, exist_ok=True)
-os.makedirs(os.path.join(download_dir, "downloads"), exist_ok=True)
+os.makedirs(os.path.join(download_dir, "07_Downloads"), exist_ok=True)
 
 @app.get("/media/{path:path}")
 async def smart_media_server(path: str):
@@ -389,8 +304,8 @@ async def smart_media_server(path: str):
     raw_path = os.path.join(download_dir, "raw", path)
     if os.path.isfile(raw_path): return FileResponse(raw_path)
     
-    # [Smart Fallback] Check if the file is actually inside 'downloads'
-    downloads_path = os.path.join(download_dir, "downloads", path)
+    # [Smart Fallback] Check if the file is actually inside '07_Downloads'
+    downloads_path = os.path.join(download_dir, "07_Downloads", path)
     if os.path.isfile(downloads_path): return FileResponse(downloads_path)
     
     # [Smart Fallback] profile.jpg가 유실된 경우 동적 이니셜 아바타 생성

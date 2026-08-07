@@ -32,7 +32,7 @@ class ScriptEngine:
         if not model:
             model = "opencode/deepseek-v4-flash-free"
 
-        logger.info(f"📝 [Elite Gen] Niche={niche}, Input={input_text[:50]}..., Model={model}")
+        logger.info(f"[SCRIPT] [Elite Gen] Niche={niche}, Input={input_text[:50]}..., Model={model}")
         
         # 1. Specialized Persona Injection (Sovereign Specialist)
         specialist_persona = ""
@@ -194,7 +194,7 @@ class ScriptEngine:
                 actual_model = result.get("model", fb_model) if isinstance(result, dict) else fb_model
                 content = result.get("content", result) if isinstance(result, dict) else result
                 
-                logger.info(f"✅ Script generated successfully using {actual_model}.")
+                logger.info(f"[OK] Script generated successfully using {actual_model}.")
                 
                 warning = None
                 if actual_model != model:
@@ -212,10 +212,10 @@ class ScriptEngine:
                 }
             except Exception as e:
                 last_error = e
-                logger.warning(f"⚠️ {fb_provider}/{fb_model} failed: {e}. Trying next fallback...")
+                logger.warning(f"[WARN] {fb_provider}/{fb_model} failed: {e}. Trying next fallback...")
                 continue
         
-        logger.error(f"❌ All providers failed. Last error: {last_error}")
+        logger.error(f"[FAIL] All providers failed. Last error: {last_error}")
         raise last_error or Exception("All script generation providers failed.")
 
     def refine_script(self, current_text: str, instruction: str, persona: str = None, style_instruction: str = None, sample_text: str = None, provider: str = None, model: str = None, tempo_percentage: int = 100):
@@ -228,7 +228,7 @@ class ScriptEngine:
         if not model:
             model = "opencode/deepseek-v4-flash-free"
 
-        logger.info(f"✨ Script Refinement Request: Persona={persona}, Instruction='{instruction}', Tempo={tempo_percentage}%, Style={bool(style_instruction)}")
+        logger.info(f"[MAGIC] Script Refinement Request: Persona={persona}, Instruction='{instruction}', Tempo={tempo_percentage}%, Style={bool(style_instruction)}")
         
         persona_map = {
             "strategist": (
@@ -294,7 +294,7 @@ class ScriptEngine:
             actual_model = result.get("model", model) if isinstance(result, dict) else model
             content = result.get("content", result) if isinstance(result, dict) else result
             
-            logger.info("✅ Script refined successfully.")
+            logger.info("[OK] Script refined successfully.")
             
             warning = None
             # Check if models are different, ignoring provider prefixes like 'google/'
@@ -310,7 +310,60 @@ class ScriptEngine:
                 "warning": warning
             }
         except Exception as e:
-            logger.error(f"❌ Script refinement failed with {model}: {e}")
+            logger.error(f"[FAIL] Script refinement failed with {model}: {e}")
+            raise e
+
+    def safety_review_script(self, current_text: str, provider: str = None, model: str = None):
+        """
+        Performs a safety review on the script, suggesting changes and returning a JSON.
+        """
+        if not provider:
+            provider = "opencode"
+        if not model:
+            model = "opencode/deepseek-v4-flash-free"
+
+        system_prompt = (
+            "You are an expert Safety and Compliance Editor for YouTube content.\n"
+            "Your task is to review the provided script and replace any harsh, dangerous, explicit, or non-advertiser-friendly language with soft, family-friendly alternatives.\n\n"
+            "### CRITICAL RULES:\n"
+            "1. You MUST output ONLY valid JSON format.\n"
+            "2. Do not include markdown code blocks like ```json in the output.\n"
+            "3. Ensure the 'revised_script' contains the fully modified text.\n"
+            "4. For every change made, add an entry to the 'changes' array with 'original', 'replacement', and 'reason'.\n"
+            'Example output:\n'
+            '{\n'
+            '  "revised_script": "This is a very nice script.",\n'
+            '  "changes": [\n'
+            '    {"original": "bad word", "replacement": "nice", "reason": "Family friendly"}\n'
+            '  ]\n'
+            '}'
+        )
+
+        user_prompt = f"### CURRENT SCRIPT:\n{current_text}"
+
+        try:
+            import json
+            result = self.llm_client.generate_content(
+                prompt=user_prompt,
+                model_name=model,
+                system_instruction=system_prompt,
+                full_response=True
+            )
+            
+            content = result.get("content", result) if isinstance(result, dict) else result
+            
+            # Clean markdown JSON formatting if present
+            if content.startswith("```json"):
+                content = content[7:]
+            if content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+                
+            parsed_data = json.loads(content.strip())
+            return parsed_data
+        except Exception as e:
+            logger.error(f"[FAIL] Safety review failed: {e}")
             raise e
 
     def generate_multilingual_script(self, input_text: str, niche: str = None, provider: str = None, model: str = None):
@@ -391,7 +444,66 @@ class ScriptEngine:
                 "warning": warning
             }
         except Exception as e:
-            logger.error(f"❌ Multilingual generation failed with {model}: {e}")
+            logger.error(f"[FAIL] Multilingual generation failed with {model}: {e}")
+            raise e
+    def safety_review_script(self, current_text: str, provider: str = None, model: str = None) -> dict:
+        """
+        Analyzes the script for safety/policy violations (TikTok/Douyin standards) 
+        and suggests replacements.
+        """
+        if not provider: provider = "opencode"
+        if not model: model = "opencode/deepseek-v4-flash-free"
+
+        logger.info(f"🛡️ Safety Review Requested for {len(current_text)} chars")
+
+        system_prompt = (
+            "You are a Content Safety and Policy Expert for TikTok and YouTube Shorts.\n"
+            "Your task is to analyze the provided Korean script and identify any words or phrases that violate community guidelines (e.g., violence, gore, excessive swearing, sexual content, self-harm, hate speech).\n\n"
+            "### RULES:\n"
+            "1. ONLY identify problematic words/phrases. Do NOT rewrite the entire script from scratch unless necessary.\n"
+            "2. For each identified issue, provide a safe `replacement` and a brief `reason` in Korean.\n"
+            "3. Finally, provide the `revised_script` with all replacements applied.\n"
+            "4. Output MUST be raw JSON without markdown formatting.\n\n"
+            "### JSON SCHEMA:\n"
+            "{\n"
+            '  "revised_script": "The full script with safe words applied",\n'
+            '  "changes": [\n'
+            '    {\n'
+            '      "original": "problematic word/phrase",\n'
+            '      "replacement": "safe alternative",\n'
+            '      "reason": "Why it violates policy"\n'
+            '    }\n'
+            '  ]\n'
+            "}"
+        )
+
+        user_prompt = f"### SCRIPT TO REVIEW:\n{current_text}"
+        
+        try:
+            result = self.llm_client.generate_content(
+                prompt=user_prompt, 
+                model_name=model,
+                system_instruction=system_prompt,
+                full_response=True
+            )
+            
+            content = result.get("content", result) if isinstance(result, dict) else result
+            
+            # Parse JSON
+            if isinstance(content, str):
+                content = content.replace('```json', '').replace('```', '').strip()
+                import json
+                try:
+                    parsed = json.loads(content)
+                except json.JSONDecodeError:
+                    logger.error("Failed to parse Safety Review JSON.")
+                    parsed = {"revised_script": current_text, "changes": []}
+            else:
+                parsed = content
+
+            return parsed
+        except Exception as e:
+            logger.error(f"[FAIL] Safety review failed: {e}")
             raise e
 
     def segment_to_beats(self, script: str, provider: str = None, model: str = None):
@@ -455,9 +567,9 @@ class ScriptEngine:
             else:
                 beats = content
 
-            logger.info(f"✅ Successfully segmented script into {len(beats)} beats.")
+            logger.info(f"[OK] Successfully segmented script into {len(beats)} beats.")
             return beats
         except Exception as e:
-            logger.error(f"❌ Script segmentation failed: {e}")
+            logger.error(f"[FAIL] Script segmentation failed: {e}")
             raise e
 

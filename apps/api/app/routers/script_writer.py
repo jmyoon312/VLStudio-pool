@@ -127,3 +127,22 @@ def refine_script(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/safety-review", response_model=schemas.SafetyReviewResponse)
+def safety_review_script(
+    request: schemas.SafetyReviewRequest,
+    db: Session = Depends(database.get_db),
+    engine: ScriptEngine = Depends(get_script_engine)
+):
+    settings = crud.get_settings(db)
+    provider = request.provider or settings.script_analysis_provider
+    model = request.model or settings.script_analysis_model
+
+    try:
+        return engine.safety_review_script(
+            current_text=request.current_text,
+            provider=provider,
+            model=model
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

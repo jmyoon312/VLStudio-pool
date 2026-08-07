@@ -68,7 +68,7 @@ class HybridMemory:
         else:
             table = self.db.open_table(table_name)
             table.add(data)
-        logger.info(f"💾 Vector Wisdom added for niche: {niche}")
+        logger.info(f"[SAVE] Vector Wisdom added for niche: {niche}")
 
     def query_vector_wisdom(self, embedding: List[float], limit: int = 5) -> List[Dict]:
         if "wisdom_manifold" not in self.db.table_names():

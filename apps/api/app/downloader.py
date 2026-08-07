@@ -160,7 +160,7 @@ def _get_latest_videos_impl(channel_url, limit, timeout, **kwargs):
         try:
             return future.result(timeout=timeout)
         except FutureTimeoutError:
-            logger.warning(f"⏱️ get_latest_videos timeout after {timeout}s for {channel_url}")
+            logger.warning(f"[TIME] get_latest_videos timeout after {timeout}s for {channel_url}")
             return []
         except Exception as e:
             err_msg = str(e)
@@ -253,7 +253,7 @@ def get_downloader_strategy(url: str, force_bypass: bool = False):
     return YTDLPDownloader(), clean_url
 
 # Wrapper for Backward Compatibility with routers/videos.py
-def download_single_video(video_url, root_download_path, cookies_path=None, use_bypass=False, headless=True, script_only=False, force_hd=False):
+def download_single_video(video_url, root_download_path, cookies_path=None, user_data_dir=None, use_bypass=False, headless=True, script_only=False, force_hd=False):
     """
     Downloads a video with automatic fallback source discovery.
     [UPGRADE] If YouTube fails, tries alternative sources like:
@@ -267,40 +267,40 @@ def download_single_video(video_url, root_download_path, cookies_path=None, use_
     # Even for TikTok/Douyin, we try YTDLP first to get better metadata/subs
     try:
         ytdlp = YTDLPDownloader()
-        print(f"🔄 [STEP 1] Trying YTDLP for {clean_url}...")
+        print(f"[REFRESH] [STEP 1] Trying YTDLP for {clean_url}...")
         result = ytdlp.download(clean_url, root_download_path, cookies_path=cookies_path, script_only=script_only, force_hd=force_hd)
         
         if result.get('status') == 'success':
-            print(f"✅ [SUCCESS] YTDLP succeeded for {clean_url}")
+            print(f"[OK] [SUCCESS] YTDLP succeeded for {clean_url}")
             return result
         else:
             err_msg = str(result.get('error', 'Unknown YTDLP error'))
-            print(f"⚠️ [FAILED] YTDLP failed: {err_msg}")
+            print(f"[WARN] [FAILED] YTDLP failed: {err_msg}")
             # If it's a "known" failure (IP block), we proceed to fallback
     except Exception as e:
-        print(f"❌ [ERROR] YTDLP execution error: {e}")
+        print(f"[FAIL] [ERROR] YTDLP execution error: {e}")
 
     # 2. FALLBACK: Try Specialized Bypass Strategies
     # We only reach here if YTDLP failed
-    print(f"🔄 [STEP 2] Attempting Bypass Fallback for {clean_url}...")
+    print(f"[REFRESH] [STEP 2] Attempting Bypass Fallback for {clean_url}...")
     strategy, _ = get_downloader_strategy(clean_url, force_bypass=True)
     
     if strategy and not isinstance(strategy, YTDLPDownloader):
         try:
-            print(f"🚀 [FALLBACK] Strategy: {strategy.__class__.__name__}")
+            print(f"[FALLBACK] [FALLBACK] Strategy: {strategy.__class__.__name__}")
             if isinstance(strategy, (TikVideoDownloader, V2OBDownloader, DouyinSmartDownloader)):
-                result = strategy.download(clean_url, root_download_path, headless=headless)
+                result = strategy.download(clean_url, root_download_path, headless=headless, user_data_dir=user_data_dir)
             
             if result.get('status') == 'success':
                 # [NOTE] For bypass, script_only means we still download video 
                 # because we need it for metadata/script extraction.
                 return result
         except Exception as e:
-            print(f"❌ [ERROR] Fallback strategy failed: {e}")
+            print(f"[FAIL] [ERROR] Fallback strategy failed: {e}")
     
     # 3. YOUTUBE SPECIFIC FALLBACKS (Invidious/Piped)
     if 'youtube.com' in clean_url or 'youtu.be' in clean_url:
-        logger.info("🔄 Primary YouTube download failed. Trying alternative sources...")
+        logger.info("[REFRESH] Primary YouTube download failed. Trying alternative sources...")
         
         # Try alternative 1: Invidious
         invidious_urls = [
@@ -318,7 +318,7 @@ def download_single_video(video_url, root_download_path, cookies_path=None, use_
                 result = inv_strategy.download(inv_url, root_download_path, cookies_path=cookies_path, force_hd=force_hd, script_only=script_only)
                 
                 if result.get('status') == 'success':
-                    logger.info(f"✅ Invidious fallback succeeded: {invidious}")
+                    logger.info(f"[OK] Invidious fallback succeeded: {invidious}")
                     return result
             except Exception as ex:
                 logger.warning(f"Invidious {invidious} failed: {ex}")
@@ -362,7 +362,7 @@ def download_single_video(video_url, root_download_path, cookies_path=None, use_
                     continue
         
         # Try alternative 3: Different yt-dlp extractor args
-        logger.info("🔄 Trying yt-dlp with alternative extractor args...")
+        logger.info("[REFRESH] Trying yt-dlp with alternative extractor args...")
         try:
             alt_opts = {
                 'extractor_args': {
@@ -377,7 +377,7 @@ def download_single_video(video_url, root_download_path, cookies_path=None, use_
             result = alt_strategy.download(clean_url, root_download_path, cookies_path=cookies_path, force_hd=force_hd, script_only=script_only)
             
             if result.get('status') == 'success':
-                logger.info("✅ Alternative extractor args succeeded")
+                logger.info("[OK] Alternative extractor args succeeded")
                 return result
         except Exception as ex:
             logger.warning(f"Alternative extractor failed: {ex}")
@@ -385,13 +385,13 @@ def download_single_video(video_url, root_download_path, cookies_path=None, use_
     # Return original result if all fallbacks fail
     return result if 'result' in locals() else {'status': 'failed', 'error': 'All download methods failed'}
 
-def get_channel_info(url):
+def get_channel_info(url, cookies_path=None):
     """
     Wrapper to get channel info. Currently delegates to YTDLP strategy 
     as it has the extraction logic.
     """
     downloader = YTDLPDownloader()
-    return downloader.get_channel_info(url)
+    return downloader.get_channel_info(url, cookies_path=cookies_path)
 
 def get_video_info(url, cookies_path=None):
     """
